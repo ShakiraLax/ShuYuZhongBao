@@ -35,4 +35,7 @@ public class LoginActivity extends BaseActivity {
         startActivity(intent);
         finish();
     }
+
+    /*--------------------高德----------------------------*/
+
 }

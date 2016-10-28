@@ -47,6 +47,8 @@ dependencies {
     compile 'com.tumblr:remember:1.0.0@aar'
     /*分组列表*/
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
+    /*高德地图*/
+    compile files('libs/AMap_Location_V3.0.0_20160922.jar')
 
     testCompile 'junit:junit:4.12'
 }

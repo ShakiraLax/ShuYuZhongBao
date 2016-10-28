@@ -71,6 +71,15 @@
         <activity
             android:name=".WorkTimeActivity"
             android:label="上班时间" />
+
+        <!--高德地图-->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="2d17b25daab614978a9f6c3e788d4e08">
+
+        </meta-data>
+        <service android:name="com.amap.api.location.APSService" />
+
     </application>
 
 </manifest>

@@ -91,4 +91,11 @@
         android:layout_marginTop="10dp"
         android:onClick="loginByAccount"
         android:text="账号密码登陆" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
 </LinearLayout>
