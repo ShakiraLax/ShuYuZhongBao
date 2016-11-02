@@ -34,7 +34,6 @@ public class RetrofitClient {
                 .Builder()
                 .sslSocketFactory(HttpsHelper.getSSLSocketFactory())
                 .hostnameVerifier(HttpsHelper.getHostnameVerifier())
-                .cookieJar(null)
 //                .cookieJar(Injection.provideCookieJar())
                 .connectTimeout(4, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
