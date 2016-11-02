@@ -49,14 +49,4 @@ public abstract class BaseActivity extends AppCompatActivity {
         return this;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
 }
