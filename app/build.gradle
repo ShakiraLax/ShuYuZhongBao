@@ -46,7 +46,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha4'
     compile 'com.tumblr:remember:1.0.0@aar'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'//listView分组列表
-    compile files('AMap_Location_V3.0.0_20160922.jar')//高德地图
 
     compile 'io.reactivex:rxandroid:1.2.0'//适配rxandroid的依赖包
     compile 'io.reactivex:rxjava:1.1.4'//适配rxjava的依赖包
