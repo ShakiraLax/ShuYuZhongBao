@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.utils.FragmentManagerActivity;
 
@@ -18,6 +19,7 @@ public class MainActivity extends FragmentManagerActivity {
     private static final int MY = 2;
 
     private TabLayout tabLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,5 +90,23 @@ public class MainActivity extends FragmentManagerActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        exitApp();
+    }
+
+    private long exitTime = 0;
+
+    //再按一次退出
+    private void exitApp() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(this, "再按一次退出...", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        } else {
+            finish();
+        }
     }
 }
