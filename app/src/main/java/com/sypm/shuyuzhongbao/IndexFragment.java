@@ -1,11 +1,13 @@
 package com.sypm.shuyuzhongbao;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
@@ -21,6 +23,7 @@ import java.util.List;
 public class IndexFragment extends BaseFragment {
 
     ListView listView;
+    LinearLayout linearLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,6 +56,14 @@ public class IndexFragment extends BaseFragment {
         }
         listView = (ListView) getView().findViewById(R.id.listView);
         listView.setAdapter(new ListAdapter(getContext(), list));
+        linearLayout = (LinearLayout) getView().findViewById(R.id.of);
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MapActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public static class ListAdapter extends MyBaseAdapter {

@@ -29,7 +29,6 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
     private MapView mapView;//地图控件
     private AMap aMap;//地图对象
 
-
     //定位需要的声明
     private AMapLocationClient mLocationClient = null;//定位发起端
     private AMapLocationClientOption mLocationOption = null;//定位参数
@@ -51,7 +50,6 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
         //获取地图对象
         aMap = mapView.getMap();
 
-
         //设置显示定位按钮 并且可以点击
         UiSettings settings = aMap.getUiSettings();
         //设置定位监听
@@ -61,10 +59,9 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
         // 是否可触发定位并显示定位层
         aMap.setMyLocationEnabled(true);
 
-
         //定位的小图标 默认是蓝点 这里自定义一团火，其实就是一张图片
         MyLocationStyle myLocationStyle = new MyLocationStyle();
-//        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.avator));//已更改
+        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));//已更改
         myLocationStyle.radiusFillColor(android.R.color.transparent);
         myLocationStyle.strokeColor(android.R.color.transparent);
         aMap.setMyLocationStyle(myLocationStyle);
@@ -78,6 +75,7 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
 
     //定位
     private void initLoc() {
+
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
         //设置定位回调监听
@@ -130,51 +128,26 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //设置缩放级别
-                    aMap.moveCamera(CameraUpdateFactory.zoomTo(22));
+                    aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                     //将地图移动到定位点
                     aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())));
                     //点击定位按钮 能够将地图的中心移动到定位点
                     mListener.onLocationChanged(amapLocation);
-                    //添加图钉
-                    aMap.addMarker(getMarkerOptions(amapLocation));
                     //获取定位信息
                     StringBuffer buffer = new StringBuffer();
-                    buffer.append(amapLocation.getCountry() + "" + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getProvince() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
+                    buffer.append(df.format(date) + "" + amapLocation.getLocationType() + "" + amapLocation.getLatitude() + "" + amapLocation.getLongitude() + "" + amapLocation.getAccuracy() + "" + amapLocation.getCityCode() + "" + amapLocation.getCountry() + "" + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getProvince() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
                     Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
+                    Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
                 }
 
 
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                Log.e("AmapError", "location Error, ErrCode:"
-                        + amapLocation.getErrorCode() + ", errInfo:"
-                        + amapLocation.getErrorInfo());
-
+                Log.e("AmapError", "location Error, ErrCode:" + amapLocation.getErrorCode() + ", errInfo:" + amapLocation.getErrorInfo());
                 Toast.makeText(getApplicationContext(), "定位失败", Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    //自定义一个图钉，并且设置图标，当我们点击图钉时，显示设置的信息
-    private MarkerOptions getMarkerOptions(AMapLocation amapLocation) {
-        //设置图钉选项
-        MarkerOptions options = new MarkerOptions();
-        //图标
-        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));//已更改
-        //位置
-        options.position(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()));
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(amapLocation.getCountry() + "" + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
-        //标题
-        options.title(buffer.toString());
-        //子标题
-        options.snippet("这里好火");
-        //设置多少帧刷新一次图片资源
-        options.period(60);
-
-        return options;
-
     }
 
     //激活定位

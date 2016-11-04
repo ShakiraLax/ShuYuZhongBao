@@ -25,7 +25,6 @@
     <!-- 写入扩展存储，向扩展卡写入数据，用于写入缓存定位数据 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.SET_DEBUG_APP" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -42,14 +41,13 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/StartTheme">
-        <activity android:name=".IDCardActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity android:name=".MainActivity" />-->
         <activity
             android:name=".LoginActivity"
             android:label="登陆" />
@@ -65,9 +63,9 @@
         <activity
             android:name=".LoginByAccountActivity"
             android:label="账号登陆" />
-        <!--<activity
+        <activity
             android:name=".IDCardActivity"
-            android:label="身份证信息" />-->
+            android:label="身份证信息" />
         <activity
             android:name=".RenameActivity"
             android:label="姓名" />
@@ -85,7 +83,7 @@
             android:label="上班时间" />
         <activity
             android:name=".MapActivity"
-            android:label="上班时间" />
+            android:label="我的位置" />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
