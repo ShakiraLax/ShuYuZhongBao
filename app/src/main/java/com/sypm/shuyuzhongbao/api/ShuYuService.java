@@ -1,6 +1,35 @@
 package com.sypm.shuyuzhongbao.api;
 
+import com.sypm.shuyuzhongbao.data.DataResult;
+
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
+
 public interface ShuYuService {
+
+    /*登陆*/
+    @FormUrlEncoded
+    @POST("site/login.html")
+    Call<DataResult> login(@Field("staffSn") String staffSn, @Field("password") String password);
+
+    /*获取验证码*/
+    @FormUrlEncoded
+    @POST("site/sms.html")
+    Call<DataResult> getPinFromNet(@Field("phone") String phone);
+
+    /*手机号登陆*/
+    @FormUrlEncoded
+    @POST("site/mobilelogin.html")
+    Call<DataResult> loginByPhone(@Field("phone") String phone, @Field("code") String code);
+
+    /*获取当前用户信息*/
+    @GET("user/info.html")
+    Call<DataResult> getUserInfo();
+
 
     /*@FormUrlEncoded
     @POST("mobile-site-login.html")

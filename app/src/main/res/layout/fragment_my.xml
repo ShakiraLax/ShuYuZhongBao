@@ -186,6 +186,7 @@
         android:background="@color/line" />
 
     <LinearLayout
+        android:id="@+id/exit"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@android:color/white">

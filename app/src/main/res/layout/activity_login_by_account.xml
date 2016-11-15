@@ -24,13 +24,14 @@
             android:orientation="horizontal">
 
             <EditText
+                android:id="@+id/number"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="20dp"
                 android:layout_weight="3"
                 android:background="@null"
                 android:gravity="center_vertical"
-                android:hint="请输入手机号    "
+                android:hint="请输入账号"
+                android:paddingLeft="20dp"
                 android:textSize="17sp" />
 
         </LinearLayout>
@@ -41,12 +42,13 @@
             android:background="@color/line" />
 
         <EditText
+            android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:layout_marginLeft="20dp"
             android:background="@null"
             android:gravity="center_vertical"
             android:hint="请输入密码"
+            android:paddingLeft="20dp"
             android:textSize="17sp" />
 
         <View

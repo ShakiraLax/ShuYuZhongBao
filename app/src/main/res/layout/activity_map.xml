@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context="com.sypm.shuyuzhongbao.MapActivity">
 
-    <include layout="@layout/view_toolbar" />
+    <!--<include layout="@layout/view_toolbar" />-->
 
     <com.amap.api.maps.MapView
         android:id="@+id/map"

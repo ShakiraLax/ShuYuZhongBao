@@ -4,9 +4,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toolbar;
 
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
@@ -15,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 首页
+ * 收入列表
  */
 
 public class MoneyFragment extends BaseFragment {
@@ -27,6 +31,20 @@ public class MoneyFragment extends BaseFragment {
         //允许刷新按钮
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.refresh, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_refresh) {
+            initData();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Nullable

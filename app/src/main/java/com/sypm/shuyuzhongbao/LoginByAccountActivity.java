@@ -1,14 +1,28 @@
 package com.sypm.shuyuzhongbao;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.sypm.shuyuzhongbao.api.RetrofitClient;
+import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
+import com.sypm.shuyuzhongbao.utils.MD5Utils;
+import com.sypm.shuyuzhongbao.utils.RememberHelper;
+import com.sypm.shuyuzhongbao.utils.ToastUtils;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginByAccountActivity extends BaseActivity {
     Button login;
+    EditText number, password;
 
 
     @Override
@@ -16,6 +30,14 @@ public class LoginByAccountActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_by_account);
         initData();
+        initViews();
+    }
+
+    private void initViews() {
+        number = (EditText) findViewById(R.id.number);
+        password = (EditText) findViewById(R.id.password);
+        number.setText("100002");
+        password.setText("123456");
     }
 
     private void initData() {
@@ -23,9 +45,31 @@ public class LoginByAccountActivity extends BaseActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                finish();
+                if (!isInvalidInput()) {
+                    Call<DataResult> login = RetrofitClient.getInstance().getSYService()
+                            .login(number.getText().toString(), MD5Utils.md5Encode(password.getText().toString()));
+                    login.enqueue(new Callback<DataResult>() {
+                        @Override
+                        public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                            if (response.body() != null) {
+                                String status = response.body().status;
+                                if (status.equals("1")) {
+                                    RememberHelper.saveUserInfo(number.getText().toString(), password.getText().toString());
+                                    startActivity(new Intent(LoginByAccountActivity.this, MainActivity.class));
+                                    Toast.makeText(LoginByAccountActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                    return;
+                                }
+                            }
+                            ToastUtils.show("登陆失败...");
+                        }
+
+                        @Override
+                        public void onFailure(Call<DataResult> call, Throwable t) {
+                            ToastUtils.show(t.toString());
+                        }
+                    });
+                }
             }
         });
     }
@@ -34,5 +78,12 @@ public class LoginByAccountActivity extends BaseActivity {
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    //验证输入字符是否无效
+    public boolean isInvalidInput() {
+        String uid = number.getText().toString().trim();
+        String mPassword = password.getText().toString().trim();
+        return TextUtils.isEmpty(uid) || TextUtils.isEmpty(mPassword);
     }
 }

@@ -6,8 +6,8 @@ import com.tumblr.remember.Remember;
 
 public class RememberHelper {
 
-    public static void saveUserInfo(String uid, String password) {
-        Remember.putString("uid", uid);
+    public static void saveUserInfo(String number, String password) {
+        Remember.putString("number", number);
         Remember.putString("password", password);
     }
 
@@ -16,9 +16,8 @@ public class RememberHelper {
     }
 
 
-    public static String getUid() {
-        return Remember.getString("uid", "");
+    public static String getNumber() {
+        return Remember.getString("number", "");
     }
-
 
 }

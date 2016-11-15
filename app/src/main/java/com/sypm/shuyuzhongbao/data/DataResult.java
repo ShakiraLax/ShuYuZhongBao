@@ -2,9 +2,7 @@ package com.sypm.shuyuzhongbao.data;
 
 import java.util.List;
 
-/**
- * Created by Jack Wang on 2016/7/13.
- */
+
 public class DataResult<T> {
 
     /**
@@ -15,7 +13,6 @@ public class DataResult<T> {
 
     public String status;
     public String message;
-
     public List<T> list;
     public String[] array;
 

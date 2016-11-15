@@ -15,7 +15,6 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
@@ -59,7 +58,7 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
         // 是否可触发定位并显示定位层
         aMap.setMyLocationEnabled(true);
 
-        //定位的小图标 默认是蓝点 这里自定义一团火，其实就是一张图片
+        //定位的小图标 默认是蓝点 这里自定义一箭头，其实就是一张图片
         MyLocationStyle myLocationStyle = new MyLocationStyle();
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));//已更改
         myLocationStyle.radiusFillColor(android.R.color.transparent);
@@ -107,6 +106,7 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
 
         if (amapLocation != null) {
             if (amapLocation.getErrorCode() == 0) {
+
                 //定位成功回调信息，设置相关消息
                 amapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见官方定位类型表
                 amapLocation.getLatitude();//获取纬度
@@ -127,18 +127,19 @@ public class MapActivity extends BaseActivity implements LocationSource, AMapLoc
 
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
-                    //设置缩放级别
-                    aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                     //将地图移动到定位点
                     aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())));
                     //点击定位按钮 能够将地图的中心移动到定位点
                     mListener.onLocationChanged(amapLocation);
                     //获取定位信息
                     StringBuffer buffer = new StringBuffer();
-                    buffer.append(df.format(date) + "" + amapLocation.getLocationType() + "" + amapLocation.getLatitude() + "" + amapLocation.getLongitude() + "" + amapLocation.getAccuracy() + "" + amapLocation.getCityCode() + "" + amapLocation.getCountry() + "" + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getProvince() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
+                    buffer.append(df.format(date) + " 定位类型：" + amapLocation.getLocationType() + " 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + " 精度：" + amapLocation.getAccuracy() + " 城市编码：" + amapLocation.getCityCode() + " 国家：" + amapLocation.getCountry() + " 省份：" + amapLocation.getProvince() + "     " + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
                     Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
                     Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
+
+                    //设置缩放级别
+                    aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                 }
 
 
