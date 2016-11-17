@@ -21,6 +21,10 @@ import com.sypm.shuyuzhongbao.utils.BaseActivity;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/*
+* 高德定位
+* */
+
 //监听定位和定位变化
 public class MapActivity extends BaseActivity implements LocationSource, AMapLocationListener {
 

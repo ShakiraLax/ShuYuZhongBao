@@ -30,6 +30,38 @@ public interface ShuYuService {
     @GET("user/info.html")
     Call<DataResult> getUserInfo();
 
+    /*修改当前用户信息*/
+    @FormUrlEncoded
+    @POST("user/update.html")
+    Call<DataResult> updateUserInfo(
+            @Field("mobile") String mobile
+            , @Field("sn") String sn
+            , @Field("name") String name
+            , @Field("idNumber") String idNumber
+            , @Field("idFront") String idFront
+            , @Field("idBack") String idBack);
+
+    /*获取指派未接受订单*/
+    @GET("shiporder/getorder.html")
+    Call<DataResult> getOrder();
+
+    /*获取现在执行的订单*/
+    @GET("shiporder/getcurrent.html")
+    Call<DataResult> getCurrentOrder();
+
+    /*人员上班时间列表*/
+    @FormUrlEncoded
+    @POST("worktime/list.html")
+    Call<DataResult> getWorkTimeList(@Field("sort") String sort);
+
+    /*修改密码*/
+    @FormUrlEncoded
+    @POST("user/password.html")
+    Call<DataResult> midifyPassword(@Field("oldPassword") String oldPassword, @Field("password") String password);
+
+    /*退出登录*/
+    @GET("site/logout.html")
+    Call<DataResult> logout();
 
     /*@FormUrlEncoded
     @POST("mobile-site-login.html")

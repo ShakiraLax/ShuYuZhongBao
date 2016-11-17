@@ -1,6 +1,5 @@
 package com.sypm.shuyuzhongbao;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,6 +18,10 @@ import com.sypm.shuyuzhongbao.utils.ToastUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+/*
+* 账号密码登陆
+* */
 
 public class LoginByAccountActivity extends BaseActivity {
     Button login;

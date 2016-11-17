@@ -16,6 +16,10 @@ import com.yuyh.library.imgsel.ImgSelConfig;
 
 import java.util.List;
 
+/*
+* 图片选择器
+* */
+
 public class IDCardActivity extends BaseActivity {
 
     private static final int REQUEST_CODE = 0;

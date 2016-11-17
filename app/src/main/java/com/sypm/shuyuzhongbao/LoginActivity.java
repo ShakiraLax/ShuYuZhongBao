@@ -25,6 +25,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/*
+* 手机快速登陆
+* */
+
 public class LoginActivity extends FixKeyboardActivity {
 
     private EditText mUIDEdit;

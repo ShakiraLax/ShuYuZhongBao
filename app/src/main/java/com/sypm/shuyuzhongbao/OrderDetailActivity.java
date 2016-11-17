@@ -4,6 +4,10 @@ import android.os.Bundle;
 
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
+/**
+ * 订单详情
+ * */
+
 public class OrderDetailActivity extends BaseActivity {
 
     @Override

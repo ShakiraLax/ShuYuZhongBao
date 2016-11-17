@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 
 /**
- * 首页
+ * “我的”界面
  */
 
 public class MyFragment extends BaseFragment {

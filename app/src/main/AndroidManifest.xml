@@ -200,7 +200,7 @@
         <service android:name="com.amap.api.location.APSService" />
 
         <activity
-            android:name=".DialogActivity"
+            android:name=".GrabOrderActivity"
             android:label="抢单"
             android:theme="@style/Theme.AppCompat.Dialog" />
         <activity

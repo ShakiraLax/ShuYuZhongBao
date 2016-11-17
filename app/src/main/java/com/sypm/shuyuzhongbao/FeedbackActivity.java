@@ -8,6 +8,10 @@ import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
+/*
+* 意见反馈
+* */
+
 public class FeedbackActivity extends BaseActivity {
 
 

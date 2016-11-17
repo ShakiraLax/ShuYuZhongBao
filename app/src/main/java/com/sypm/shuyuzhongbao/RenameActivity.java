@@ -4,6 +4,10 @@ import android.os.Bundle;
 
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
+/**
+ * 修改姓名
+ * */
+
 public class RenameActivity extends BaseActivity {
 
     @Override

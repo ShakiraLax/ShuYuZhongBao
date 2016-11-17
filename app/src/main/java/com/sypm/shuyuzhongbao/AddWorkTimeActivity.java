@@ -1,16 +1,16 @@
 package com.sypm.shuyuzhongbao;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
+
+/*
+* 添加上班时间
+* */
 
 public class AddWorkTimeActivity extends BaseActivity {
 

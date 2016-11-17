@@ -7,6 +7,10 @@ import android.widget.LinearLayout;
 
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
+/**
+ * 个人信息修改
+ * */
+
 public class PersonalActivity extends BaseActivity {
 
     LinearLayout IDCard, name, personCode, storeAddress;

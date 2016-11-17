@@ -60,7 +60,7 @@ public class IndexFragment extends BaseFragment {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), DialogActivity.class);
+                Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
                 startActivity(intent);
             }
         });
