@@ -10,11 +10,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.sypm.shuyuzhongbao.api.RetrofitClient;
+import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * 首页
@@ -46,7 +52,18 @@ public class IndexFragment extends BaseFragment {
     }
 
     private void initData() {
+        Call<DataResult> call = RetrofitClient.getInstance().getSYService().messageList("1");
+        call.enqueue(new Callback<DataResult>() {
+            @Override
+            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
 
+            }
+
+            @Override
+            public void onFailure(Call<DataResult> call, Throwable t) {
+
+            }
+        });
     }
 
     private void setupListView() {

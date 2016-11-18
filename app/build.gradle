@@ -20,6 +20,15 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'armeabi-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+        }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "a255283885edcd495cc0e659", //JPush上注册的包名对应的appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
     }
     buildTypes {
         release {
@@ -55,7 +64,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile files('libs/AMap3DMap_4.1.1_AMapNavi_1.9.3_AMapSearch_3.5.0_AMapLocation_3.1.0_20161027.jar')//高德地图
     compile 'com.yuyh.imgsel:library:1.2.0'//图片选择器
-    compile files('libs/jpush-android-2.2.0.jar')//极光推送
+    compile 'cn.jiguang:jpush:2.2.0'//极光推送
     compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'//星期选择器
     compile 'com.github.franmontiel:PersistentCookieJar:v0.9.3'//okhttp
 }

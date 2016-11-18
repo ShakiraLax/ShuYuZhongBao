@@ -2,6 +2,7 @@ package com.sypm.shuyuzhongbao;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import com.sypm.shuyuzhongbao.utils.BaseActivity;
 import com.sypm.shuyuzhongbao.utils.MD5Utils;
 import com.sypm.shuyuzhongbao.utils.RememberHelper;
 import com.sypm.shuyuzhongbao.utils.ToastUtils;
+import com.tumblr.remember.Remember;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,8 +34,18 @@ public class LoginByAccountActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_by_account);
+        autoLogin();
         initData();
         initViews();
+    }
+
+    private void autoLogin() {
+        final String uid= Remember.getString("uid","");
+        final String password=Remember.getString("password","");
+        if (TextUtils.isEmpty(uid)||TextUtils.isEmpty(password)){
+            return;
+        }
+
     }
 
     private void initViews() {
@@ -88,5 +100,10 @@ public class LoginByAccountActivity extends BaseActivity {
         String uid = number.getText().toString().trim();
         String mPassword = password.getText().toString().trim();
         return TextUtils.isEmpty(uid) || TextUtils.isEmpty(mPassword);
+    }
+
+    private void intentMain(){
+        startActivity(new Intent(this,MainActivity.class));
+        finish();
     }
 }

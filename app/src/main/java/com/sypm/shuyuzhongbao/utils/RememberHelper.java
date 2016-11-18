@@ -11,6 +11,10 @@ public class RememberHelper {
         Remember.putString("password", password);
     }
 
+    public static void saveUserPhone(String phone) {
+        Remember.putString("phone", phone);
+    }
+
     public static String getPassword() {
         return Remember.getString("password", "");
     }
@@ -18,6 +22,10 @@ public class RememberHelper {
 
     public static String getNumber() {
         return Remember.getString("number", "");
+    }
+
+    public static String getPhone() {
+        return Remember.getString("phone", "");
     }
 
 }

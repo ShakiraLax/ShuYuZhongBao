@@ -9,8 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.sypm.shuyuzhongbao.api.RetrofitClient;
+import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
+import com.sypm.shuyuzhongbao.utils.RememberHelper;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * “我的”界面
@@ -19,12 +27,24 @@ import com.sypm.shuyuzhongbao.utils.BaseFragment;
 public class MyFragment extends BaseFragment {
 
     LinearLayout personal, feedback, modifyPass, workTime, exit;
+    TextView number, phone;
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        number = (TextView) view.findViewById(R.id.number);
+        phone = (TextView) view.findViewById(R.id.phone);
+        number.setText("NO." + RememberHelper.getNumber());
+        phone.setText(RememberHelper.getPhone());
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         //允许刷新按钮
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Nullable

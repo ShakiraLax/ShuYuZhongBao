@@ -10,68 +10,81 @@
 
     <include layout="@layout/view_toolbar" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:paddingLeft="20dp"
-            android:text="单号：203523215"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
-            android:id="@+id/textView2" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:paddingLeft="20dp"
-            android:text="姓名：亓老板"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:paddingLeft="20dp"
-            android:text="电话：15605337839"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="单号：203523215"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:paddingLeft="20dp"
-            android:text="地址：山东省济南市历城区山大北路56号，漱玉平民大药房"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="20dp"
+                    android:text="姓名：亓老板"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="20dp"
-            android:background="@color/line" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="20dp"
+                    android:text="电话：15605337839"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="260dp"
-            android:layout_margin="20dp"
-            android:background="@color/background" />
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="20dp"
+                    android:text="地址：山东省济南市历城区山大北路56号，漱玉平民大药房"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line" />
-    </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/line" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_margin="20dp"
+                    android:background="@color/background" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -29,7 +29,7 @@ public class MyApplication extends Application {
         JPushInterface.init(this);
         //建议添加tag标签，发送消息的之后就可以指定tag标签来发送了
         Set<String> set = new HashSet<>();
-        set.add("zxy");//名字任意，可多添加几个
+        set.add("113802");//名字任意，可多添加几个
         JPushInterface.setTags(this, set, null);//设置标签
     }
 }

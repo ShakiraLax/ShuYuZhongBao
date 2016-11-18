@@ -18,17 +18,19 @@
             android:background="@drawable/avator" />
 
         <TextView
+            android:id="@+id/phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="156****1136"
+            android:text=""
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No.113802"
+            android:text=""
             android:textColor="@android:color/white"
             android:textSize="16sp" />
     </LinearLayout>

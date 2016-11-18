@@ -5,11 +5,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.sypm.shuyuzhongbao.api.RetrofitClient;
+import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * 个人信息修改
- * */
+ */
 
 public class PersonalActivity extends BaseActivity {
 
@@ -24,6 +30,21 @@ public class PersonalActivity extends BaseActivity {
     }
 
     private void initData() {
+
+        /*获取当前用户信息*/
+        Call<DataResult> callGetUserInfo = RetrofitClient.getInstance().getSYService().getUserInfo();
+        callGetUserInfo.enqueue(new Callback<DataResult>() {
+            @Override
+            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<DataResult> call, Throwable t) {
+
+            }
+        });
+
         IDCard = (LinearLayout) findViewById(R.id.IDCard);
         name = (LinearLayout) findViewById(R.id.name);
         personCode = (LinearLayout) findViewById(R.id.personCode);

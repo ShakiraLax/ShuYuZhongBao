@@ -42,13 +42,13 @@ public class ModifyPasswordActivity extends BaseActivity {
     public void loginOnclick(View view) {
 
         if (!RememberHelper.getPassword().equals(number.getText().toString())) {
-            Toast.makeText(this, "旧密码输入错误...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "旧密码输入错误", Toast.LENGTH_SHORT).show();
             Toast.makeText(this, RememberHelper.getPassword(), Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (TextUtils.isEmpty(number.getText().toString()) || TextUtils.isEmpty(password.getText().toString())) {
-            Toast.makeText(this, "密码不能为空...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -66,12 +66,12 @@ public class ModifyPasswordActivity extends BaseActivity {
                     return;
                 }
                 //failed
-                Toast.makeText(ModifyPasswordActivity.this, "服务器返回失败...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ModifyPasswordActivity.this, "修改失败", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Call<DataResult> call, Throwable t) {
-                Toast.makeText(ModifyPasswordActivity.this, " 不明原因失败...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ModifyPasswordActivity.this, " 修改失败", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -84,7 +84,7 @@ public class ModifyPasswordActivity extends BaseActivity {
                 if (response.body() != null) {
                     String status = response.body().status;
                     if (status.equals("1")) {
-                        Toast.makeText(ModifyPasswordActivity.this, "修改成功,请重新登陆...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ModifyPasswordActivity.this, "修改成功,请重新登陆", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(ModifyPasswordActivity.this, LoginByAccountActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -94,7 +94,7 @@ public class ModifyPasswordActivity extends BaseActivity {
                     return;
                 }
                 //failed
-                Toast.makeText(getActivity(), "修改失败...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "修改失败", Toast.LENGTH_SHORT).show();
             }
 
             @Override

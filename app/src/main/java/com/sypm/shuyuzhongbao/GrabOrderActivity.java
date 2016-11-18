@@ -1,6 +1,7 @@
 package com.sypm.shuyuzhongbao;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
@@ -53,9 +54,9 @@ public class GrabOrderActivity extends BaseActivity {
             }
         });
 
-        /*获取当前用户信息*/
-        Call<DataResult> callGetUserInfo = RetrofitClient.getInstance().getSYService().getUserInfo();
-        callGetUserInfo.enqueue(new Callback<DataResult>() {
+        /*接单*/
+        Call<DataResult> callSure = RetrofitClient.getInstance().getSYService().orderSure("1");
+        callSure.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
 
@@ -67,9 +68,9 @@ public class GrabOrderActivity extends BaseActivity {
             }
         });
 
-        /*修改当前用户信息*/
-        Call<DataResult> updateUserInfo = RetrofitClient.getInstance().getSYService().updateUserInfo(null, null, null, null, null, null);
-        updateUserInfo.enqueue(new Callback<DataResult>() {
+        /*配送员拒单*/
+        /*Call<DataResult> callCancel = RetrofitClient.getInstance().getSYService().orderReject("1");
+        callCancel.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
 
@@ -79,7 +80,7 @@ public class GrabOrderActivity extends BaseActivity {
             public void onFailure(Call<DataResult> call, Throwable t) {
 
             }
-        });
+        });*/
     }
 
 }

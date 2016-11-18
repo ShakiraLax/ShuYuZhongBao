@@ -85,7 +85,7 @@ public class LoginActivity extends FixKeyboardActivity {
     }
 
     void validatecode() {
-        String phone = mUIDEdit.getText().toString().trim();
+        final String phone = mUIDEdit.getText().toString().trim();
         String pin = mPinEdit.getText().toString().trim();
         /*请求接口*/
         Call<DataResult> login = RetrofitClient.getInstance().getSYService().loginByPhone(phone, pin);
@@ -96,6 +96,7 @@ public class LoginActivity extends FixKeyboardActivity {
                     String status = response.body().status;
                     if (status.equals("1")) {
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        RememberHelper.saveUserPhone(mUIDEdit.getText().toString());
                         Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                         finish();
                         return;
