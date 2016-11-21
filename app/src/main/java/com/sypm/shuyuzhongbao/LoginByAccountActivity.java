@@ -34,25 +34,15 @@ public class LoginByAccountActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_by_account);
-        autoLogin();
         initData();
         initViews();
-    }
-
-    private void autoLogin() {
-        final String uid= Remember.getString("uid","");
-        final String password=Remember.getString("password","");
-        if (TextUtils.isEmpty(uid)||TextUtils.isEmpty(password)){
-            return;
-        }
-
     }
 
     private void initViews() {
         number = (EditText) findViewById(R.id.number);
         password = (EditText) findViewById(R.id.password);
-        number.setText("100002");
-        password.setText("123456");
+        /*number.setText("100002");
+        password.setText("123456");*/
     }
 
     private void initData() {
@@ -102,8 +92,4 @@ public class LoginByAccountActivity extends BaseActivity {
         return TextUtils.isEmpty(uid) || TextUtils.isEmpty(mPassword);
     }
 
-    private void intentMain(){
-        startActivity(new Intent(this,MainActivity.class));
-        finish();
-    }
 }

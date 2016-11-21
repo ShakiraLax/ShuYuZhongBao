@@ -108,7 +108,13 @@ public class MyFragment extends BaseFragment {
                                 startActivity(intent);
                             }
                         })
-                        .setNegativeButton("取消", null).create().show();
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(getActivity(), MapActivity.class);
+                                startActivity(intent);
+                            }
+                        }).create().show();
             }
         });
     }
