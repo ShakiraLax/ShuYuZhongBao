@@ -28,11 +28,12 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="10"
             android:gravity="right|center_vertical"
-            android:text="亓老板"
+            android:text=""
             android:textSize="16sp" />
 
         <ImageView
@@ -70,11 +71,12 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/number"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="10"
             android:gravity="right|center_vertical"
-            android:text="113802"
+            android:text=""
             android:textSize="16sp" />
 
         <ImageView
@@ -110,11 +112,12 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/store"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="10"
             android:gravity="right|center_vertical"
-            android:text="山大北三店"
+            android:text=""
             android:textSize="16sp" />
 
         <ImageView
@@ -152,11 +155,12 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/IDCardNumber"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="10"
             android:gravity="right|center_vertical"
-            android:text="370126****0411"
+            android:text=""
             android:textSize="16sp" />
 
         <ImageView

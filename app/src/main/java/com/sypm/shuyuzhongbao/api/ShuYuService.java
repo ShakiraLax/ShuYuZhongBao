@@ -1,6 +1,7 @@
 package com.sypm.shuyuzhongbao.api;
 
 import com.sypm.shuyuzhongbao.data.DataResult;
+import com.sypm.shuyuzhongbao.data.UserInfo;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

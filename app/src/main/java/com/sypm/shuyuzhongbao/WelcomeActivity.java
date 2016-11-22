@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
@@ -58,13 +59,25 @@ public class WelcomeActivity extends BaseActivity {
         login.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                RememberHelper.saveUserInfo(number, password);
-                intentMain();
+                if (response.body() != null) {
+                    String status = response.body().status;
+                    if (status.equals("1")) {
+                        RememberHelper.saveUserInfo(number, password);
+                        intentMain();
+                    } else if (status.equals("0")) {
+                        intentLogin();
+                        Toast.makeText(getActivity(), "登陆失败", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                }
+
             }
 
             @Override
             public void onFailure(Call<DataResult> call, Throwable t) {
-                intentMain();
+                intentLogin();
+                Toast.makeText(getActivity(), "登陆失败", Toast.LENGTH_SHORT).show();
+                return;
             }
         });
     }
