@@ -71,11 +71,11 @@
                     android:layout_marginTop="20dp"
                     android:background="@color/line" />
 
-                <ImageView
+                <com.amap.api.maps.MapView
+                    android:id="@+id/mapView"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_margin="20dp"
-                    android:background="@color/background" />
+                    android:layout_margin="20dp" />
 
                 <View
                     android:layout_width="match_parent"

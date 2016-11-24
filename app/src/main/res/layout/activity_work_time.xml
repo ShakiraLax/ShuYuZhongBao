@@ -12,9 +12,10 @@
 
     <!--item_work_time-->
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/listView_worktime"
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="300dp"
+        android:scrollbars="none">
 
     </ListView>
 

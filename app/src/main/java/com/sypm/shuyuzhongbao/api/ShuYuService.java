@@ -2,6 +2,7 @@ package com.sypm.shuyuzhongbao.api;
 
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.UserInfo;
+import com.sypm.shuyuzhongbao.data.WorkTime;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -26,14 +27,28 @@ public interface ShuYuService {
     @POST("site/mobilelogin.html")
     Call<DataResult> loginByPhone(@Field("phone") String phone, @Field("code") String code);
 
+    /*配送员上线下线*/
+    @FormUrlEncoded
+    @POST("site/site/line.html")
+    Call<DataResult> line(@Field("type") String type);
+
+    /*配送员个人信息汇总*/
+    @GET("site/summary.html")
+    Call<DataResult> summary();
+
     /*首页消息队列*/
     @FormUrlEncoded
     @POST("site/message.html")
     Call<DataResult> messageList(@Field("page") String page);
 
+    /*收入队列*/
+    @FormUrlEncoded
+    @POST("site/salary.html")
+    Call<DataResult> salaryList(@Field("page") String page, @Field("pagesize") String pagesize);
+
     /*获取当前用户信息*/
     @GET("user/info.html")
-    Call<DataResult> getUserInfo();
+    Call<UserInfo> getUserInfo();
 
     /*修改当前用户信息*/
     @FormUrlEncoded
@@ -77,7 +92,7 @@ public interface ShuYuService {
     /*人员上班时间列表*/
     @FormUrlEncoded
     @POST("worktime/list.html")
-    Call<DataResult> getWorkTimeList(@Field("sort") String sort);
+    Call<DataResult<WorkTime>> getWorkTimeList(@Field("sort") String sort);
 
     /*修改密码*/
     @FormUrlEncoded
@@ -104,11 +119,22 @@ public interface ShuYuService {
     @FormUrlEncoded
     @POST("worktime/update.html")
     Call<DataResult> worktimeUpdate(
-            @Field("id") String id
+            @Field("id") int id
             , @Field("startTime") String startTime
             , @Field("endTime") String endTime
-            , @Field("dayTime") String dayTime
-            , @Field("isOpen") String isOpen);
+            , @Field("dayTime") String dayTime);
+
+    /*人员上班时间删除*/
+    @FormUrlEncoded
+    @POST("worktime/delete.html")
+    Call<DataResult> worktimedelete(@Field("id") int id);
+
+    /*人员上班时间开关*/
+    @FormUrlEncoded
+    @POST("worktime/update.html")
+    Call<DataResult> worktimeOffOn(
+            @Field("id") int id,
+            @Field("isOpen") String isOpen);
 
     /*退出登录*/
     @GET("site/logout.html")

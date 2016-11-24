@@ -13,6 +13,7 @@ public class DataResult<T> {
 
     public String status;
     public String message;
+    public String msg;
     public List<T> list;
     public String[] array;
 

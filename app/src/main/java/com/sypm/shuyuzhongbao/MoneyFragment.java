@@ -67,7 +67,7 @@ public class MoneyFragment extends BaseFragment {
     }
 
     private void initData() {
-        Call<DataResult> call = RetrofitClient.getInstance().getSYService().messageList("1");
+        Call<DataResult> call = RetrofitClient.getInstance().getSYService().salaryList("1", null);
         call.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {

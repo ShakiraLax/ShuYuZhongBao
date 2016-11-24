@@ -90,7 +90,7 @@
         <activity
             android:name=".GrabOrderActivity"
             android:label="抢单"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+            android:theme="@style/Theme.AppCompat.Light.DialogWhenLarge" />
         <activity
             android:name=".AddWorkTimeActivity"
             android:label="添加班次" />
@@ -104,6 +104,9 @@
         <activity
             android:name=".LoginByAccountActivity"
             android:label="账号登陆" />
+        <activity
+            android:name=".UpdateWorkTimeActivity"
+            android:label="更新上班时间" />
         <!--<activity android:name=".WelcomeActivity" />-->
 
         <!-- 高德 -->

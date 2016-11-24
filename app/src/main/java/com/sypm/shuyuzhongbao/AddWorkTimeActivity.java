@@ -5,8 +5,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.sypm.shuyuzhongbao.api.RetrofitClient;
+import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /*
 * 添加上班时间
@@ -17,13 +24,44 @@ public class AddWorkTimeActivity extends BaseActivity {
     LinearLayout up, down, week;
     TextView upTime, downTime, weekText;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_work_time);
         initData();
 
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.bt_addtime_commit:
+                //人员上班时间上传
+                Call<DataResult> timeCall = RetrofitClient.getInstance().getSYService()
+                        .worktimeCreate(upTime.getText().toString(),
+                                downTime.getText().toString(),
+                                weekText.getText().toString());
+                timeCall.enqueue(new Callback<DataResult>() {
+                    @Override
+                    public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().message != null) {
+                                Toast.makeText(getApplicationContext(), response.body().msg,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataResult> call, Throwable t) {
+
+                    }
+                });
+                finish();
+                break;
+            case R.id.bt_addtime_delete:
+                finish();
+                break;
+        }
     }
 
     private void initData() {

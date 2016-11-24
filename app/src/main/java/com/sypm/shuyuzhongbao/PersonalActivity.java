@@ -25,6 +25,7 @@ public class PersonalActivity extends BaseActivity {
 
     LinearLayout IDCard, name, personCode, storeAddress;
     TextView userName, number, store, IDCardNumber;
+    UserInfo userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +43,15 @@ public class PersonalActivity extends BaseActivity {
         IDCardNumber = (TextView) findViewById(R.id.IDCardNumber);
 
         /*获取当前用户信息*/
-        Call<DataResult> call = RetrofitClient.getInstance().getSYService().getUserInfo();
-        call.enqueue(new Callback<DataResult>() {
+        Call<UserInfo> call = RetrofitClient.getInstance().getSYService().getUserInfo();
+        call.enqueue(new Callback<UserInfo>() {
             @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                if (response.body() == null) {
-                    String status = response.body().status;
-                    if (status.equals("1")) {
+            public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
+                if (response.body() != null) {
+                    if (response.isSuccessful()) {
+                        userInfo = response.body();
                         Toast.makeText(getActivity(), "获取成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), userInfo.toString(), Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), "没有数据", Toast.LENGTH_SHORT).show();
                     }
@@ -58,7 +60,7 @@ public class PersonalActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
+            public void onFailure(Call<UserInfo> call, Throwable t) {
                 Toast.makeText(getActivity(), "失败了", Toast.LENGTH_SHORT).show();
             }
         });
