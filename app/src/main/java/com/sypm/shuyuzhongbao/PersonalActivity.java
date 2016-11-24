@@ -25,7 +25,7 @@ public class PersonalActivity extends BaseActivity {
 
     LinearLayout IDCard, name, personCode, storeAddress;
     TextView userName, number, store, IDCardNumber;
-    UserInfo userInfo;
+    UserInfo.DataBean userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +49,9 @@ public class PersonalActivity extends BaseActivity {
             public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
                 if (response.body() != null) {
                     if (response.isSuccessful()) {
-                        userInfo = response.body();
+                        userInfo = response.body().list;
                         Toast.makeText(getActivity(), "获取成功", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getActivity(), userInfo.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), userInfo.name, Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), "没有数据", Toast.LENGTH_SHORT).show();
                     }

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -27,6 +28,8 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
+import com.sypm.shuyuzhongbao.data.MessageList;
+import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
 
@@ -56,6 +59,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     ListView listView;
     LinearLayout linearLayout;
     private int recLen = 0;
+    List<MessageList.ListBean> list;
+    TextView endure, accept_num, salary, percent;
 
     /*高德start*/
     //显示地图需要的变量
@@ -77,20 +82,23 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         public void run() {
             recLen++;
             updateInfo();
-            //每隔20秒获取一次订单
-            handler.postDelayed(this, 20000);
+            //每隔60秒上传一次位置信息，在线时长
+            handler.postDelayed(this, 60000);
         }
     };
 
     private void updateInfo() {
+        /*上线后开始上传位置信息和在线时长*/
+
+
         /*未指派订单*/
-        Call<DataResult> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+        /*Call<DataResult> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
         getOrder.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                 if (response.body() != null) {
                     if (response.body().status.equals("1")) {
-                        /*跳转到接单界面*/
+                        *//*跳转到接单界面*//*
                         Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
                         startActivity(intent);
                     } else {
@@ -103,17 +111,17 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             public void onFailure(Call<DataResult> call, Throwable t) {
 
             }
-        });
+        });*/
         /*现在执行订单*/
-        Call<DataResult> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
+        /*Call<DataResult> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
         callCurrentOrder.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                 if (response.body() != null) {
                     if (response.body().status.equals("1")) {
-                        /*跳转到订单详情界面*/
-                        /*Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-                        startActivity(intent);*/
+                        *//*跳转到订单详情界面*//*
+                        *//*Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                        startActivity(intent);*//*
                     } else {
 
                     }
@@ -124,7 +132,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             public void onFailure(Call<DataResult> call, Throwable t) {
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -174,42 +182,63 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     private void initData() {
+        endure = (TextView) getView().findViewById(R.id.endure);
+        accept_num = (TextView) getView().findViewById(R.id.accept_num);
+        salary = (TextView) getView().findViewById(R.id.salary);
+        percent = (TextView) getView().findViewById(R.id.percent);
         /*在线时长等信息(是否需要实时获取)*/
-        Call<DataResult> summary = RetrofitClient.getInstance().getSYService().summary();
-        summary.enqueue(new Callback<DataResult>() {
+        Call<TotalLine> summary = RetrofitClient.getInstance().getSYService().summary();
+        summary.enqueue(new Callback<TotalLine>() {
             @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-
+            public void onResponse(Call<TotalLine> call, Response<TotalLine> response) {
+                if (response.body() != null) {
+                    if (response.isSuccessful()) {
+                        endure.setText("在线：" + response.body().endure + "小时");
+                        accept_num.setText("接单：" + response.body().accept_num);
+                        salary.setText("流水：" + response.body().salary + "元");
+                        percent.setText("成交率：" + response.body().percent + "%");
+                    } else {
+                        Toast.makeText(getActivity(), "头部信息无数据", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
+            public void onFailure(Call<TotalLine> call, Throwable t) {
 
             }
         });
 
         /*首页消息列表*/
-        Call<DataResult> call = RetrofitClient.getInstance().getSYService().messageList("1");
-        call.enqueue(new Callback<DataResult>() {
+        Call<MessageList> call = RetrofitClient.getInstance().getSYService().messageList("1");
+        call.enqueue(new Callback<MessageList>() {
             @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-
+            public void onResponse(Call<MessageList> call, Response<MessageList> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
+                        list = response.body().list;
+                        listView.setAdapter(new ListAdapter(getActivity(), list));
+                        Toast.makeText(getActivity(), "消息列表获取成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "无数据", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
+            public void onFailure(Call<MessageList> call, Throwable t) {
 
             }
         });
     }
 
     private void setupListView() {
-        List list = new ArrayList();
+        /*List list = new ArrayList();
         for (int i = 0; i < 5; i++) {
             list.add(i);
-        }
+        }*/
         listView = (ListView) getView().findViewById(R.id.listView);
-        listView.setAdapter(new ListAdapter(getContext(), list));
+        listView.setAdapter(new ListAdapter(getContext(), null));
         linearLayout = (LinearLayout) getView().findViewById(R.id.of);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,17 +263,26 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.item_pay_list, parent, false);
                 holder = new ViewHolder();
+                holder.content = (TextView) convertView.findViewById(R.id.content);
+                holder.shipSn = (TextView) convertView.findViewById(R.id.messageHead);
+                holder.createTime = (TextView) convertView.findViewById(R.id.time);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
+            final MessageList.ListBean item = (MessageList.ListBean) getItem(position);
+            holder.content.setText(item.content);
+            holder.createTime.setText(item.createTime);
+            holder.shipSn.setText(item.shipSn);
             return convertView;
         }
     }
 
     private static class ViewHolder {
-
+        public TextView fromId;
+        public TextView content;
+        public TextView createTime;
+        public TextView shipSn;
     }
 
     /*高德地图相关类*/
@@ -307,7 +345,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     //获取定位信息
                     StringBuffer buffer = new StringBuffer();
                     buffer.append(df.format(date) + " 定位类型：" + amapLocation.getLocationType() + " 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + " 精度：" + amapLocation.getAccuracy() + " 城市编码：" + amapLocation.getCityCode() + " 国家：" + amapLocation.getCountry() + " 省份：" + amapLocation.getProvince() + "     " + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
-                    Toast.makeText(getContext(), buffer.toString(), Toast.LENGTH_LONG).show();//getApplicationContext
+//                    Toast.makeText(getContext(), buffer.toString(), Toast.LENGTH_LONG).show();//getApplicationContext
+                    Toast.makeText(getActivity(), String.valueOf(" 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum()), Toast.LENGTH_LONG).show();
                     Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
 

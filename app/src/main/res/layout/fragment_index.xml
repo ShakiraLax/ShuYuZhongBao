@@ -20,15 +20,16 @@
             android:gravity="center_horizontal">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/endure"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:text="在线：0.0小时"
                 android:textColor="@android:color/black"
                 android:textSize="24sp" />
 
             <TextView
+                android:id="@+id/accept_num"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -42,8 +43,7 @@
         <com.amap.api.maps.MapView
             android:id="@+id/mapView"
             android:layout_width="0dp"
-            android:layout_height="0dp">
-        </com.amap.api.maps.MapView>
+            android:layout_height="0dp"></com.amap.api.maps.MapView>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,12 +53,14 @@
             android:layout_marginTop="10dp">
 
             <TextView
+                android:id="@+id/salary"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="流水：0.0元"
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/percent"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
@@ -78,8 +80,7 @@
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginTop="15dp"
-        android:background="@android:color/white" />
+        android:layout_marginTop="15dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

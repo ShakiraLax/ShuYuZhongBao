@@ -1,6 +1,8 @@
 package com.sypm.shuyuzhongbao.api;
 
 import com.sypm.shuyuzhongbao.data.DataResult;
+import com.sypm.shuyuzhongbao.data.MessageList;
+import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.data.UserInfo;
 import com.sypm.shuyuzhongbao.data.WorkTime;
 
@@ -34,12 +36,12 @@ public interface ShuYuService {
 
     /*配送员个人信息汇总*/
     @GET("site/summary.html")
-    Call<DataResult> summary();
+    Call<TotalLine> summary();
 
     /*首页消息队列*/
     @FormUrlEncoded
     @POST("site/message.html")
-    Call<DataResult> messageList(@Field("page") String page);
+    Call<MessageList> messageList(@Field("page") String page);
 
     /*收入队列*/
     @FormUrlEncoded
@@ -68,6 +70,11 @@ public interface ShuYuService {
     /*获取现在执行的订单*/
     @GET("shiporder/getcurrent.html")
     Call<DataResult> getCurrentOrder();
+
+    /*根据orderSn来获取订单详情*/
+    @FormUrlEncoded
+    @POST("shiporder/order.html")
+    Call<DataResult> getOrderDetail(@Field("orderSn") String orderSn);
 
     /*配送员拒绝单子*/
     @FormUrlEncoded
