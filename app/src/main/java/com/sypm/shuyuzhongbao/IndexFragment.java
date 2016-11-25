@@ -2,8 +2,11 @@ package com.sypm.shuyuzhongbao;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,8 +62,9 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     ListView listView;
     LinearLayout linearLayout;
     private int recLen = 0;
+    private boolean isOnline = false;
     List<MessageList.ListBean> list;
-    TextView endure, accept_num, salary, percent;
+    TextView endure, accept_num, salary, percent, online;
 
     /*高德start*/
     //显示地图需要的变量
@@ -82,7 +86,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         public void run() {
             recLen++;
             updateInfo();
-            //每隔60秒上传一次位置信息，在线时长
+            //每隔60秒上传一次位置信息
             handler.postDelayed(this, 60000);
         }
     };
@@ -178,7 +182,9 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         aMap.setMyLocationStyle(myLocationStyle);
 
         //开始定位
-        initLoc();
+        if (isOnline) {
+            initLoc();
+        }
     }
 
     private void initData() {
@@ -218,7 +224,6 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     if (response.body().status == 1) {
                         list = response.body().list;
                         listView.setAdapter(new ListAdapter(getActivity(), list));
-                        Toast.makeText(getActivity(), "消息列表获取成功", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), "无数据", Toast.LENGTH_SHORT).show();
                     }
@@ -237,6 +242,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         for (int i = 0; i < 5; i++) {
             list.add(i);
         }*/
+        online = (TextView) getView().findViewById(R.id.online);
         listView = (ListView) getView().findViewById(R.id.listView);
         listView.setAdapter(new ListAdapter(getContext(), null));
         linearLayout = (LinearLayout) getView().findViewById(R.id.of);
@@ -244,9 +250,41 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             @Override
             public void onClick(View v) {
                 /*上线按钮点击事件*/
+                if (online.getText().equals("上线")) {
+                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
+                    call.enqueue(new Callback<DataResult>() {
+                        @Override
+                        public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                            Toast.makeText(getActivity(), "上线成功", Toast.LENGTH_SHORT).show();
+                            online.setText("下线");
+                            isOnline = true;
+                            linearLayout.setBackgroundResource(R.drawable.oval_on);
+                        }
 
-                Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                startActivity(intent);
+                        @Override
+                        public void onFailure(Call<DataResult> call, Throwable t) {
+
+                        }
+                    });
+                } else {
+                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
+                    call.enqueue(new Callback<DataResult>() {
+                        @Override
+                        public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                            Toast.makeText(getActivity(), "下线成功", Toast.LENGTH_SHORT).show();
+                            online.setText("上线");
+                            isOnline = false;
+                            linearLayout.setBackgroundResource(R.drawable.oval_off);
+                        }
+
+                        @Override
+                        public void onFailure(Call<DataResult> call, Throwable t) {
+
+                        }
+                    });
+                }
+                /*Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
+                startActivity(intent);*/
             }
         });
     }

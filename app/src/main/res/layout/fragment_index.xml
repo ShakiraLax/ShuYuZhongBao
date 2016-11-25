@@ -34,7 +34,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:text="接单：20"
+                android:text="接单："
                 android:textColor="@android:color/black"
                 android:textSize="24sp" />
         </LinearLayout>
@@ -91,10 +91,11 @@
             android:id="@+id/of"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/oval_on"
+            android:background="@drawable/oval_off"
             android:gravity="center">
 
             <TextView
+                android:id="@+id/online"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="上线"

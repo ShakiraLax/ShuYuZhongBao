@@ -30,7 +30,7 @@ public interface ShuYuService {
     @POST("site/mobilelogin.html")
     Call<DataResult> loginByPhone(@Field("phone") String phone, @Field("code") String code);
 
-    /*配送员上线下线*/
+    /*配送员上线下线(1为上线，2为下线)*/
     @FormUrlEncoded
     @POST("site/site/line.html")
     Call<DataResult> line(@Field("type") String type);

@@ -118,18 +118,16 @@ public class IDCardActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             List<String> pathList = data.getStringArrayListExtra(ImgSelActivity.INTENT_RESULT);
-
 //            imageView1.setImageURI(Uri.parse("file://" + pathList.get(0)));
-            Uri uri=Uri.fromFile(new File(pathList.get(0)));
+            Uri uri = Uri.fromFile(new File(pathList.get(0)));
             imageView1.setImageURI(uri);
 
 
         }
         if (requestCode == REQUEST_CODE1 && resultCode == RESULT_OK && data != null) {
             List<String> pathList = data.getStringArrayListExtra(ImgSelActivity.INTENT_RESULT);
-
 //            imageView2.setImageURI(Uri.parse("file://" + pathList.get(0)));
-            Uri uri=Uri.fromFile(new File(pathList.get(0)));
+            Uri uri = Uri.fromFile(new File(pathList.get(0)));
             imageView2.setImageURI(uri);
 
         }

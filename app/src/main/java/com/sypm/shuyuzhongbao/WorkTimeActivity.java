@@ -256,9 +256,8 @@ public class WorkTimeActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-//        Log.i(">>>>>onResume","onResume");
+    protected void onRestart() {
+        super.onRestart();
         //重新获取时间列表
         Call<DataResult<WorkTime>> call = RetrofitClient.getInstance().getSYService().getWorkTimeList("asc");
         call.enqueue(new Callback<DataResult<WorkTime>>() {
