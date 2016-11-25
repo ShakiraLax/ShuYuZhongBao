@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,56 +88,59 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             recLen++;
             updateInfo();
             //每隔60秒上传一次位置信息
-            handler.postDelayed(this, 60000);
+            handler.postDelayed(this, 20000);
         }
     };
 
     private void updateInfo() {
         /*上线后开始上传位置信息和在线时长*/
 
+        if (isOnline) {
+            /*未指派订单*/
+            Call<DataResult> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+            getOrder.enqueue(new Callback<DataResult>() {
+                @Override
+                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                    if (response.body() != null) {
+                        if (response.body().status.equals("1")) {
+                            //跳转到接单界面
+                            Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
+                            startActivity(intent);
+                        } else {
 
-        /*未指派订单*/
-        /*Call<DataResult> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
-        getOrder.enqueue(new Callback<DataResult>() {
-            @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                if (response.body() != null) {
-                    if (response.body().status.equals("1")) {
-                        *//*跳转到接单界面*//*
-                        Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                        startActivity(intent);
-                    } else {
-
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
+                @Override
+                public void onFailure(Call<DataResult> call, Throwable t) {
 
-            }
-        });*/
+                }
+            });
         /*现在执行订单*/
-        /*Call<DataResult> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
-        callCurrentOrder.enqueue(new Callback<DataResult>() {
-            @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                if (response.body() != null) {
-                    if (response.body().status.equals("1")) {
-                        *//*跳转到订单详情界面*//*
-                        *//*Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-                        startActivity(intent);*//*
-                    } else {
+            Call<DataResult> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
+            callCurrentOrder.enqueue(new Callback<DataResult>() {
+                @Override
+                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                    if (response.body() != null) {
+                        if (response.body().status.equals("1")) {
+                            //跳转到订单详情界面
+                            Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                            startActivity(intent);
+                        } else {
 
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
+                @Override
+                public void onFailure(Call<DataResult> call, Throwable t) {
 
-            }
-        });*/
+                }
+            });
+        }
+        return;
+
     }
 
     @Override
@@ -182,9 +186,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         aMap.setMyLocationStyle(myLocationStyle);
 
         //开始定位
-        if (isOnline) {
-            initLoc();
-        }
+        initLoc();
+
     }
 
     private void initData() {
@@ -192,6 +195,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         accept_num = (TextView) getView().findViewById(R.id.accept_num);
         salary = (TextView) getView().findViewById(R.id.salary);
         percent = (TextView) getView().findViewById(R.id.percent);
+        online = (TextView) getView().findViewById(R.id.online);
+
         /*在线时长等信息(是否需要实时获取)*/
         Call<TotalLine> summary = RetrofitClient.getInstance().getSYService().summary();
         summary.enqueue(new Callback<TotalLine>() {
@@ -235,16 +240,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
             }
         });
-    }
 
-    private void setupListView() {
-        /*List list = new ArrayList();
-        for (int i = 0; i < 5; i++) {
-            list.add(i);
-        }*/
-        online = (TextView) getView().findViewById(R.id.online);
-        listView = (ListView) getView().findViewById(R.id.listView);
-        listView.setAdapter(new ListAdapter(getContext(), null));
         linearLayout = (LinearLayout) getView().findViewById(R.id.of);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -283,10 +279,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         }
                     });
                 }
-                /*Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                startActivity(intent);*/
             }
         });
+    }
+
+    private void setupListView() {
+        listView = (ListView) getView().findViewById(R.id.listView);
+        listView.setAdapter(new ListAdapter(getContext(), null));
     }
 
     public static class ListAdapter extends MyBaseAdapter {
@@ -374,6 +373,9 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 amapLocation.getCityCode();//城市编码
                 amapLocation.getAdCode();//地区编码
 
+                Double Lat = amapLocation.getLatitude();
+                Double Lon = amapLocation.getLongitude();
+                Log.d("实时定位", String.valueOf(Lat) + "" + String.valueOf(Lon));
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //将地图移动到定位点
