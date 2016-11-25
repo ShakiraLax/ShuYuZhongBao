@@ -17,9 +17,9 @@ public class MoneyList implements Serializable {
      * list : [{"fee":5,"status":"下单","createTime":"2016-11-10 17:15:57","shipSn":"Y162254103644237"}]
      */
 
-    public int total;
-    public int todaytotal;
-    public int status;
+    public String total;
+    public String todaytotal;
+    public String status;
     public String msg;
     public List<ListBean> list;
 
@@ -32,7 +32,7 @@ public class MoneyList implements Serializable {
          * shipSn : Y162254103644237
          */
 
-        public int fee;
+        public String fee;
         public String status;
         public String createTime;
         public String shipSn;

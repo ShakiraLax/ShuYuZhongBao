@@ -4,20 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toolbar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
-import com.sypm.shuyuzhongbao.data.DataResult;
+import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -31,6 +28,8 @@ import retrofit2.Response;
 public class MoneyFragment extends BaseFragment {
 
     ListView listView;
+    TextView today, total;
+    List<MoneyList.ListBean> moneyListl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,15 +52,24 @@ public class MoneyFragment extends BaseFragment {
     }
 
     private void initData() {
-        Call<DataResult> call = RetrofitClient.getInstance().getSYService().salaryList("1", null);
-        call.enqueue(new Callback<DataResult>() {
+        today = (TextView) getView().findViewById(R.id.today);
+        total = (TextView) getView().findViewById(R.id.total);
+        Call<MoneyList> call = RetrofitClient.getInstance().getSYService().salaryList("1", null);
+        call.enqueue(new Callback<MoneyList>() {
             @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-
+            public void onResponse(Call<MoneyList> call, Response<MoneyList> response) {
+                if (response.body() != null) {
+                    if (response.isSuccessful()) {
+                        today.setText(response.body().todaytotal);
+                        total.setText(response.body().total);
+                    } else {
+                        Toast.makeText(getActivity(), "无数据", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
+            public void onFailure(Call<MoneyList> call, Throwable t) {
 
             }
         });
@@ -69,12 +77,12 @@ public class MoneyFragment extends BaseFragment {
 
 
     private void setupListView() {
-        List list = new ArrayList();
+        /*List list = new ArrayList();
         for (int i = 0; i < 20; i++) {
             list.add(i);
-        }
+        }*/
         listView = (ListView) getView().findViewById(R.id.listView);
-        listView.setAdapter(new ListAdapter(getContext(), list));
+        listView.setAdapter(new ListAdapter(getContext(), null));
     }
 
     public static class ListAdapter extends MyBaseAdapter {

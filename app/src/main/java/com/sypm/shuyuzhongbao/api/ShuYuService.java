@@ -2,6 +2,7 @@ package com.sypm.shuyuzhongbao.api;
 
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
+import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.data.UserInfo;
 import com.sypm.shuyuzhongbao.data.WorkTime;
@@ -46,7 +47,7 @@ public interface ShuYuService {
     /*收入队列*/
     @FormUrlEncoded
     @POST("site/salary.html")
-    Call<DataResult> salaryList(@Field("page") String page, @Field("pagesize") String pagesize);
+    Call<MoneyList> salaryList(@Field("page") String page, @Field("pagesize") String pagesize);
 
     /*获取当前用户信息*/
     @GET("user/info.html")
