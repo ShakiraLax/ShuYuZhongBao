@@ -14,6 +14,7 @@ import com.yuyh.library.imgsel.ImageLoader;
 import com.yuyh.library.imgsel.ImgSelActivity;
 import com.yuyh.library.imgsel.ImgSelConfig;
 
+import java.io.File;
 import java.util.List;
 
 /*
@@ -103,7 +104,7 @@ public class IDCardActivity extends BaseActivity {
                 .cropSize(1, 1, 200, 200)
                 .needCrop(false)
                 // 第一个是否显示相机
-                .needCamera(false)
+                .needCamera(true)
                 // 最大选择图片数量
                 .maxNum(1)
                 .build();
@@ -118,13 +119,18 @@ public class IDCardActivity extends BaseActivity {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             List<String> pathList = data.getStringArrayListExtra(ImgSelActivity.INTENT_RESULT);
 
-            imageView1.setImageURI(Uri.parse("file://" + pathList.get(0)));
+//            imageView1.setImageURI(Uri.parse("file://" + pathList.get(0)));
+            Uri uri=Uri.fromFile(new File(pathList.get(0)));
+            imageView1.setImageURI(uri);
+
 
         }
         if (requestCode == REQUEST_CODE1 && resultCode == RESULT_OK && data != null) {
             List<String> pathList = data.getStringArrayListExtra(ImgSelActivity.INTENT_RESULT);
 
-            imageView2.setImageURI(Uri.parse("file://" + pathList.get(0)));
+//            imageView2.setImageURI(Uri.parse("file://" + pathList.get(0)));
+            Uri uri=Uri.fromFile(new File(pathList.get(0)));
+            imageView2.setImageURI(uri);
 
         }
     }
