@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:paddingLeft="20dp"
-                    android:text="单号：203523215"
+                    android:text="单号："
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
 
@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:paddingLeft="20dp"
-                    android:text="姓名：亓老板"
+                    android:text="姓名："
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
 
@@ -49,7 +49,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:paddingLeft="20dp"
-                    android:text="电话：15605337839"
+                    android:text="电话："
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
 
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:paddingLeft="20dp"
-                    android:text="地址：山东省济南市历城区山大北路56号，漱玉平民大药房"
+                    android:text="地址："
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
 
@@ -91,6 +91,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/isClickable"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">

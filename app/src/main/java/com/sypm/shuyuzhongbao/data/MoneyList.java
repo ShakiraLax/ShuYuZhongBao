@@ -24,7 +24,7 @@ public class MoneyList implements Serializable {
     public List<ListBean> list;
 
 
-    public static class ListBean {
+    public static class ListBean implements Serializable {
         /**
          * fee : 5
          * status : 下单

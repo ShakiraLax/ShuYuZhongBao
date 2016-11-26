@@ -3,6 +3,7 @@ package com.sypm.shuyuzhongbao.api;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
 import com.sypm.shuyuzhongbao.data.MoneyList;
+import com.sypm.shuyuzhongbao.data.OrderDetail;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.data.UserInfo;
 import com.sypm.shuyuzhongbao.data.WorkTime;
@@ -75,7 +76,7 @@ public interface ShuYuService {
     /*根据orderSn来获取订单详情*/
     @FormUrlEncoded
     @POST("shiporder/order.html")
-    Call<DataResult> getOrderDetail(@Field("orderSn") String orderSn);
+    Call<OrderDetail> getOrderDetail(@Field("orderSn") String orderSn);
 
     /*配送员拒绝单子*/
     @FormUrlEncoded
