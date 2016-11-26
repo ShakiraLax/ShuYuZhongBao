@@ -3,12 +3,10 @@ package com.sypm.shuyuzhongbao;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,9 +35,6 @@ import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -49,7 +44,7 @@ import retrofit2.Response;
 /**
  * 首页
  * 所有操作都是建立在已将上线的基础上
- * 上线后每隔20秒获取一次是否有<指派未接受的订单><获取现在执行的订单>并且上传<配送员位置信息>
+ * 上线后每隔10秒获取一次是否有<指派未接受的订单><获取现在执行的订单>并且上传<配送员位置信息>
  * 如果有<指派未接受的订单>的话跳转到<接单界面>进行接单或者拒绝操作
  * 如接单跳转到<订单详情界面>
  * 订单配送完成访问<客户拒单接口>或<完成配送接口>
@@ -66,6 +61,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     private boolean isOnline = false;
     List<MessageList.ListBean> list;
     TextView endure, accept_num, salary, percent, online;
+    private double WD, JD;//纬度lat,经度lng
 
     /*高德start*/
     //显示地图需要的变量
@@ -87,8 +83,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         public void run() {
             recLen++;
             updateInfo();
-            //每隔60秒上传一次位置信息
-            handler.postDelayed(this, 20000);
+            //每隔10秒上传一次位置信息
+            handler.postDelayed(this, 10000);
         }
     };
 
@@ -96,6 +92,26 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         /*上线后开始上传位置信息和在线时长*/
 
         if (isOnline) {
+
+            Call<DataResult> call = RetrofitClient.getInstance().getSYService().locationInsert(String.valueOf(WD), String.valueOf(JD), null);
+            call.enqueue(new Callback<DataResult>() {
+                @Override
+                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                    if (response.body() != null) {
+                        if (response.body().status.equals("1")) {
+                            Log.d("上线后定位信息上传", "纬度" + String.valueOf(WD) + "经度" + String.valueOf(JD));
+                        } else {
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataResult> call, Throwable t) {
+
+                }
+            });
+
             /*未指派订单*/
             Call<DataResult> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
             getOrder.enqueue(new Callback<DataResult>() {
@@ -251,7 +267,10 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     call.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                            Toast.makeText(getActivity(), "上线成功", Toast.LENGTH_SHORT).show();
+                            Snackbar snackbar = Snackbar.make(getView(), "上线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
+                            snackbar.getView().setBackgroundResource(R.color.orange);
+                            snackbar.setActionTextColor(Color.WHITE);
+                            snackbar.show();
                             online.setText("下线");
                             isOnline = true;
                             linearLayout.setBackgroundResource(R.drawable.oval_on);
@@ -267,7 +286,10 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     call.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                            Toast.makeText(getActivity(), "下线成功", Toast.LENGTH_SHORT).show();
+                            Snackbar snackbar = Snackbar.make(getView(), "下线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
+                            snackbar.getView().setBackgroundResource(R.color.orange);
+                            snackbar.setActionTextColor(Color.WHITE);
+                            snackbar.show();
                             online.setText("上线");
                             isOnline = false;
                             linearLayout.setBackgroundResource(R.drawable.oval_off);
@@ -322,7 +344,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         public TextView shipSn;
     }
 
-    /*高德地图相关类*/
+    /*-----------------高德地图相关类----------------*/
 
     //定位
     private void initLoc() {
@@ -343,7 +365,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(2000);
+        mLocationOption.setInterval(10000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -354,28 +376,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     public void onLocationChanged(AMapLocation amapLocation) {
         if (amapLocation != null) {
             if (amapLocation.getErrorCode() == 0) {
-
                 //定位成功回调信息，设置相关消息
-                amapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见官方定位类型表
-                amapLocation.getLatitude();//获取纬度
-                amapLocation.getLongitude();//获取经度
-                amapLocation.getAccuracy();//获取精度信息
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date(amapLocation.getTime());
-                df.format(date);//定位时间
-                amapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
-                amapLocation.getCountry();//国家信息
-                amapLocation.getProvince();//省信息
-                amapLocation.getCity();//城市信息
-                amapLocation.getDistrict();//城区信息
-                amapLocation.getStreet();//街道信息
-                amapLocation.getStreetNum();//街道门牌号信息
-                amapLocation.getCityCode();//城市编码
-                amapLocation.getAdCode();//地区编码
-
                 Double Lat = amapLocation.getLatitude();
                 Double Lon = amapLocation.getLongitude();
-                Log.d("实时定位", String.valueOf(Lat) + "" + String.valueOf(Lon));
+                WD = Lat;
+                JD = Lon;
+                Log.d("实时定位：", "纬度" + String.valueOf(Lat) + "经度" + String.valueOf(Lon));
+
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //将地图移动到定位点
@@ -384,16 +391,12 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     mListener.onLocationChanged(amapLocation);
                     //获取定位信息
                     StringBuffer buffer = new StringBuffer();
-                    buffer.append(df.format(date) + " 定位类型：" + amapLocation.getLocationType() + " 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + " 精度：" + amapLocation.getAccuracy() + " 城市编码：" + amapLocation.getCityCode() + " 国家：" + amapLocation.getCountry() + " 省份：" + amapLocation.getProvince() + "     " + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
-//                    Toast.makeText(getContext(), buffer.toString(), Toast.LENGTH_LONG).show();//getApplicationContext
-                    Toast.makeText(getActivity(), String.valueOf(" 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum()), Toast.LENGTH_LONG).show();
+                    buffer.append(" 定位类型：" + amapLocation.getLocationType() + " 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + " 精度：" + amapLocation.getAccuracy() + " 城市编码：" + amapLocation.getCityCode() + " 国家：" + amapLocation.getCountry() + " 省份：" + amapLocation.getProvince() + "     " + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
                     Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
-
                     //设置缩放级别
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                 }
-
 
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
@@ -411,6 +414,61 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     @Override
     public void deactivate() {
         mListener = null;
+        if (mLocationClient != null) {
+            mLocationClient.stopLocation();
+            mLocationClient.onDestroy();
+        }
+        mLocationClient = null;
     }
 
+    /**
+     * 方法必须重写
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    /**
+     * 方法必须重写
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    /**
+     * 方法必须重写
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+
+    /**
+     * 方法必须重写
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mLocationClient.stopLocation();
+        mapView.onDestroy();
+        handler.removeCallbacks(runnable);
+        /*退出应用时下线*/
+        Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
+        call.enqueue(new Callback<DataResult>() {
+            @Override
+            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<DataResult> call, Throwable t) {
+
+            }
+        });
+    }
 }

@@ -8,11 +8,14 @@ import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.data.UserInfo;
 import com.sypm.shuyuzhongbao.data.WorkTime;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public interface ShuYuService {
 
@@ -33,7 +36,7 @@ public interface ShuYuService {
 
     /*配送员上线下线(1为上线，2为下线)*/
     @FormUrlEncoded
-    @POST("site/site/line.html")
+    @POST("site/line.html")
     Call<DataResult> line(@Field("type") String type);
 
     /*配送员个人信息汇总*/
@@ -54,16 +57,20 @@ public interface ShuYuService {
     @GET("user/info.html")
     Call<UserInfo> getUserInfo();
 
-    /*修改当前用户信息*/
+    /*修改当前用户姓名*/
     @FormUrlEncoded
     @POST("user/update.html")
-    Call<DataResult> updateUserInfo(
-            @Field("mobile") String mobile
-            , @Field("sn") String sn
-            , @Field("name") String name
-            , @Field("idNumber") String idNumber
-            , @Field("idFront") String idFront
-            , @Field("idBack") String idBack);
+    Call<DataResult> updateUserName(@Field("name") String name);
+
+    /*修改当前用户身份证号*/
+    @FormUrlEncoded
+    @POST("user/update.html")
+    Call<DataResult> updateUserIdCard(@Field("idNumber") String idNumber);
+
+    /*上传身份证前后两张照片*/
+    @Multipart
+    @POST("user/update.html")
+    Call<DataResult> postIdFrontFile(@Part MultipartBody.Part idFrontFile);
 
     /*获取指派未接受订单*//*之后请求接单或者拒绝单子*/
     @GET("shiporder/getorder.html")

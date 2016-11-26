@@ -12,8 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sypm.shuyuzhongbao.api.RetrofitClient;
+import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.utils.ExampleUtil;
 import com.sypm.shuyuzhongbao.utils.FragmentManagerActivity;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends FragmentManagerActivity {
 
@@ -97,6 +103,18 @@ public class MainActivity extends FragmentManagerActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
+        call.enqueue(new Callback<DataResult>() {
+            @Override
+            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<DataResult> call, Throwable t) {
+
+            }
+        });
     }
 
 
@@ -110,7 +128,7 @@ public class MainActivity extends FragmentManagerActivity {
     //再按一次退出
     private void exitApp() {
         if ((System.currentTimeMillis() - exitTime) > 2000) {
-            Toast.makeText(this, "再按一次退出...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "再按一次退出应用并下线！", Toast.LENGTH_SHORT).show();
             exitTime = System.currentTimeMillis();
         } else {
             finish();

@@ -1,7 +1,10 @@
 package com.sypm.shuyuzhongbao;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -46,11 +49,35 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
 
+    TextView shipSn, name, phone, address, timer, reject;
+    LinearLayout accept;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dialog);
         initData();
+
+        shipSn = (TextView) findViewById(R.id.shipSn);
+        name = (TextView) findViewById(R.id.name);
+        phone = (TextView) findViewById(R.id.phone);
+        address = (TextView) findViewById(R.id.address);
+        timer = (TextView) findViewById(R.id.timer);
+        reject = (TextView) findViewById(R.id.reject);
+        accept = (LinearLayout) findViewById(R.id.accept);
+
+        CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timer.setText("倒计时" + (millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                accept.setEnabled(true);
+                timer.setText("已默认接单");
+            }
+        };
 
         //显示地图
         mapView = (MapView) findViewById(R.id.mapView);
@@ -230,4 +257,5 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         super.onDestroy();
         mapView.onDestroy();
     }
+
 }

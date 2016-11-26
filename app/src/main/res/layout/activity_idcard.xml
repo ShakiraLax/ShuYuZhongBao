@@ -20,6 +20,7 @@
             android:orientation="vertical">
 
             <EditText
+                android:id="@+id/edit_insert_idcard"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@android:color/white"
@@ -63,7 +64,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/background" />
+                    android:background="@color/background"
+                    android:scaleType="fitXY" />
 
                 <ImageView
                     android:id="@+id/image2"
@@ -72,7 +74,8 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/background" />
+                    android:background="@color/background"
+                    android:scaleType="fitXY" />
 
                 <View
                     android:layout_width="match_parent"

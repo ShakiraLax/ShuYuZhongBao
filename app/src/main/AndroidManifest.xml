@@ -56,7 +56,7 @@
         <activity android:name=".MainActivity" />
         <activity
             android:name=".LoginActivity"
-            android:label="账号登陆" />
+            android:label="登陆" />
         <activity
             android:name=".PersonalActivity"
             android:label="个人资料" />
