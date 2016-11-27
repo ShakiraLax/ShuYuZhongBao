@@ -3,6 +3,7 @@ package com.sypm.shuyuzhongbao.api;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
 import com.sypm.shuyuzhongbao.data.MoneyList;
+import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.data.OrderDetail;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.data.UserInfo;
@@ -22,7 +23,7 @@ public interface ShuYuService {
     /*账号登陆*/
     @FormUrlEncoded
     @POST("site/login.html")
-    Call<DataResult> login(@Field("staffSn") String staffSn, @Field("password") String password);
+    Call<DataResult> login(@Field("staffSn") String staffSn, @Field("password") String password, @Field("registrationId") String registrationId);
 
     /*获取验证码*/
     @FormUrlEncoded
@@ -74,16 +75,16 @@ public interface ShuYuService {
 
     /*获取指派未接受订单*//*之后请求接单或者拒绝单子*/
     @GET("shiporder/getorder.html")
-    Call<DataResult> getOrder();
+    Call<Order> getOrder();
 
     /*获取现在执行的订单*/
     @GET("shiporder/getcurrent.html")
-    Call<DataResult> getCurrentOrder();
+    Call<Order> getCurrentOrder();
 
     /*根据orderSn来获取订单详情*/
     @FormUrlEncoded
     @POST("shiporder/order.html")
-    Call<OrderDetail> getOrderDetail(@Field("orderSn") String orderSn);
+    Call<Order> getOrderDetail(@Field("orderSn") String orderSn);
 
     /*配送员拒绝单子*/
     @FormUrlEncoded

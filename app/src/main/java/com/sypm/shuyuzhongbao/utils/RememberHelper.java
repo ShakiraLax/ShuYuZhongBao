@@ -11,6 +11,10 @@ public class RememberHelper {
         Remember.putString("password", password);
     }
 
+    public static void saveRegistrationId(String registrationId) {
+        Remember.putString("registrationId", registrationId);
+    }
+
     public static void saveUserPhone(String phone) {
         Remember.putString("phone", phone);
     }
@@ -26,6 +30,10 @@ public class RememberHelper {
 
     public static String getPhone() {
         return Remember.getString("phone", "");
+    }
+
+    public static String getRegistrationId() {
+        return Remember.getString("registrationId", "");
     }
 
 }

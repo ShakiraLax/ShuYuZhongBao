@@ -36,6 +36,7 @@ public class WelcomeActivity extends BaseActivity {
     private void autoLogin() {
         final String number = Remember.getString("number", "");
         final String password = Remember.getString("password", "");
+        final String registrationId = RememberHelper.getRegistrationId();
         if (TextUtils.isEmpty(number) || TextUtils.isEmpty(password)) {
             intentLogin();
             return;
@@ -43,7 +44,7 @@ public class WelcomeActivity extends BaseActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                requestLogin(number, password);
+                requestLogin(number, password, registrationId);
             }
         }, 1500);
     }
@@ -53,8 +54,8 @@ public class WelcomeActivity extends BaseActivity {
         finish();
     }
 
-    private void requestLogin(final String number, final String password) {
-        final Call<DataResult> login = RetrofitClient.getInstance().getSYService().login(number, MD5Utils.md5Encode(password));
+    private void requestLogin(final String number, final String password, final String registrationId) {
+        final Call<DataResult> login = RetrofitClient.getInstance().getSYService().login(number, MD5Utils.md5Encode(password), registrationId);
         login.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {

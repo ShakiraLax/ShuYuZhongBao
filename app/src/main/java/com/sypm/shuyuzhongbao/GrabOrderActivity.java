@@ -1,8 +1,10 @@
 package com.sypm.shuyuzhongbao;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
+import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
 import java.text.SimpleDateFormat;
@@ -51,6 +54,20 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
 
     TextView shipSn, name, phone, address, timer, reject;
     LinearLayout accept;
+    Order order;
+
+    CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            timer.setText("倒计时" + (millisUntilFinished / 1000));
+        }
+
+        @Override
+        public void onFinish() {
+            /*设置倒计时完毕时自动接单*/
+            timer.setText("已默认接单");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,19 +82,58 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         timer = (TextView) findViewById(R.id.timer);
         reject = (TextView) findViewById(R.id.reject);
         accept = (LinearLayout) findViewById(R.id.accept);
-
-        CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+        /*接单*/
+        accept.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTick(long millisUntilFinished) {
-                timer.setText("倒计时" + (millisUntilFinished / 1000));
-            }
+            public void onClick(View v) {
+                Call<DataResult> orderSure = RetrofitClient.getInstance().getSYService().orderSure(order.list.orderSn);
+                orderSure.enqueue(new Callback<DataResult>() {
+                    @Override
+                    public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                        if (response.body() != null) {
+                            if (response.body().status.equals("1")) {
+                                Toast.makeText(getApplicationContext(), "接单成功", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(getApplicationContext(), "接单失败", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
 
-            @Override
-            public void onFinish() {
-                accept.setEnabled(true);
-                timer.setText("已默认接单");
+                    @Override
+                    public void onFailure(Call<DataResult> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), "接单操作失败", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
-        };
+        });
+        /*拒单*/
+        reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Call<DataResult> orderCancel = RetrofitClient.getInstance().getSYService().orderCancel(order.list.orderSn);
+                orderCancel.enqueue(new Callback<DataResult>() {
+                    @Override
+                    public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                        if (response.body() != null) {
+                            if (response.body().status.equals("1")) {
+                                Toast.makeText(getApplicationContext(), "拒单成功", Toast.LENGTH_LONG).show();
+                                accept.setVisibility(View.INVISIBLE);
+                            } else {
+                                Toast.makeText(getApplicationContext(), "拒单失败", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataResult> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), "拒单操作失败", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
 
         //显示地图
         mapView = (MapView) findViewById(R.id.mapView);
@@ -107,35 +163,32 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
     }
 
     private void initData() {
-
-        /*接单*/
-        /*Call<DataResult> callSure = RetrofitClient.getInstance().getSYService().orderSure("1");
-        callSure.enqueue(new Callback<DataResult>() {
+        /*未指派订单*/
+        Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+        getOrder.enqueue(new Callback<Order>() {
             @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-
+            public void onResponse(Call<Order> call, Response<Order> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
+                        Toast.makeText(getApplicationContext(), "获取订单成功", Toast.LENGTH_LONG).show();
+                        countDownTimer.start();
+                        order = response.body();
+                        shipSn.setText("单号：" + order.list.orderSn);
+                        address.setText("地址：" + order.list.address);
+                        phone.setText("电话：" + order.list.mobile);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "订单无数据", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
-
+            public void onFailure(Call<Order> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "获取订单失败", Toast.LENGTH_LONG).show();
             }
-        });*/
-
-        /*配送员拒单*/
-        /*Call<DataResult> callCancel = RetrofitClient.getInstance().getSYService().orderReject("1");
-        callCancel.enqueue(new Callback<DataResult>() {
-            @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-
-            }
-
-            @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
-
-            }
-        });*/
+        });
     }
+
 
     //定位
     private void initLoc() {
@@ -167,25 +220,6 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
     public void onLocationChanged(AMapLocation amapLocation) {
         if (amapLocation != null) {
             if (amapLocation.getErrorCode() == 0) {
-
-                //定位成功回调信息，设置相关消息
-                amapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见官方定位类型表
-                amapLocation.getLatitude();//获取纬度
-                amapLocation.getLongitude();//获取经度
-                amapLocation.getAccuracy();//获取精度信息
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date(amapLocation.getTime());
-                df.format(date);//定位时间
-                amapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
-                amapLocation.getCountry();//国家信息
-                amapLocation.getProvince();//省信息
-                amapLocation.getCity();//城市信息
-                amapLocation.getDistrict();//城区信息
-                amapLocation.getStreet();//街道信息
-                amapLocation.getStreetNum();//街道门牌号信息
-                amapLocation.getCityCode();//城市编码
-                amapLocation.getAdCode();//地区编码
-
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //将地图移动到定位点
@@ -194,11 +228,9 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     mListener.onLocationChanged(amapLocation);
                     //获取定位信息
                     StringBuffer buffer = new StringBuffer();
-                    buffer.append(df.format(date) + " 定位类型：" + amapLocation.getLocationType() + " 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + " 精度：" + amapLocation.getAccuracy() + " 城市编码：" + amapLocation.getCityCode() + " 国家：" + amapLocation.getCountry() + " 省份：" + amapLocation.getProvince() + "     " + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
-                    Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
                     Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
-
                     //设置缩放级别
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                 }

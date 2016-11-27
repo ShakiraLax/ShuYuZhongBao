@@ -31,6 +31,7 @@ import com.amap.api.maps.model.MyLocationStyle;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
+import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
@@ -113,12 +114,12 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             });
 
             /*未指派订单*/
-            Call<DataResult> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
-            getOrder.enqueue(new Callback<DataResult>() {
+            Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+            getOrder.enqueue(new Callback<Order>() {
                 @Override
-                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                public void onResponse(Call<Order> call, Response<Order> response) {
                     if (response.body() != null) {
-                        if (response.body().status.equals("1")) {
+                        if (response.body().status == 1) {
                             //跳转到接单界面
                             Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
                             startActivity(intent);
@@ -129,17 +130,17 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 }
 
                 @Override
-                public void onFailure(Call<DataResult> call, Throwable t) {
+                public void onFailure(Call<Order> call, Throwable t) {
 
                 }
             });
         /*现在执行订单*/
-            Call<DataResult> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
-            callCurrentOrder.enqueue(new Callback<DataResult>() {
+            Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
+            callCurrentOrder.enqueue(new Callback<Order>() {
                 @Override
-                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                public void onResponse(Call<Order> call, Response<Order> response) {
                     if (response.body() != null) {
-                        if (response.body().status.equals("1")) {
+                        if (response.body().status == 1) {
                             //跳转到订单详情界面
                             Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
                             startActivity(intent);
@@ -150,12 +151,20 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 }
 
                 @Override
-                public void onFailure(Call<DataResult> call, Throwable t) {
+                public void onFailure(Call<Order> call, Throwable t) {
 
                 }
             });
         }
         return;
+
+    }
+
+    private String getRunningActivityName() {
+
+        String contextString = getActivity().toString();
+
+        return contextString.substring(contextString.lastIndexOf(".") + 1, contextString.indexOf("@"));
 
     }
 

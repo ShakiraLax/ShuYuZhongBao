@@ -26,7 +26,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/shipSn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
@@ -36,6 +36,7 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -45,6 +46,8 @@
                     android:textSize="20sp" />
 
                 <TextView
+
+                    android:id="@+id/phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -54,7 +57,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/textView10"
+                    android:id="@+id/address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -97,6 +100,7 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/customerReject"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_gravity="bottom"
@@ -107,6 +111,7 @@
                 android:textSize="20sp" />
 
             <Button
+                android:id="@+id/dispatchingDone"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_gravity="bottom"

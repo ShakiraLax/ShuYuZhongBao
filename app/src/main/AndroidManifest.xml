@@ -74,7 +74,8 @@
             android:label="姓名" />
         <activity
             android:name=".OrderDetailActivity"
-            android:label="订单信息" />
+            android:label="订单信息"
+            android:launchMode="singleTop" />
         <activity
             android:name=".PersonCodingActivity"
             android:label="人员编码" />
@@ -90,6 +91,7 @@
         <activity
             android:name=".GrabOrderActivity"
             android:label="抢单"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat.Light.DialogWhenLarge" />
         <activity
             android:name=".AddWorkTimeActivity"

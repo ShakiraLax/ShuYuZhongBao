@@ -52,7 +52,7 @@ public class LoginByAccountActivity extends BaseActivity {
             public void onClick(View v) {
                 if (!isInvalidInput()) {
                     Call<DataResult> login = RetrofitClient.getInstance().getSYService()
-                            .login(number.getText().toString(), MD5Utils.md5Encode(password.getText().toString()));
+                            .login(number.getText().toString(), MD5Utils.md5Encode(password.getText().toString()), RememberHelper.getRegistrationId());
                     login.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {

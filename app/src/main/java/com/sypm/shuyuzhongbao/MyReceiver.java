@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.sypm.shuyuzhongbao.utils.ExampleUtil;
+import com.sypm.shuyuzhongbao.utils.RememberHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,9 +29,12 @@ public class MyReceiver extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
         Log.d(TAG, "[MyReceiver] onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));
 
+        //保存registrationId:160a3797c80a1a27a63
+
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
             String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
             Log.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
+            RememberHelper.saveRegistrationId(regId);
             //send the Registration Id to your server...
 
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
@@ -46,7 +50,7 @@ public class MyReceiver extends BroadcastReceiver {
             Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
 
             //打开自定义的Activity
-            Intent i = new Intent(context, OrderDetailActivity.class);
+            Intent i = new Intent(context, GrabOrderActivity.class);
             i.putExtras(bundle);
             //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
