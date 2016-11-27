@@ -160,14 +160,6 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     }
 
-    private String getRunningActivityName() {
-
-        String contextString = getActivity().toString();
-
-        return contextString.substring(contextString.lastIndexOf(".") + 1, contextString.indexOf("@"));
-
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         //允许刷新按钮
@@ -246,7 +238,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         });
 
         /*首页消息列表*/
-        Call<MessageList> call = RetrofitClient.getInstance().getSYService().messageList("1");
+        Call<MessageList> call = RetrofitClient.getInstance().getSYService().messageList("1", "100");
         call.enqueue(new Callback<MessageList>() {
             @Override
             public void onResponse(Call<MessageList> call, Response<MessageList> response) {

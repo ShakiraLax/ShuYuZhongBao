@@ -56,7 +56,7 @@ public class MoneyFragment extends BaseFragment {
     private void initData() {
         today = (TextView) getView().findViewById(R.id.today);
         total = (TextView) getView().findViewById(R.id.total);
-        Call<MoneyList> call = RetrofitClient.getInstance().getSYService().salaryList("1", null);
+        Call<MoneyList> call = RetrofitClient.getInstance().getSYService().salaryList("1", "100");
         call.enqueue(new Callback<MoneyList>() {
             @Override
             public void onResponse(Call<MoneyList> call, Response<MoneyList> response) {
@@ -86,7 +86,7 @@ public class MoneyFragment extends BaseFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (moneyList != null){
+                if (moneyList != null) {
                     Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
                     intent.putExtra("item", moneyList.get(position));
                     startActivity(intent);

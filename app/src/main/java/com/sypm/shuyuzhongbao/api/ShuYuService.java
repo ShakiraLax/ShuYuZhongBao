@@ -47,7 +47,7 @@ public interface ShuYuService {
     /*首页消息队列*/
     @FormUrlEncoded
     @POST("site/message.html")
-    Call<MessageList> messageList(@Field("page") String page);
+    Call<MessageList> messageList(@Field("page") String page, @Field("pagesize") String pagesize);
 
     /*收入队列*/
     @FormUrlEncoded
