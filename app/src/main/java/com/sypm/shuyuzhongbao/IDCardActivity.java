@@ -79,7 +79,7 @@ public class IDCardActivity extends BaseActivity {
         IDCardValidate idCardValidate = new IDCardValidate();
         try {
             String s = idCardValidate.IDCardRe(idNumber);
-            if (!TextUtils.isEmpty(idNumber)&&s.equals("")) {
+            if (!TextUtils.isEmpty(idNumber) && s.equals("")) {
                 Call<DataResult> idNumberCall = RetrofitClient.getInstance().getSYService().updateUserIdCard(idNumber);
                 idNumberCall.enqueue(new Callback<DataResult>() {
                     @Override
@@ -96,7 +96,7 @@ public class IDCardActivity extends BaseActivity {
                         ToastUtils.show("操作失败");
                     }
                 });
-            }else {
+            } else if (!TextUtils.isEmpty(idNumber) && !s.equals("")) {
                 ToastUtils.show("输入的身份证号有误！");
             }
         } catch (ParseException e) {

@@ -47,7 +47,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     Order order;
     Order orderByShipSn;
     Order ordering;
-    TextView shipSn, name, phone, address;
+    TextView shipSn, name, phone, address, storeName, fee, feeWay;
     Button customerReject, dispatchingDone;
     String phoneNumber;
 
@@ -78,6 +78,10 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         name = (TextView) findViewById(R.id.name);
         phone = (TextView) findViewById(R.id.phone);
         address = (TextView) findViewById(R.id.address);
+        fee = (TextView) findViewById(R.id.fee);
+        storeName = (TextView) findViewById(R.id.storeName);
+        feeWay = (TextView) findViewById(R.id.feeWay);
+
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
         ordering = (Order) getIntent().getSerializableExtra("ordering");
@@ -95,12 +99,13 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
             JD = ordering.list.lng;
             initDataFromIndex();
         }
-        initData();
+
         moneyList = (MoneyList.ListBean) getIntent().getSerializableExtra("item");
         if (moneyList != null) {
             Log.d("根据订单号获取订单详情", moneyList.shipSn);
             initOrderData();
         }
+        initData();
 
         //显示地图
         mapView = (MapView) findViewById(R.id.mapView);
@@ -134,6 +139,9 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         name.setText("姓名：" + ordering.list.name);
         address.setText("地址：" + ordering.list.address);
         phone.setText("电话：" + ordering.list.mobile);
+        fee.setText("订单金额：" + ordering.list.amount);
+        feeWay.setText("支付方式：" + ordering.list.payCode);
+        storeName.setText("门店名称：" + ordering.list.storeName);
     }
 
     private void initOrderData() {
@@ -149,6 +157,9 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                         name.setText("姓名：" + orderByShipSn.list.name);
                         address.setText("地址：" + orderByShipSn.list.address);
                         phone.setText("电话：" + orderByShipSn.list.mobile);
+                        fee.setText("订单金额：" + orderByShipSn.list.amount);
+                        feeWay.setText("支付方式：" + orderByShipSn.list.payCode);
+                        storeName.setText("门店名称：" + orderByShipSn.list.storeName);
                         phoneNumber = orderByShipSn.list.mobile;
                         WD = orderByShipSn.list.lat;
                         JD = orderByShipSn.list.lng;
@@ -183,6 +194,9 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                         name.setText("姓名：" + order.list.name);
                         address.setText("地址：" + order.list.address);
                         phone.setText("电话：" + order.list.mobile);
+//                        fee.setText("订单金额：" + orderByShipSn.list.amount);
+//                        feeWay.setText("支付方式：" + orderByShipSn.list.payCode);
+//                        storeName.setText("门店名称：" + orderByShipSn.list.storeName);
                         phoneNumber = order.list.mobile;
                         if (order.list.status != 1) {
                             customerReject.setVisibility(View.INVISIBLE);

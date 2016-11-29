@@ -46,7 +46,7 @@ public class WelcomeActivity extends BaseActivity {
             public void run() {
                 requestLogin(number, password, registrationId);
             }
-        }, 1500);
+        }, 1000);
     }
 
     private void intentLogin() {

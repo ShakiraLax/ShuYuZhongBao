@@ -59,7 +59,7 @@ public class WeekPickerActivity extends BaseActivity {
                 if (isChecked) {
                     weeks += buttonView.getText();
                 } else {
-                    weeks = weeks.substring(0, weeks.length() - 1);
+                    weeks = weeks.replace(buttonView.getText(), "");
                 }
             }
         };

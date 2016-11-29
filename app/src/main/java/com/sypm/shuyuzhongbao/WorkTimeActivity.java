@@ -168,7 +168,7 @@ public class WorkTimeActivity extends BaseActivity {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.item_work_time, parent, false);
                 holder = new ViewHolder();
-                holder.txtNumWorkTime= (TextView) convertView.findViewById(R.id.txt_num_worktime);
+                holder.txtNumWorkTime = (TextView) convertView.findViewById(R.id.txt_num_worktime);
                 holder.txtItemWorkTime = (TextView) convertView.findViewById(R.id.txt_item_worktime);
                 holder.txtItemWorkDay = (TextView) convertView.findViewById(R.id.txt_item_workday);
                 holder.cbTimeOnWorktime = (CheckBox) convertView.findViewById(R.id.cb_timeon_worktime);
@@ -178,7 +178,7 @@ public class WorkTimeActivity extends BaseActivity {
             }
             //赋值
             final WorkTime workTime = timeList.get(position);
-            holder.txtNumWorkTime.setText("班次"+(position+1));
+            holder.txtNumWorkTime.setText("班次" + (position + 1));
             holder.txtItemWorkTime.setText(workTime.getStartTime() + "-" + workTime.getEndTime());
             holder.txtItemWorkDay.setText(workTime.getDayTime());
             if (workTime.getIsOpen() == 1) {
@@ -199,10 +199,10 @@ public class WorkTimeActivity extends BaseActivity {
                             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                                 if (response.isSuccessful()) {
                                     if (response.body().status.equals("1")) {
-                                        Toast.makeText(getApplicationContext(), workTime.getId() + "打开成功",
+                                        Toast.makeText(getApplicationContext(), "打开成功",
                                                 Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(getApplicationContext(), workTime.getId() + "打开失败",
+                                        Toast.makeText(getApplicationContext(), "打开失败",
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }

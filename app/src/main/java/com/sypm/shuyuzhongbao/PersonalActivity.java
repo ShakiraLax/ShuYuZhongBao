@@ -49,18 +49,18 @@ public class PersonalActivity extends BaseActivity {
 
     private void initData() {
         /*获取当前用户信息*/
-        Call<UserInfo> userInfoCall=RetrofitClient.getInstance().getSYService().getUserInfo();
+        Call<UserInfo> userInfoCall = RetrofitClient.getInstance().getSYService().getUserInfo();
         userInfoCall.enqueue(new Callback<UserInfo>() {
             @Override
             public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
-                if (response.isSuccessful()){
-                    if (response.body().getStatus()==1){
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
 //                        Log.i(">>>>name+idcard",response.body().getList().getName()+response.body().getList().getIdNumber());
-                        String name=response.body().getList().getName();
-                        String idCard=response.body().getList().getIdNumber();
+                        String name = response.body().getList().getName();
+                        String idCard = response.body().getList().getIdNumber();
 //                        String idCard="370126199102187118";
-                        if (!TextUtils.isEmpty(idCard)&&idCard.length()==18){
-                            idCard=idCard.substring(0,6)+"********"+idCard.substring(14);
+                        if (!TextUtils.isEmpty(idCard) && idCard.length() == 18) {
+                            idCard = idCard.substring(0, 6) + "********" + idCard.substring(14);
                         }
                         txtName.setText(name);
                         txtIdCard.setText(idCard);
@@ -68,6 +68,7 @@ public class PersonalActivity extends BaseActivity {
 
                 }
             }
+
             @Override
             public void onFailure(Call<UserInfo> call, Throwable t) {
 
@@ -98,18 +99,18 @@ public class PersonalActivity extends BaseActivity {
     protected void onRestart() {
         super.onRestart();
              /*获取当前用户信息*/
-        Call<UserInfo> userInfoCall=RetrofitClient.getInstance().getSYService().getUserInfo();
+        Call<UserInfo> userInfoCall = RetrofitClient.getInstance().getSYService().getUserInfo();
         userInfoCall.enqueue(new Callback<UserInfo>() {
             @Override
             public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
-                if (response.isSuccessful()){
-                    if (response.body().getStatus()==1){
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
 //                        Log.i(">>>>name+idcard",response.body().getList().getName()+response.body().getList().getIdNumber());
-                        String name=response.body().getList().getName();
-                        String idCard=response.body().getList().getIdNumber();
+                        String name = response.body().getList().getName();
+                        String idCard = response.body().getList().getIdNumber();
 //                        String idCard="370126199102187118";
-                        if (!TextUtils.isEmpty(idCard)){
-                            idCard=idCard.substring(0,6)+"********"+idCard.substring(14);
+                        if (!TextUtils.isEmpty(idCard)) {
+                            idCard = idCard.substring(0, 6) + "********" + idCard.substring(14);
                         }
                         txtName.setText(name);
                         txtIdCard.setText(idCard);
@@ -117,6 +118,7 @@ public class PersonalActivity extends BaseActivity {
 
                 }
             }
+
             @Override
             public void onFailure(Call<UserInfo> call, Throwable t) {
 

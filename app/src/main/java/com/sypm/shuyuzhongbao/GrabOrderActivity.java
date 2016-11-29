@@ -84,6 +84,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     if (response.body() != null) {
                         if (response.body().status.equals("1")) {
                             accept.setVisibility(View.INVISIBLE);
+                            reject.setVisibility(View.INVISIBLE);
                         } else {
                             Toast.makeText(getActivity(), "接单失败", Toast.LENGTH_LONG).show();
                         }
@@ -111,11 +112,6 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         reject = (TextView) findViewById(R.id.reject);
         accept = (LinearLayout) findViewById(R.id.accept);
         orderComing = (Order) getIntent().getSerializableExtra("orderComing");
-
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        mediaPlayer.create(getActivity(), R.raw.va);
-        mediaPlayer.start();
-
 
         if (orderComing != null) {
             WD = orderComing.list.lat;
@@ -196,9 +192,10 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
-                                Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                                Toast.makeText(getActivity(), "接单成功,正在获取订单详情...", Toast.LENGTH_LONG).show();
-                                startActivity(intent);
+                                Toast.makeText(getActivity(), "接单成功！稍后跳转到订单详情...", Toast.LENGTH_LONG).show();
+//                                Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+//                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                startActivity(intent);
                                 finish();
                             } else {
                                 Toast.makeText(getActivity(), "接单失败", Toast.LENGTH_LONG).show();

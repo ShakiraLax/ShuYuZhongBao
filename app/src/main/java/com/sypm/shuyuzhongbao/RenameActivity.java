@@ -28,16 +28,17 @@ public class RenameActivity extends BaseActivity {
         setContentView(R.layout.activity_rename);
         initView();
     }
-    public void onClick(View view){
-        String name=editText.getText().toString();
-        Call<DataResult> reNameCall=RetrofitClient.getInstance().getSYService().updateUserName(name);
+
+    public void onClick(View view) {
+        String name = editText.getText().toString();
+        Call<DataResult> reNameCall = RetrofitClient.getInstance().getSYService().updateUserName(name);
         reNameCall.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                if (response.isSuccessful()){
-                    if (response.body().status.equals("1")){
+                if (response.isSuccessful()) {
+                    if (response.body().status.equals("1")) {
                         ToastUtils.show("操作成功");
-                    }else {
+                    } else {
                         ToastUtils.show("操作失败");
                     }
                 }

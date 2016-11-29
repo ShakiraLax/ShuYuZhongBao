@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">蚂蚁</string>
+    <string name="app_name">漱玉嗖嗖</string>
     <string name="title_activity_work_time">WorkTimeActivity</string>
     <string name="title_activity_dialog">DialogActivity</string>
 </resources>
