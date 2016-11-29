@@ -59,9 +59,11 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     ListView listView;
     LinearLayout linearLayout;
     private int recLen = 0;
-    private boolean isOnline = false;
+    private boolean isOnline = true;
     List<MessageList.ListBean> list;
     TextView endure, accept_num, salary, percent, online;
+    LinearLayout refresh;
+    TotalLine totalLine;
     private double WD, JD;//纬度lat,经度lng
 
     /*高德start*/
@@ -90,7 +92,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     };
 
     private void updateInfo() {
-        /*上线后开始上传位置信息和在线时长*/
+        /*上线后开始上传位置信息*/
 
         if (isOnline) {
 
@@ -113,7 +115,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 }
             });
 
-            /*未指派订单*/
+            /*未接受订单*/
             Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
             getOrder.enqueue(new Callback<Order>() {
                 @Override
@@ -122,6 +124,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         if (response.body().status == 1) {
                             //跳转到接单界面
                             Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
+                            intent.putExtra("orderComing", response.body());
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         } else {
 
@@ -143,6 +147,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         if (response.body().status == 1) {
                             //跳转到订单详情界面
                             Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                            intent.putExtra("ordering", response.body());
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         } else {
 
@@ -172,13 +178,32 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_index, container, false);
+
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setupListView();
+
+        endure = (TextView) getView().findViewById(R.id.endure);
+        accept_num = (TextView) getView().findViewById(R.id.accept_num);
+        salary = (TextView) getView().findViewById(R.id.salary);
+        percent = (TextView) getView().findViewById(R.id.percent);
+        online = (TextView) getView().findViewById(R.id.online);
+        listView = (ListView) getView().findViewById(R.id.listView);
+        linearLayout = (LinearLayout) getView().findViewById(R.id.of);
+        refresh = (LinearLayout) getView().findViewById(R.id.refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initData();
+                setupListView();
+            }
+        });
+        autoLine();
         initData();
+        setupListView();
+
         //显示地图
         mapView = (MapView) getView().findViewById(R.id.mapView);
         //必须要写
@@ -207,13 +232,23 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     }
 
-    private void initData() {
-        endure = (TextView) getView().findViewById(R.id.endure);
-        accept_num = (TextView) getView().findViewById(R.id.accept_num);
-        salary = (TextView) getView().findViewById(R.id.salary);
-        percent = (TextView) getView().findViewById(R.id.percent);
-        online = (TextView) getView().findViewById(R.id.online);
+    private void autoLine() {
+        /*自动上线*/
+        Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
+        call.enqueue(new Callback<DataResult>() {
+            @Override
+            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                Log.d("自动上线", response.body().msg);
+            }
 
+            @Override
+            public void onFailure(Call<DataResult> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void initData() {
         /*在线时长等信息(是否需要实时获取)*/
         Call<TotalLine> summary = RetrofitClient.getInstance().getSYService().summary();
         summary.enqueue(new Callback<TotalLine>() {
@@ -221,10 +256,12 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             public void onResponse(Call<TotalLine> call, Response<TotalLine> response) {
                 if (response.body() != null) {
                     if (response.isSuccessful()) {
-                        endure.setText("在线：" + response.body().endure + "小时");
-                        accept_num.setText("接单：" + response.body().accept_num);
-                        salary.setText("流水：" + response.body().salary + "元");
-                        percent.setText("成交率：" + response.body().percent + "%");
+//                        Toast.makeText(getActivity(), "总览信息获取成功", Toast.LENGTH_SHORT).show();
+                        totalLine = response.body();
+                        endure.setText("在线：" + totalLine.endure + "小时");
+                        accept_num.setText("接单：" + totalLine.accept_num);
+                        salary.setText("流水：" + totalLine.salary + "元");
+                        percent.setText("成交率：" + totalLine.percent + "%");
                     } else {
                         Toast.makeText(getActivity(), "头部信息无数据", Toast.LENGTH_SHORT).show();
                     }
@@ -237,28 +274,6 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             }
         });
 
-        /*首页消息列表*/
-        Call<MessageList> call = RetrofitClient.getInstance().getSYService().messageList("1", "100");
-        call.enqueue(new Callback<MessageList>() {
-            @Override
-            public void onResponse(Call<MessageList> call, Response<MessageList> response) {
-                if (response.body() != null) {
-                    if (response.body().status == 1) {
-                        list = response.body().list;
-                        listView.setAdapter(new ListAdapter(getActivity(), list));
-                    } else {
-                        Toast.makeText(getActivity(), "无数据", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MessageList> call, Throwable t) {
-
-            }
-        });
-
-        linearLayout = (LinearLayout) getView().findViewById(R.id.of);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,6 +283,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     call.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                            initData();
+                            setupListView();
                             Snackbar snackbar = Snackbar.make(getView(), "上线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
                             snackbar.getView().setBackgroundResource(R.color.orange);
                             snackbar.setActionTextColor(Color.WHITE);
@@ -307,8 +324,28 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     private void setupListView() {
-        listView = (ListView) getView().findViewById(R.id.listView);
+
         listView.setAdapter(new ListAdapter(getContext(), null));
+        /*首页消息列表*/
+        Call<MessageList> call = RetrofitClient.getInstance().getSYService().messageList("1", "20");
+        call.enqueue(new Callback<MessageList>() {
+            @Override
+            public void onResponse(Call<MessageList> call, Response<MessageList> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
+                        list = response.body().list;
+                        listView.setAdapter(new ListAdapter(getActivity(), list));
+                    } else {
+                        Toast.makeText(getActivity(), "无数据", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageList> call, Throwable t) {
+
+            }
+        });
     }
 
     public static class ListAdapter extends MyBaseAdapter {
@@ -387,7 +424,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //将地图移动到定位点
-                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())));
+//                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())));
                     //点击定位按钮 能够将地图的中心移动到定位点
                     mListener.onLocationChanged(amapLocation);
                     //获取定位信息

@@ -4,8 +4,8 @@
     android:id="@+id/activity_week_picker"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.sypm.shuyuzhongbao.WeekPickerActivity">
+    tools:context="com.sypm.shuyuzhongbao.WeekPickerActivity"
+    android:orientation="horizontal">
+
 
 </LinearLayout>

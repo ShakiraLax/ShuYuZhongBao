@@ -151,7 +151,7 @@ public interface ShuYuService {
     @POST("worktime/update.html")
     Call<DataResult> worktimeOffOn(
             @Field("id") int id,
-            @Field("isOpen") String isOpen);
+            @Field("isOpen") int isOpen);
 
     /*退出登录*/
     @GET("site/logout.html")

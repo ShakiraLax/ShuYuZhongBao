@@ -16,10 +16,9 @@ public class TotalLine implements Serializable {
      * percent : 0
      */
 
-    public int endure;
+    public String endure;
     public String accept_num;
-    public int salary;
-    public String precent;
-    public int percent;
+    public String salary;
+    public String percent;
 
 }

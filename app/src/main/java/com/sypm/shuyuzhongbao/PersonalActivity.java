@@ -2,121 +2,125 @@ package com.sypm.shuyuzhongbao;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
+import com.sypm.shuyuzhongbao.api.ShuYuService;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.UserInfo;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
+import java.util.List;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+
 
 /**
- * 个人信息修改
+ * 个人信息
  */
 
 public class PersonalActivity extends BaseActivity {
 
-    LinearLayout IDCard, name, personCode, storeAddress;
-    TextView userName, number, store, IDCardNumber;
-    UserInfo.DataBean userInfo;
+    LinearLayout IDCard, name;
+    private TextView txtName;
+    private TextView txtIdCard;
+    private UserInfo userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
-        setupListView();
+        initView();
         initData();
     }
 
+    private void initView() {
+        txtName = (TextView) findViewById(R.id.txt_name_userinfo);
+        txtIdCard = (TextView) findViewById(R.id.txt_idCard_userinfo);
+    }
+
     private void initData() {
-
-        userName = (TextView) findViewById(R.id.userName);
-        number = (TextView) findViewById(R.id.number);
-        store = (TextView) findViewById(R.id.store);
-        IDCardNumber = (TextView) findViewById(R.id.IDCardNumber);
-
         /*获取当前用户信息*/
-        Call<UserInfo> call = RetrofitClient.getInstance().getSYService().getUserInfo();
-        call.enqueue(new Callback<UserInfo>() {
+        Call<UserInfo> userInfoCall=RetrofitClient.getInstance().getSYService().getUserInfo();
+        userInfoCall.enqueue(new Callback<UserInfo>() {
             @Override
             public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
-                if (response.body() != null) {
-                    if (response.isSuccessful()) {
-                        userInfo = response.body().list;
-                        Toast.makeText(getActivity(), "获取成功", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getActivity(), userInfo.name, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getActivity(), "没有数据", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()==1){
+//                        Log.i(">>>>name+idcard",response.body().getList().getName()+response.body().getList().getIdNumber());
+                        String name=response.body().getList().getName();
+                        String idCard=response.body().getList().getIdNumber();
+//                        String idCard="370126199102187118";
+                        if (!TextUtils.isEmpty(idCard)&&idCard.length()==18){
+                            idCard=idCard.substring(0,6)+"********"+idCard.substring(14);
+                        }
+                        txtName.setText(name);
+                        txtIdCard.setText(idCard);
                     }
-                    return;
+
                 }
             }
-
             @Override
             public void onFailure(Call<UserInfo> call, Throwable t) {
-                Toast.makeText(getActivity(), "失败了", Toast.LENGTH_SHORT).show();
+
             }
         });
 
         IDCard = (LinearLayout) findViewById(R.id.IDCard);
         name = (LinearLayout) findViewById(R.id.name);
-        personCode = (LinearLayout) findViewById(R.id.personCode);
-        storeAddress = (LinearLayout) findViewById(R.id.storeAddress);
         IDCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), IDCardActivity.class);
-                startActivityForResult(intent, 1000);
+                startActivity(intent);
             }
         });
         name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RenameActivity.class);
-                startActivityForResult(intent, 2000);
+                startActivity(intent);
             }
         });
-        personCode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PersonCodingActivity.class);
-                startActivityForResult(intent, 3000);
-            }
-        });
-        storeAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), StoreAddressActivity.class);
-                startActivityForResult(intent, 4000);
-            }
-        });
+
+
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000 && resultCode == RESULT_OK) {
+    protected void onRestart() {
+        super.onRestart();
+             /*获取当前用户信息*/
+        Call<UserInfo> userInfoCall=RetrofitClient.getInstance().getSYService().getUserInfo();
+        userInfoCall.enqueue(new Callback<UserInfo>() {
+            @Override
+            public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()==1){
+//                        Log.i(">>>>name+idcard",response.body().getList().getName()+response.body().getList().getIdNumber());
+                        String name=response.body().getList().getName();
+                        String idCard=response.body().getList().getIdNumber();
+//                        String idCard="370126199102187118";
+                        if (!TextUtils.isEmpty(idCard)){
+                            idCard=idCard.substring(0,6)+"********"+idCard.substring(14);
+                        }
+                        txtName.setText(name);
+                        txtIdCard.setText(idCard);
+                    }
 
-        }
-        if (requestCode == 2000 && resultCode == RESULT_OK) {
+                }
+            }
+            @Override
+            public void onFailure(Call<UserInfo> call, Throwable t) {
 
-        }
-        if (requestCode == 3000 && resultCode == RESULT_OK) {
-
-        }
-        if (requestCode == 4000 && resultCode == RESULT_OK) {
-
-        }
-    }
-
-    private void setupListView() {
-
+            }
+        });
     }
 }

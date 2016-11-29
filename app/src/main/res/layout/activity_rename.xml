@@ -1,47 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_rename"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.sypm.shuyuzhongbao.RenameActivity">
 
-    <include layout="@layout/view_toolbar" />
+    <include layout="@layout/view_toolbar"
+        android:id="@+id/include" />
 
-    <LinearLayout
+
+    <Button
+        android:id="@+id/bt_rename_done"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="54dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/orange"
+        android:text="提交"
+        android:onClick="onClick"
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@android:color/white"
-            android:gravity="center_vertical"
-            android:hint="请输入您的姓名"
-            android:paddingLeft="10dp"
-            android:textSize="18sp" />
+    <EditText
+        android:id="@+id/edit_rename"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:hint="请输入您的姓名"
+        android:paddingLeft="10dp"
+        android:textSize="18sp"
+        android:layout_below="@+id/include"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line"
+        android:layout_alignBottom="@+id/edit_rename"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/view3" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_gravity="bottom"
-                android:background="@color/orange"
-                android:text="提交"
-                android:textColor="@android:color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

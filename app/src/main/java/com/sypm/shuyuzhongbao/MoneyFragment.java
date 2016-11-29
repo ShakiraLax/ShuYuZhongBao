@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,8 @@ public class MoneyFragment extends BaseFragment {
     TextView today, total;
     List<MoneyList.ListBean> moneyList;
 
+    LinearLayout refresh, refresh2;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         //允许刷新按钮
@@ -49,6 +52,20 @@ public class MoneyFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        refresh = (LinearLayout) getView().findViewById(R.id.refresh);
+        refresh2 = (LinearLayout) getView().findViewById(R.id.refresh2);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initData();
+            }
+        });
+        refresh2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initData();
+            }
+        });
         setupListView();
         initData();
     }
@@ -56,7 +73,8 @@ public class MoneyFragment extends BaseFragment {
     private void initData() {
         today = (TextView) getView().findViewById(R.id.today);
         total = (TextView) getView().findViewById(R.id.total);
-        Call<MoneyList> call = RetrofitClient.getInstance().getSYService().salaryList("1", "100");
+
+        Call<MoneyList> call = RetrofitClient.getInstance().getSYService().salaryList("1", "20");
         call.enqueue(new Callback<MoneyList>() {
             @Override
             public void onResponse(Call<MoneyList> call, Response<MoneyList> response) {

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="执行日期"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/cb_mydailog_monday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableBottom="@drawable/monday_selecter"
+            android:text="一"
+            android:textColor="#ffffff" />
+
+        <CheckBox
+            android:id="@+id/cb_mydailog_tuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableBottom="@drawable/tuesday_selecter"
+            android:text="二"
+            android:textColor="#ffffff" />
+
+        <CheckBox
+            android:id="@+id/cb_mydailog_wednesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableBottom="@drawable/wednesday_selecter"
+            android:text="三"
+            android:textColor="#ffffff" />
+
+        <CheckBox
+            android:id="@+id/cb_mydailog_thursday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableBottom="@drawable/thursday_selecter"
+            android:text="四"
+            android:textColor="#ffffff" />
+
+        <CheckBox
+            android:id="@+id/cb_mydailog_friday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableBottom="@drawable/friday_selecter"
+            android:text="五"
+            android:textColor="#ffffff" />
+
+        <CheckBox
+            android:id="@+id/cb_mydailog_saturday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:drawableBottom="@drawable/saturday_selecter"
+            android:text="六"
+            android:textColor="#ffffff" />
+
+        <CheckBox
+            android:id="@+id/cb_mydailog_sunday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableBottom="@drawable/sunday_selecter"
+            android:text="日"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/line"></View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_mydailog_negative"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#ffffff"
+            android:onClick="onWeeksClick"
+            android:text="取消"
+            android:textColor="#999999"
+            android:textSize="20dp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:background="@color/line">
+
+        </View>
+
+        <Button
+            android:id="@+id/bt_mydailog_positive"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#ffffff"
+            android:onClick="onWeeksClick"
+            android:text="确定"
+            android:textColor="#ffb40f"
+            android:textSize="20dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line" />
+</LinearLayout>

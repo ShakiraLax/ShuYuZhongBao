@@ -1,5 +1,7 @@
 package com.sypm.shuyuzhongbao;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -43,8 +45,11 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
 
     private MoneyList.ListBean moneyList;
     Order order;
+    Order orderByShipSn;
+    Order ordering;
     TextView shipSn, name, phone, address;
     Button customerReject, dispatchingDone;
+    String phoneNumber;
 
     /*高德地图*/
     //显示地图需要的变量
@@ -68,10 +73,34 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
+
+        shipSn = (TextView) findViewById(R.id.shipSn);
+        name = (TextView) findViewById(R.id.name);
+        phone = (TextView) findViewById(R.id.phone);
+        address = (TextView) findViewById(R.id.address);
+        customerReject = (Button) findViewById(R.id.customerReject);
+        dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
+        ordering = (Order) getIntent().getSerializableExtra("ordering");
+        phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                Uri data = Uri.parse("tel:" + phoneNumber);
+                intent.setData(data);
+                startActivity(intent);
+            }
+        });
+        if (ordering != null) {
+            WD = ordering.list.lat;
+            JD = ordering.list.lng;
+            initDataFromIndex();
+        }
         initData();
         moneyList = (MoneyList.ListBean) getIntent().getSerializableExtra("item");
-        Log.d("根据订单号获取订单详情", moneyList.shipSn);
-        initOrderData();
+        if (moneyList != null) {
+            Log.d("根据订单号获取订单详情", moneyList.shipSn);
+            initOrderData();
+        }
 
         //显示地图
         mapView = (MapView) findViewById(R.id.mapView);
@@ -100,6 +129,13 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         initLoc();
     }
 
+    private void initDataFromIndex() {
+        shipSn.setText("单号：" + ordering.list.orderSn);
+        name.setText("姓名：" + ordering.list.name);
+        address.setText("地址：" + ordering.list.address);
+        phone.setText("电话：" + ordering.list.mobile);
+    }
+
     private void initOrderData() {
         /*根据收入列表传输过来的shipSn获取订单详情*/
         Call<Order> getOrderDetail = RetrofitClient.getInstance().getSYService().getOrderDetail(moneyList.shipSn);
@@ -108,13 +144,15 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
             public void onResponse(Call<Order> call, Response<Order> response) {
                 if (response.body() != null) {
                     if (response.body().status == 1) {
-                        order = response.body();
-                        shipSn.setText("单号：" + order.list.orderSn);
-                        address.setText("地址：" + order.list.address);
-                        phone.setText("电话：" + order.list.mobile);
-                        WD = order.list.lat;
-                        JD = order.list.lng;
-                        if (order.list.status != 1) {
+                        orderByShipSn = response.body();
+                        shipSn.setText("单号：" + orderByShipSn.list.orderSn);
+                        name.setText("姓名：" + orderByShipSn.list.name);
+                        address.setText("地址：" + orderByShipSn.list.address);
+                        phone.setText("电话：" + orderByShipSn.list.mobile);
+                        phoneNumber = orderByShipSn.list.mobile;
+                        WD = orderByShipSn.list.lat;
+                        JD = orderByShipSn.list.lng;
+                        if (orderByShipSn.list.status != 1) {
                             customerReject.setVisibility(View.INVISIBLE);
                             dispatchingDone.setVisibility(View.INVISIBLE);
                         }
@@ -132,12 +170,6 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     }
 
     private void initData() {
-        shipSn = (TextView) findViewById(R.id.shipSn);
-        name = (TextView) findViewById(R.id.name);
-        phone = (TextView) findViewById(R.id.phone);
-        address = (TextView) findViewById(R.id.address);
-        customerReject = (Button) findViewById(R.id.customerReject);
-        dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
 
         /*现在执行订单*/
         Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
@@ -148,8 +180,10 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     if (response.body().status == 1) {
                         order = response.body();
                         shipSn.setText("单号：" + order.list.orderSn);
+                        name.setText("姓名：" + order.list.name);
                         address.setText("地址：" + order.list.address);
                         phone.setText("电话：" + order.list.mobile);
+                        phoneNumber = order.list.mobile;
                         if (order.list.status != 1) {
                             customerReject.setVisibility(View.INVISIBLE);
                             dispatchingDone.setVisibility(View.INVISIBLE);
@@ -176,16 +210,17 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
-                                Toast.makeText(getApplicationContext(), "客户拒单提交成功", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "客户拒单提交成功", Toast.LENGTH_LONG).show();
+                                finish();
                             } else {
-                                Toast.makeText(getApplicationContext(), "提交失败", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "客户拒单操作失败", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "客户拒单操作失败", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -201,16 +236,17 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
-                                Toast.makeText(getApplicationContext(), "提交成功", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "提交成功", Toast.LENGTH_LONG).show();
+                                finish();
                             } else {
-                                Toast.makeText(getApplicationContext(), "提价失败", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "提价失败", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "完成配送操作失败", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "完成配送操作失败", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -267,10 +303,10 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     Log.d("配送点", WD + JD);
                     //将地图移动到配送点
                     aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(Double.valueOf(WD), Double.valueOf(JD))));
-                    latLngList.add(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()));
-                    latLngList.add(new LatLng(Double.valueOf(WD), Double.valueOf(JD)));
+//                    latLngList.add(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()));
+//                    latLngList.add(new LatLng(Double.valueOf(WD), Double.valueOf(JD)));
                     final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("配送点").snippet("DefaultMarker"));
-                    polyline = aMap.addPolyline(new PolylineOptions().addAll(latLngList).color(R.color.orange).width(5));
+//                    polyline = aMap.addPolyline(new PolylineOptions().addAll(latLngList).color(R.color.orange).width(5));
 
                 }
 

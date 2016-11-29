@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -91,14 +92,14 @@
             android:id="@+id/of"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/oval_off"
+            android:background="@drawable/oval_on"
             android:gravity="center">
 
             <TextView
                 android:id="@+id/online"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="上线"
+                android:text="下线"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
         </LinearLayout>

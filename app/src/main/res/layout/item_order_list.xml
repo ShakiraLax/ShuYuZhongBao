@@ -6,17 +6,18 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:background="@android:color/white">
 
         <TextView
             android:id="@+id/createTime"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:gravity="center"
+            android:lines="2"
             android:text="2016.10.20"
-            android:textSize="12sp" />
+            android:textSize="16sp" />
 
         <View
             android:layout_width="0.1dp"
@@ -25,11 +26,11 @@
         <TextView
             android:id="@+id/shipSn"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="2"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
             android:gravity="center"
             android:text="203216"
-            android:textSize="12sp" />
+            android:textSize="16sp" />
 
         <View
             android:layout_width="0.1dp"
@@ -38,11 +39,11 @@
         <TextView
             android:id="@+id/status"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:text="已完成"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <View
             android:layout_width="0.1dp"
@@ -51,7 +52,7 @@
         <TextView
             android:id="@+id/fee"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:text="5元"

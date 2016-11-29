@@ -13,26 +13,24 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
-import com.sypm.shuyuzhongbao.api.ShuYuService;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
+import com.sypm.shuyuzhongbao.utils.IDCardValidate;
 import com.sypm.shuyuzhongbao.utils.ToastUtils;
 import com.yuyh.library.imgsel.ImageLoader;
 import com.yuyh.library.imgsel.ImgSelActivity;
 import com.yuyh.library.imgsel.ImgSelConfig;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /*
@@ -76,63 +74,77 @@ public class IDCardActivity extends BaseActivity {
     }
 
     public void addSuggestionClick(View view) {
-        String idNumber=editIdcard.getText().toString();
+        String idNumber = editIdcard.getText().toString();
         //上传身份证号
-        Call<DataResult> idNumberCall= RetrofitClient.getInstance().getSYService().updateUserIdCard(idNumber);
-        idNumberCall.enqueue(new Callback<DataResult>() {
-            @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                if (response.isSuccessful()){
-                    if (response.body().status.equals("1")){
+        IDCardValidate idCardValidate = new IDCardValidate();
+        try {
+            String s = idCardValidate.IDCardRe(idNumber);
+            if (!TextUtils.isEmpty(idNumber)&&s.equals("")) {
+                Call<DataResult> idNumberCall = RetrofitClient.getInstance().getSYService().updateUserIdCard(idNumber);
+                idNumberCall.enqueue(new Callback<DataResult>() {
+                    @Override
+                    public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().status.equals("1")) {
 //                        ToastUtils.show("操作成功");
+                            }
+                        }
                     }
-                }
-            }
 
-            @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
-                ToastUtils.show("操作失败");
+                    @Override
+                    public void onFailure(Call<DataResult> call, Throwable t) {
+                        ToastUtils.show("操作失败");
+                    }
+                });
+            }else {
+                ToastUtils.show("输入的身份证号有误！");
             }
-        });
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
         //上传身份证号和前后两张照片
 //        /storage/sdcard1/DCIM/Camera/IMG20161111215920.jpg
 //        /storage/sdcard1/DCIM/Camera/IMG20161111205045.jpg
-        File fileFront = new File(idFrontPath);
-        Log.i(">>>idFrontPath",idFrontPath);
-        File fileBack=new File(idBackPath);
-        Log.i(">>>idBackPath",idBackPath);
-        RequestBody requestFront=RequestBody.create(MediaType.parse("multipart/form-data"),fileFront);
-        RequestBody requestBack=RequestBody.create(MediaType.parse("multipart/form-data"),fileBack);
-        MultipartBody.Part frontBody=MultipartBody.Part.createFormData("frontImg",fileFront.getName(),requestFront);
-        MultipartBody.Part backBody=MultipartBody.Part.createFormData("backImg",fileBack.getName(),requestBack);
-        Call<DataResult> fileCall= RetrofitClient.getInstance().getSYService()
-                .postIdFrontFile(frontBody);
-        Call<DataResult> backCall=RetrofitClient.getInstance().getSYService().postIdFrontFile(backBody);
+        if (!TextUtils.isEmpty(idFrontPath) && !TextUtils.isEmpty(idBackPath)) {
+            File fileFront = new File(idFrontPath);
+//            Log.i(">>>idFrontPath", idFrontPath);
+            File fileBack = new File(idBackPath);
+//            Log.i(">>>idBackPath", idBackPath);
+            RequestBody requestFront = RequestBody.create(MediaType.parse("multipart/form-data"), fileFront);
+            RequestBody requestBack = RequestBody.create(MediaType.parse("multipart/form-data"), fileBack);
+            MultipartBody.Part frontBody = MultipartBody.Part.createFormData("idFront", fileFront.getName(), requestFront);
+            MultipartBody.Part backBody = MultipartBody.Part.createFormData("idBack", fileBack.getName(), requestBack);
+            Call<DataResult> fileCall = RetrofitClient.getInstance().getSYService()
+                    .postIdFrontFile(frontBody);
+            Call<DataResult> backCall = RetrofitClient.getInstance().getSYService().postIdFrontFile(backBody);
 
-        fileCall.enqueue(new Callback<DataResult>() {
-            @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+            fileCall.enqueue(new Callback<DataResult>() {
+                @Override
+                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
 
-            }
-
-            @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
-
-            }
-        });
-        backCall.enqueue(new Callback<DataResult>() {
-            @Override
-            public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                if (response.isSuccessful()){
-                    ToastUtils.show(response.body().msg);
                 }
-            }
 
-            @Override
-            public void onFailure(Call<DataResult> call, Throwable t) {
+                @Override
+                public void onFailure(Call<DataResult> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+            backCall.enqueue(new Callback<DataResult>() {
+                @Override
+                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                    if (response.isSuccessful()) {
+                        ToastUtils.show(response.body().msg);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataResult> call, Throwable t) {
+
+                }
+            });
+        }
 
         finish();
     }

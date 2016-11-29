@@ -40,6 +40,7 @@ public class Order implements Serializable {
 
         public String orderSn;
         public String mobile;
+        public String name;
         public String address;
         public String lat;
         public String lng;

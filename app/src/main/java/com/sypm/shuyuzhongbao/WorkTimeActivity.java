@@ -5,13 +5,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,9 +36,9 @@ import retrofit2.Response;
 
 public class WorkTimeActivity extends BaseActivity {
 
-    LinearLayout add;
     ListView listView;
     private List<WorkTime> timeList;
+    private ImageView addTime;
     private ListAdapter listAdapter;
 
     @Override
@@ -55,7 +56,7 @@ public class WorkTimeActivity extends BaseActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(getApplicationContext(), "点击了第" + position + "条", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),"点击了第"+position+"条",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), UpdateWorkTimeActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("id", timeList.get(position).getId());
@@ -71,7 +72,7 @@ public class WorkTimeActivity extends BaseActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-//                Toast.makeText(getApplicationContext(), "长按了第" + position + "条", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),"长按了第"+position+"条",Toast.LENGTH_SHORT).show();
                 new AlertDialog.Builder(getActivity())
                         .setTitle("提示")
                         .setIcon(R.mipmap.ic_launcher)
@@ -79,8 +80,7 @@ public class WorkTimeActivity extends BaseActivity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ToastUtils.show("确定");
-//                                timeList.remove(position);
+//                                ToastUtils.show("确定");
                                 Call<DataResult> worktimedelete = RetrofitClient.getInstance().getSYService()
                                         .worktimedelete(timeList.get(position).getId());
                                 worktimedelete.enqueue(new Callback<DataResult>() {
@@ -88,13 +88,14 @@ public class WorkTimeActivity extends BaseActivity {
                                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                                         if (response.isSuccessful()) {
                                             if (response.body().msg.equals("操作成功")) {
-                                                ToastUtils.show("操作成功");
+                                                ToastUtils.show("删除操作成功");
                                             } else {
-                                                ToastUtils.show("操作失败");
+                                                ToastUtils.show("删除操作失败");
                                             }
                                         }
                                         timeList.remove(position);
                                         listAdapter.refresh(timeList);
+//                                        listView.setAdapter(listviewAdapter);
                                     }
 
                                     @Override
@@ -107,7 +108,7 @@ public class WorkTimeActivity extends BaseActivity {
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ToastUtils.show("取消");
+//                                ToastUtils.show("取消");
                             }
                         }).create().show();
                 return true;
@@ -116,15 +117,10 @@ public class WorkTimeActivity extends BaseActivity {
     }
 
     private void setupListView() {
-//        List list = new ArrayList();
         timeList = new ArrayList();
-//        for (int i = 0; i < 2; i++) {
-//            list.add(i);
-//        }
         listView = (ListView) findViewById(R.id.listView_worktime);
         listAdapter = new ListAdapter(this, timeList);
         listView.setAdapter(listAdapter);
-//        listView.setAdapter(new ListAdapter(this, list));
     }
 
 
@@ -139,7 +135,7 @@ public class WorkTimeActivity extends BaseActivity {
                         timeList = response.body().list;
 //                        Log.i(">>>>>>timeList",timeList.toString());
                         listAdapter.refresh(timeList);
-//                        listView.setAdapter(listAdapter);
+//                        listView.setAdapter(listviewAdapter);
                     }
                 }
             }
@@ -150,22 +146,14 @@ public class WorkTimeActivity extends BaseActivity {
             }
         });
 
-        add = (LinearLayout) findViewById(R.id.add);
-        add.setOnClickListener(new View.OnClickListener() {
+        addTime = (ImageView) findViewById(R.id.img_worktime_add);
+        addTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddWorkTimeActivity.class);
-                startActivityForResult(intent, 1000);
+                startActivity(intent);
             }
         });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000 && resultCode == RESULT_OK) {
-
-        }
     }
 
     public class ListAdapter extends MyBaseAdapter {
@@ -180,36 +168,41 @@ public class WorkTimeActivity extends BaseActivity {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.item_work_time, parent, false);
                 holder = new ViewHolder();
+                holder.txtNumWorkTime= (TextView) convertView.findViewById(R.id.txt_num_worktime);
                 holder.txtItemWorkTime = (TextView) convertView.findViewById(R.id.txt_item_worktime);
                 holder.txtItemWorkDay = (TextView) convertView.findViewById(R.id.txt_item_workday);
-                holder.aSwitch = (Switch) convertView.findViewById(R.id.switch1);
+                holder.cbTimeOnWorktime = (CheckBox) convertView.findViewById(R.id.cb_timeon_worktime);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
             //赋值
             final WorkTime workTime = timeList.get(position);
+            holder.txtNumWorkTime.setText("班次"+(position+1));
             holder.txtItemWorkTime.setText(workTime.getStartTime() + "-" + workTime.getEndTime());
             holder.txtItemWorkDay.setText(workTime.getDayTime());
             if (workTime.getIsOpen() == 1) {
-                holder.aSwitch.setChecked(true);
+                holder.cbTimeOnWorktime.setChecked(true);
+            } else if (workTime.getIsOpen() == 2) {
+                holder.cbTimeOnWorktime.setChecked(false);
             }
-            //switch开关设置点击事件
-            holder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //checkbox开关设置点击事件
+            holder.cbTimeOnWorktime.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
+                public void onClick(View view) {
+                    if (((CheckBox) view).isChecked()) {
+                        workTime.setIsOpen(1);
                         Call<DataResult> timeOffOn = RetrofitClient.getInstance().getSYService()
-                                .worktimeOffOn(workTime.getId(), "1");
+                                .worktimeOffOn(workTime.getId(), 1);
                         timeOffOn.enqueue(new Callback<DataResult>() {
                             @Override
                             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                                 if (response.isSuccessful()) {
                                     if (response.body().status.equals("1")) {
-                                        Toast.makeText(getApplicationContext(), "操作成功",
+                                        Toast.makeText(getApplicationContext(), workTime.getId() + "打开成功",
                                                 Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(getApplicationContext(), "操作失败",
+                                        Toast.makeText(getApplicationContext(), workTime.getId() + "打开失败",
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -221,17 +214,18 @@ public class WorkTimeActivity extends BaseActivity {
                             }
                         });
                     } else {
+                        workTime.setIsOpen(2);
                         Call<DataResult> timeOffOn = RetrofitClient.getInstance().getSYService()
-                                .worktimeOffOn(workTime.getId(), "2");
+                                .worktimeOffOn(workTime.getId(), 2);
                         timeOffOn.enqueue(new Callback<DataResult>() {
                             @Override
                             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                                 if (response.isSuccessful()) {
                                     if (response.body().status.equals("1")) {
-                                        Toast.makeText(getApplicationContext(), response.body().msg,
+                                        Toast.makeText(getApplicationContext(), workTime.getId() + "关闭成功",
                                                 Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(getApplicationContext(), "操作失败",
+                                        Toast.makeText(getApplicationContext(), workTime.getId() + "关闭失败",
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -250,14 +244,17 @@ public class WorkTimeActivity extends BaseActivity {
     }
 
     private static class ViewHolder {
+        TextView txtNumWorkTime;
         TextView txtItemWorkTime;
         TextView txtItemWorkDay;
-        Switch aSwitch;
+        CheckBox cbTimeOnWorktime;
     }
+
 
     @Override
     protected void onRestart() {
         super.onRestart();
+        Log.i(">>>>>onRestart", "onRestart");
         //重新获取时间列表
         Call<DataResult<WorkTime>> call = RetrofitClient.getInstance().getSYService().getWorkTimeList("asc");
         call.enqueue(new Callback<DataResult<WorkTime>>() {
@@ -267,6 +264,7 @@ public class WorkTimeActivity extends BaseActivity {
                     if (response.body().list != null) {
                         timeList = response.body().list;
 //                        Log.i(">>>>>>timeList",timeList.toString());
+//                        listviewAdapter.notifyDataSetChanged();
                         listAdapter.refresh(timeList);
 //                        listView.setAdapter(listAdapter);
                     }
