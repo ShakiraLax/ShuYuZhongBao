@@ -3,6 +3,7 @@ package com.sypm.shuyuzhongbao;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -85,6 +86,15 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                         if (response.body().status.equals("1")) {
                             accept.setVisibility(View.INVISIBLE);
                             reject.setVisibility(View.INVISIBLE);
+                            MediaPlayer mp = new MediaPlayer();
+                            try {
+                                mp.setDataSource(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                                mp.prepare();
+                                mp.start();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
                         } else {
                             Toast.makeText(getActivity(), "接单失败", Toast.LENGTH_LONG).show();
                         }
@@ -192,6 +202,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
+                                countDownTimer.cancel();
                                 Toast.makeText(getActivity(), "接单成功！稍后跳转到订单详情...", Toast.LENGTH_LONG).show();
 //                                Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
 //                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -223,6 +234,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                             if (response.body().status.equals("1")) {
                                 Toast.makeText(getApplicationContext(), "拒单成功", Toast.LENGTH_LONG).show();
                                 accept.setVisibility(View.INVISIBLE);
+                                countDownTimer.cancel();
                                 finish();
                             } else {
                                 Toast.makeText(getApplicationContext(), "拒单失败", Toast.LENGTH_LONG).show();

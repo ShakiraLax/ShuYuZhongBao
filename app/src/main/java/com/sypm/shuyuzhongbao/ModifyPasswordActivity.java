@@ -84,7 +84,7 @@ public class ModifyPasswordActivity extends BaseActivity {
                 if (response.body() != null) {
                     String status = response.body().status;
                     if (status.equals("1")) {
-                        Toast.makeText(ModifyPasswordActivity.this, "修改成功,请重新登陆", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ModifyPasswordActivity.this, "已退出，请重新登陆", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(ModifyPasswordActivity.this, LoginByAccountActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);

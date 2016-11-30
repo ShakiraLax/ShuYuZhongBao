@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
@@ -103,9 +104,31 @@ public class MyFragment extends BaseFragment {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(getActivity(), LoginByAccountActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
+                                Call<DataResult> logout = RetrofitClient.getInstance().getSYService().logout();
+                                logout.enqueue(new Callback<DataResult>() {
+                                    @Override
+                                    public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                                        if (response.body() != null) {
+                                            String status = response.body().status;
+                                            if (status.equals("1")) {
+                                                Toast.makeText(getActivity(), "已退出，请重新登陆", Toast.LENGTH_SHORT).show();
+                                                Intent intent = new Intent(getActivity(), LoginByAccountActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                            } else {
+                                                Toast.makeText(getActivity(), response.body().message, Toast.LENGTH_SHORT).show();
+                                            }
+                                            return;
+                                        }
+                                        //failed
+                                        Toast.makeText(getActivity(), "修改失败", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<DataResult> call, Throwable t) {
+                                        Toast.makeText(getActivity(), "修改失败", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         })
                         .setNegativeButton("取消", null).create().show();

@@ -278,7 +278,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             @Override
             public void onClick(View v) {
                 /*上线按钮点击事件*/
-                if (online.getText().equals("上线")) {
+                if (online.getText().equals("下线")) {
                     Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
                     call.enqueue(new Callback<DataResult>() {
                         @Override
@@ -289,7 +289,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                             snackbar.getView().setBackgroundResource(R.color.orange);
                             snackbar.setActionTextColor(Color.WHITE);
                             snackbar.show();
-                            online.setText("下线");
+                            online.setText("上线");
                             isOnline = true;
                             linearLayout.setBackgroundResource(R.drawable.oval_on);
                         }
@@ -308,7 +308,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                             snackbar.getView().setBackgroundResource(R.color.orange);
                             snackbar.setActionTextColor(Color.WHITE);
                             snackbar.show();
-                            online.setText("上线");
+                            online.setText("下线");
                             isOnline = false;
                             linearLayout.setBackgroundResource(R.drawable.oval_off);
                         }

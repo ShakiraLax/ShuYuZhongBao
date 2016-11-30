@@ -93,8 +93,7 @@
         <activity
             android:name=".GrabOrderActivity"
             android:label="抢单"
-            android:launchMode="singleTop"
-            android:theme="@style/Theme.AppCompat.Light.DialogWhenLarge" />
+            android:launchMode="singleTop" />
         <activity
             android:name=".AddWorkTimeActivity"
             android:label="添加班次" />

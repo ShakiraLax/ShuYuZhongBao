@@ -53,9 +53,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:24.2.1'
-    /*后期添加*/
     compile 'com.android.support:design:24.1.1'
     compile 'com.android.support:support-v4:24.1.1'
+    /*后期添加*/
     compile 'com.squareup.retrofit2:retrofit:2.0.2'//Retrofit网络请求框架
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'//Log信息拦截器
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'//ConverterFactory的Gson依赖包
@@ -65,8 +65,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.2.0'//适配rxandroid的依赖包
     compile 'io.reactivex:rxjava:1.1.4'//适配rxjava的依赖包
     testCompile 'junit:junit:4.12'
-    compile files('libs/AMap3DMap_4.1.1_AMapNavi_1.9.3_AMapSearch_3.5.0_AMapLocation_3.1.0_20161027.jar')
-//高德地图
+    compile files('libs/AMap3DMap_4.1.1_AMapNavi_1.9.3_AMapSearch_3.5.0_AMapLocation_3.1.0_20161027.jar')//高德地图
     compile 'com.yuyh.imgsel:library:1.2.0'//图片选择器
     compile 'cn.jiguang:jpush:2.2.0'//极光推送
     compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'//星期选择器
