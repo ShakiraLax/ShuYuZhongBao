@@ -47,7 +47,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     Order order;
     Order orderByShipSn;
     Order ordering;
-    TextView shipSn, name, phone, address, storeName, fee, feeWay;
+    TextView shipSn, name, phone, address, storeName, amount, feeWay;
     Button customerReject, dispatchingDone;
     String phoneNumber;
 
@@ -78,10 +78,9 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         name = (TextView) findViewById(R.id.name);
         phone = (TextView) findViewById(R.id.phone);
         address = (TextView) findViewById(R.id.address);
-        fee = (TextView) findViewById(R.id.fee);
+        amount = (TextView) findViewById(R.id.amount);
         storeName = (TextView) findViewById(R.id.storeName);
         feeWay = (TextView) findViewById(R.id.feeWay);
-
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
         ordering = (Order) getIntent().getSerializableExtra("ordering");
@@ -135,17 +134,17 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     }
 
     private void initDataFromIndex() {
-        shipSn.setText("单号：" + ordering.list.orderSn);
-        name.setText("姓名：" + ordering.list.name);
-        address.setText("地址：" + ordering.list.address);
-        phone.setText("电话：" + ordering.list.mobile);
-        fee.setText("订单金额：" + ordering.list.amount);
-        feeWay.setText("支付方式：" + ordering.list.payCode);
-        storeName.setText("门店名称：" + ordering.list.storeName);
+//        shipSn.setText("单号：" + ordering.list.orderSn);
+//        name.setText("姓名：" + ordering.list.name);
+//        address.setText("地址：" + ordering.list.address);
+//        phone.setText("电话：" + ordering.list.mobile);
+//        amount.setText("订单金额：" + ordering.list.amount);
+//        feeWay.setText("支付方式：" + ordering.list.payCode);
+//        storeName.setText("门店名称：" + ordering.list.storeName);
     }
 
+    /*根据收入列表传输过来的shipSn获取订单详情*/
     private void initOrderData() {
-        /*根据收入列表传输过来的shipSn获取订单详情*/
         Call<Order> getOrderDetail = RetrofitClient.getInstance().getSYService().getOrderDetail(moneyList.shipSn);
         getOrderDetail.enqueue(new Callback<Order>() {
             @Override
@@ -157,7 +156,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                         name.setText("姓名：" + orderByShipSn.list.name);
                         address.setText("地址：" + orderByShipSn.list.address);
                         phone.setText("电话：" + orderByShipSn.list.mobile);
-                        fee.setText("订单金额：" + orderByShipSn.list.amount);
+                        amount.setText("订单金额：" + orderByShipSn.list.amount);
                         feeWay.setText("支付方式：" + orderByShipSn.list.payCode);
                         storeName.setText("门店名称：" + orderByShipSn.list.storeName);
                         phoneNumber = orderByShipSn.list.mobile;
@@ -190,13 +189,15 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                 if (response.body() != null) {
                     if (response.body().status == 1) {
                         order = response.body();
+                        WD = order.list.lat;
+                        JD = order.list.lng;
                         shipSn.setText("单号：" + order.list.orderSn);
                         name.setText("姓名：" + order.list.name);
                         address.setText("地址：" + order.list.address);
                         phone.setText("电话：" + order.list.mobile);
-//                        fee.setText("订单金额：" + orderByShipSn.list.amount);
-//                        feeWay.setText("支付方式：" + orderByShipSn.list.payCode);
-//                        storeName.setText("门店名称：" + orderByShipSn.list.storeName);
+                        amount.setText("订单金额：" + order.list.amount);
+                        feeWay.setText("支付方式：" + order.list.payCode);
+                        storeName.setText("门店名称：" + order.list.storeName);
                         phoneNumber = order.list.mobile;
                         if (order.list.status != 1) {
                             customerReject.setVisibility(View.INVISIBLE);
@@ -224,6 +225,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
+                                setResult(RESULT_OK);
                                 Toast.makeText(getActivity(), "客户拒单提交成功", Toast.LENGTH_LONG).show();
                                 finish();
                             } else {
@@ -250,6 +252,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
+                                setResult(RESULT_OK);
                                 Toast.makeText(getActivity(), "提交成功", Toast.LENGTH_LONG).show();
                                 finish();
                             } else {
@@ -278,7 +281,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         //初始化定位参数
         mLocationOption = new AMapLocationClientOption();
         //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
@@ -288,7 +291,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(2000);
+        mLocationOption.setInterval(30000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -299,6 +302,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     public void onLocationChanged(AMapLocation amapLocation) {
         if (amapLocation != null) {
             if (amapLocation.getErrorCode() == 0) {
+
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //将地图移动到定位点

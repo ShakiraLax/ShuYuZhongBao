@@ -42,6 +42,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * 首页
  * 所有操作都是建立在已将上线的基础上
@@ -86,8 +88,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         public void run() {
             recLen++;
             updateInfo();
-            //每隔10秒上传一次位置信息
-            handler.postDelayed(this, 10000);
+            //每隔60秒上传一次位置信息
+            handler.postDelayed(this, 60000);
         }
     };
 
@@ -114,53 +116,52 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
                 }
             });
-
             /*未接受订单*/
-            Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
-            getOrder.enqueue(new Callback<Order>() {
-                @Override
-                public void onResponse(Call<Order> call, Response<Order> response) {
-                    if (response.body() != null) {
-                        if (response.body().status == 1) {
-                            //跳转到接单界面
-                            Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                            intent.putExtra("orderComing", response.body());
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                        } else {
-
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Order> call, Throwable t) {
-
-                }
-            });
+//            Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+//            getOrder.enqueue(new Callback<Order>() {
+//                @Override
+//                public void onResponse(Call<Order> call, Response<Order> response) {
+//                    if (response.body() != null) {
+//                        if (response.body().status == 1) {
+//                            //跳转到接单界面
+//                            Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
+//                            intent.putExtra("orderComing", response.body());
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            startActivity(intent);
+//                        } else {
+//
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<Order> call, Throwable t) {
+//
+//                }
+//            });
         /*现在执行订单*/
-            Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
-            callCurrentOrder.enqueue(new Callback<Order>() {
-                @Override
-                public void onResponse(Call<Order> call, Response<Order> response) {
-                    if (response.body() != null) {
-                        if (response.body().status == 1) {
-                            //跳转到订单详情界面
-                            Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-                            intent.putExtra("ordering", response.body());
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                        } else {
-
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Order> call, Throwable t) {
-
-                }
-            });
+//            Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
+//            callCurrentOrder.enqueue(new Callback<Order>() {
+//                @Override
+//                public void onResponse(Call<Order> call, Response<Order> response) {
+//                    if (response.body() != null) {
+//                        if (response.body().status == 1) {
+//                            //跳转到订单详情界面
+//                            Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+//                            intent.putExtra("ordering", response.body());
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            startActivity(intent);
+//                        } else {
+//
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<Order> call, Throwable t) {
+//
+//                }
+//            });
         }
         return;
 
@@ -249,6 +250,52 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     private void initData() {
+        /*未接受订单*/
+        Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+        getOrder.enqueue(new Callback<Order>() {
+            @Override
+            public void onResponse(Call<Order> call, Response<Order> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
+                        //跳转到接单界面
+                        Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
+                        intent.putExtra("orderComing", response.body());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivityForResult(intent, 1000);
+                    } else {
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Order> call, Throwable t) {
+
+            }
+        });
+        /*现在执行订单*/
+        Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
+        callCurrentOrder.enqueue(new Callback<Order>() {
+            @Override
+            public void onResponse(Call<Order> call, Response<Order> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
+                        //跳转到订单详情界面
+                        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                        intent.putExtra("ordering", response.body());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivityForResult(intent, 2000);
+                    } else {
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Order> call, Throwable t) {
+
+            }
+        });
         /*在线时长等信息(是否需要实时获取)*/
         Call<TotalLine> summary = RetrofitClient.getInstance().getSYService().summary();
         summary.enqueue(new Callback<TotalLine>() {
@@ -274,18 +321,16 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             }
         });
 
+        /*上线按钮点击事件*/
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*上线按钮点击事件*/
                 if (online.getText().equals("下线")) {
-                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
+                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
                     call.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                            initData();
-                            setupListView();
-                            Snackbar snackbar = Snackbar.make(getView(), "上线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
+                            Snackbar snackbar = Snackbar.make(getView(), "下线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
                             snackbar.getView().setBackgroundResource(R.color.orange);
                             snackbar.setActionTextColor(Color.WHITE);
                             snackbar.show();
@@ -300,11 +345,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         }
                     });
                 } else {
-                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
+                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
                     call.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                            Snackbar snackbar = Snackbar.make(getView(), "下线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
+                            initData();
+                            setupListView();
+                            Snackbar snackbar = Snackbar.make(getView(), "上线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
                             snackbar.getView().setBackgroundResource(R.color.orange);
                             snackbar.setActionTextColor(Color.WHITE);
                             snackbar.show();
@@ -321,6 +368,19 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 }
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1000 && resultCode == RESULT_OK) {
+            initData();
+            setupListView();
+        }
+        if (requestCode == 2000 && resultCode == RESULT_OK) {
+            initData();
+            setupListView();
+        }
     }
 
     private void setupListView() {
@@ -393,7 +453,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         //初始化定位参数
         mLocationOption = new AMapLocationClientOption();
         //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
@@ -403,7 +463,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(10000);
+        mLocationOption.setInterval(30000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位

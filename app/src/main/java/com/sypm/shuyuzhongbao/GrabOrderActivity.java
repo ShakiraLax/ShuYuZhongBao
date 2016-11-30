@@ -1,5 +1,6 @@
 package com.sypm.shuyuzhongbao;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -7,7 +8,9 @@ import android.media.RingtoneManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,7 +38,9 @@ import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,34 +81,41 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
 
         @Override
         public void onFinish() {
+            final MediaPlayer mp = new MediaPlayer();
+            try {
+                mp.setDataSource(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                mp.prepare();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             /*设置倒计时完毕时自动接单*/
-            timer.setText("已默认接单");
             Call<DataResult> orderSure = RetrofitClient.getInstance().getSYService().orderSure(order.list.orderSn);
             orderSure.enqueue(new Callback<DataResult>() {
                 @Override
                 public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                     if (response.body() != null) {
+                        Log.d("自动接单状态", response.body().status);
                         if (response.body().status.equals("1")) {
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
+                            Date curDate = new Date(System.currentTimeMillis());
+                            String str = formatter.format(curDate);
+                            Log.d("自动接单成功", order.list.orderSn);
+                            timer.setText("已默认接单" + str);
                             accept.setVisibility(View.INVISIBLE);
                             reject.setVisibility(View.INVISIBLE);
-                            MediaPlayer mp = new MediaPlayer();
-                            try {
-                                mp.setDataSource(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-                                mp.prepare();
-                                mp.start();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
+                            mp.start();
+                            Intent intent = new Intent();
+                            setResult(RESULT_OK, intent);
                         } else {
-                            Toast.makeText(getActivity(), "接单失败", Toast.LENGTH_LONG).show();
+                            Log.d("自动接单失败", order.list.orderSn);
+                            Toast.makeText(getActivity(), "自动接单失败或您已接单", Toast.LENGTH_LONG).show();
                         }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<DataResult> call, Throwable t) {
-                    Toast.makeText(getActivity(), "接单操作失败", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "自动接单操作失败", Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -158,11 +170,10 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
     }
 
     private void initDataFromIndex() {
-        countDownTimer.start();
-        shipSn.setText("单号：" + orderComing.list.orderSn);
-        name.setText("姓名：" + orderComing.list.name);
-        address.setText("地址：" + orderComing.list.address);
-        phone.setText("电话：" + orderComing.list.mobile);
+//        shipSn.setText("单号：" + orderComing.list.orderSn);
+//        name.setText("姓名：" + orderComing.list.name);
+//        address.setText("地址：" + orderComing.list.address);
+//        phone.setText("电话：" + orderComing.list.mobile);
     }
 
     private void initData() {
@@ -203,10 +214,12 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
                                 countDownTimer.cancel();
-                                Toast.makeText(getActivity(), "接单成功！稍后跳转到订单详情...", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "接单成功！", Toast.LENGTH_LONG).show();
 //                                Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
 //                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                                startActivity(intent);
+                                Intent intent = new Intent();
+                                setResult(RESULT_OK, intent);
                                 finish();
                             } else {
                                 Toast.makeText(getActivity(), "接单失败", Toast.LENGTH_LONG).show();
@@ -235,6 +248,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                                 Toast.makeText(getApplicationContext(), "拒单成功", Toast.LENGTH_LONG).show();
                                 accept.setVisibility(View.INVISIBLE);
                                 countDownTimer.cancel();
+                                setResult(RESULT_OK);
                                 finish();
                             } else {
                                 Toast.makeText(getApplicationContext(), "拒单失败", Toast.LENGTH_LONG).show();
@@ -251,6 +265,31 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle("提示")
+                .setMessage("确定要返回吗")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setResult(RESULT_OK);
+                        countDownTimer.cancel();
+                        finish();
+                    }
+                }).show();
+    }
 
     //定位
     private void initLoc() {
@@ -261,7 +300,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         //初始化定位参数
         mLocationOption = new AMapLocationClientOption();
         //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
@@ -271,7 +310,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(2000);
+        mLocationOption.setInterval(30000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
