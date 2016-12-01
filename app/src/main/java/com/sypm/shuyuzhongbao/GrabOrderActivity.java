@@ -72,6 +72,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
     LinearLayout accept;
     Order order;
     Order orderComing;
+    final MediaPlayer mp = new MediaPlayer();
 
     CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
         @Override
@@ -81,9 +82,8 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
 
         @Override
         public void onFinish() {
-            final MediaPlayer mp = new MediaPlayer();
             try {
-                mp.setDataSource(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                mp.setDataSource(getActivity(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
                 mp.prepare();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -286,6 +286,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     public void onClick(DialogInterface dialog, int which) {
                         setResult(RESULT_OK);
                         countDownTimer.cancel();
+                        mp.stop();
                         finish();
                     }
                 }).show();

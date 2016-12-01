@@ -43,7 +43,6 @@ public class ModifyPasswordActivity extends BaseActivity {
 
         if (!RememberHelper.getPassword().equals(number.getText().toString())) {
             Toast.makeText(this, "旧密码输入错误", Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, RememberHelper.getPassword(), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -61,7 +60,7 @@ public class ModifyPasswordActivity extends BaseActivity {
                     if (status.equals("1")) {
                         logout();
                     } else {
-                        Toast.makeText(ModifyPasswordActivity.this, response.body().message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ModifyPasswordActivity.this, response.body().msg, Toast.LENGTH_SHORT).show();
                     }
                     return;
                 }
