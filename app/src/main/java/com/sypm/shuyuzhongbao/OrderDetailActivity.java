@@ -25,6 +25,16 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.maps.overlay.WalkRouteOverlay;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.route.BusRouteResult;
+import com.amap.api.services.route.DrivePath;
+import com.amap.api.services.route.DriveRouteResult;
+import com.amap.api.services.route.RidePath;
+import com.amap.api.services.route.RideRouteResult;
+import com.amap.api.services.route.RouteSearch;
+import com.amap.api.services.route.WalkPath;
+import com.amap.api.services.route.WalkRouteResult;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MoneyList;
@@ -37,11 +47,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.R.attr.mode;
+
 /**
  * 订单详情
  */
 
-public class OrderDetailActivity extends BaseActivity implements LocationSource, AMapLocationListener {
+public class OrderDetailActivity extends BaseActivity implements LocationSource, AMapLocationListener, RouteSearch.OnRouteSearchListener {
 
     private MoneyList.ListBean moneyList;
     Order order;
@@ -51,23 +63,18 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     Button customerReject, dispatchingDone;
     String phoneNumber;
 
-    /*高德地图*/
     //显示地图需要的变量
     private MapView mapView;//地图控件
     private AMap aMap;//地图对象
-
     //定位需要的声明
     private AMapLocationClient mLocationClient = null;//定位发起端
     private AMapLocationClientOption mLocationOption = null;//定位参数
     private OnLocationChangedListener mListener = null;//定位监听器
-
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
-
-    String WD, JD;//纬度，经度
-    private ArrayList<LatLng> latLngList = new ArrayList<>();
-    private Polyline polyline;
-
+    String WD, JD;
+    private RouteSearch mRouteSearch;
+    private WalkRouteResult mWalkRouteResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,9 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         feeWay = (TextView) findViewById(R.id.feeWay);
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
+
+        mRouteSearch = new RouteSearch(this);
+
         ordering = (Order) getIntent().getSerializableExtra("ordering");
         phone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,49 +108,42 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
             JD = ordering.list.lng;
             initDataFromIndex();
         }
-
         moneyList = (MoneyList.ListBean) getIntent().getSerializableExtra("item");
         if (moneyList != null) {
             Log.d("根据订单号获取订单详情", moneyList.shipSn);
             initOrderData();
         }
         initData();
-
         //显示地图
         mapView = (MapView) findViewById(R.id.mapView);
         //必须要写
         mapView.onCreate(savedInstanceState);
         //获取地图对象
         aMap = mapView.getMap();
-
         //设置显示定位按钮 并且可以点击
         UiSettings settings = aMap.getUiSettings();
         //设置定位监听
         aMap.setLocationSource(this);
+
+        //设置数据回调监听器
+        mRouteSearch.setRouteSearchListener(this);
+
         // 是否显示定位按钮
         settings.setMyLocationButtonEnabled(true);
         // 是否可触发定位并显示定位层
         aMap.setMyLocationEnabled(true);
-
         //定位的小图标 默认是蓝点 这里自定义一箭头，其实就是一张图片
         MyLocationStyle myLocationStyle = new MyLocationStyle();
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));//已更改
         myLocationStyle.radiusFillColor(android.R.color.transparent);
         myLocationStyle.strokeColor(android.R.color.transparent);
         aMap.setMyLocationStyle(myLocationStyle);
-
         //开始定位
         initLoc();
     }
 
     private void initDataFromIndex() {
-//        shipSn.setText("单号：" + ordering.list.orderSn);
-//        name.setText("姓名：" + ordering.list.name);
-//        address.setText("地址：" + ordering.list.address);
-//        phone.setText("电话：" + ordering.list.mobile);
-//        amount.setText("订单金额：" + ordering.list.amount);
-//        feeWay.setText("支付方式：" + ordering.list.payCode);
-//        storeName.setText("门店名称：" + ordering.list.storeName);
+
     }
 
     /*根据收入列表传输过来的shipSn获取订单详情*/
@@ -180,7 +183,6 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     }
 
     private void initData() {
-
         /*现在执行订单*/
         Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
         callCurrentOrder.enqueue(new Callback<Order>() {
@@ -302,37 +304,28 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     public void onLocationChanged(AMapLocation amapLocation) {
         if (amapLocation != null) {
             if (amapLocation.getErrorCode() == 0) {
-
-                // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
-                    //将地图移动到定位点
-//                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())));
-                    //点击定位按钮 能够将地图的中心移动到定位点
                     mListener.onLocationChanged(amapLocation);
-                    //获取定位信息
                     StringBuffer buffer = new StringBuffer();
-//                    Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
-                    Log.d("定位信息", buffer.toString());
+                    Log.d("第一次定位信息", buffer.toString());
                     isFirstLoc = false;
-                    //设置缩放级别
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-
                     LatLng latLng = new LatLng(Double.valueOf(WD), Double.valueOf(JD));
+                    LatLonPoint endLatLonPoint = new LatLonPoint(Double.valueOf(WD), Double.valueOf(JD));
+                    LatLonPoint startLatLonPoint = new LatLonPoint(amapLocation.getLatitude(), amapLocation.getLongitude());
                     Log.d("配送点", WD + JD);
-                    //将地图移动到配送点
+                    final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(startLatLonPoint, endLatLonPoint);
+//                    RouteSearch.RideRouteQuery query = new RouteSearch.RideRouteQuery(fromAndTo, mode);
+                    RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo, mode);
+                    mRouteSearch.calculateWalkRouteAsyn(query);
+
                     aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(Double.valueOf(WD), Double.valueOf(JD))));
-//                    latLngList.add(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()));
-//                    latLngList.add(new LatLng(Double.valueOf(WD), Double.valueOf(JD)));
                     final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("配送点").snippet("DefaultMarker"));
-//                    polyline = aMap.addPolyline(new PolylineOptions().addAll(latLngList).color(R.color.orange).width(5));
-
                 }
-
-
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                Log.e("AmapError", "location Error, ErrCode:" + amapLocation.getErrorCode() + ", errInfo:" + amapLocation.getErrorInfo());
-                Toast.makeText(getApplicationContext(), "定位失败", Toast.LENGTH_LONG).show();
+                /*Log.e("AmapError", "location Error, ErrCode:" + amapLocation.getErrorCode() + ", errInfo:" + amapLocation.getErrorInfo());
+                Toast.makeText(getApplicationContext(), "定位失败", Toast.LENGTH_LONG).show();*/
             }
         }
     }
@@ -381,6 +374,45 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+    }
+
+    @Override
+    public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onWalkRouteSearched(WalkRouteResult result, int errorCode) {
+        aMap.clear();// 清理地图上的所有覆盖物
+        if (errorCode == 1000) {
+            if (result != null && result.getPaths() != null) {
+                if (result.getPaths().size() > 0) {
+                    mWalkRouteResult = result;
+                    final WalkPath walkPath = mWalkRouteResult.getPaths().get(0);
+                    WalkRouteOverlay walkRouteOverlay = new WalkRouteOverlay(this, aMap, walkPath, mWalkRouteResult.getStartPos(), mWalkRouteResult.getTargetPos());
+                    walkRouteOverlay.removeFromMap();
+                    walkRouteOverlay.setNodeIconVisibility(false);
+                    walkRouteOverlay.addToMap();
+                    walkRouteOverlay.zoomToSpan();
+                }
+            } else if (result != null && result.getPaths() == null) {
+                Toast.makeText(OrderDetailActivity.this, "对不起，没有搜索到相关数据！", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(OrderDetailActivity.this, "对不起，没有搜索到相关数据！", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            /*ToastUtil.showerror(this.getApplicationContext(), errorCode);*/
+        }
+    }
+
+    @Override
+    public void onRideRouteSearched(RideRouteResult result, int errorCode) {
+
     }
 }
 

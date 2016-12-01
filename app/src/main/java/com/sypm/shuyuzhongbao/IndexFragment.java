@@ -474,32 +474,24 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     public void onLocationChanged(AMapLocation amapLocation) {
         if (amapLocation != null) {
             if (amapLocation.getErrorCode() == 0) {
-                //定位成功回调信息，设置相关消息
                 Double Lat = amapLocation.getLatitude();
                 Double Lon = amapLocation.getLongitude();
                 WD = Lat;
                 JD = Lon;
                 Log.d("实时定位：", "纬度" + String.valueOf(Lat) + "经度" + String.valueOf(Lon));
-
-                // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
-                    //将地图移动到定位点
-//                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())));
-                    //点击定位按钮 能够将地图的中心移动到定位点
                     mListener.onLocationChanged(amapLocation);
-                    //获取定位信息
                     StringBuffer buffer = new StringBuffer();
                     buffer.append(" 定位类型：" + amapLocation.getLocationType() + " 纬度：" + amapLocation.getLatitude() + " 经度：" + amapLocation.getLongitude() + " 精度：" + amapLocation.getAccuracy() + " 城市编码：" + amapLocation.getCityCode() + " 国家：" + amapLocation.getCountry() + " 省份：" + amapLocation.getProvince() + "     " + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
                     Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
-                    //设置缩放级别
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                 }
 
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                Log.e("AmapError", "location Error, ErrCode:" + amapLocation.getErrorCode() + ", errInfo:" + amapLocation.getErrorInfo());
-                Toast.makeText(getContext(), "定位失败", Toast.LENGTH_LONG).show();//getApplicationContext
+                /*Log.e("AmapError", "location Error, ErrCode:" + amapLocation.getErrorCode() + ", errInfo:" + amapLocation.getErrorInfo());
+                Toast.makeText(getContext(), "定位失败", Toast.LENGTH_LONG).show();//getApplicationContext*/
             }
         }
     }
