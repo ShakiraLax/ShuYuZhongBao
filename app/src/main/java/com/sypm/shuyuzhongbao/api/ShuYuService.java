@@ -4,7 +4,10 @@ import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
 import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.data.Order;
+import com.sypm.shuyuzhongbao.data.OrderBySn;
 import com.sypm.shuyuzhongbao.data.OrderDetail;
+import com.sypm.shuyuzhongbao.data.OrderNew;
+import com.sypm.shuyuzhongbao.data.SelecteOrder;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.data.UserInfo;
 import com.sypm.shuyuzhongbao.data.WorkTime;
@@ -75,16 +78,23 @@ public interface ShuYuService {
 
     /*获取指派未接受订单*//*之后请求接单或者拒绝单子*/
     @GET("shiporder/getorder.html")
-    Call<Order> getOrder();
+    Call<OrderBySn> getOrder();
 
     /*获取现在执行的订单*/
     @GET("shiporder/getcurrent.html")
-    Call<Order> getCurrentOrder();
+    Call<OrderNew> getCurrentOrder();
 
     /*根据orderSn来获取订单详情*/
     @FormUrlEncoded
     @POST("shiporder/order.html")
-    Call<Order> getOrderDetail(@Field("orderSn") String orderSn);
+    Call<OrderBySn> getOrderDetail(@Field("orderSn") String orderSn);
+
+    /*筛选订单*/
+    @FormUrlEncoded
+    @POST("site/screening.html")
+    Call<SelecteOrder> selecteOrder(@Field("type") String type
+            , @Field("date") String date
+            , @Field("page") String page);
 
     /*配送员拒绝单子*/
     @FormUrlEncoded

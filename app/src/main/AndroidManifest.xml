@@ -46,67 +46,86 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/StartTheme">
-        <activity android:name=".WelcomeActivity">
+        <activity android:name=".WelcomeActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".LoginActivity"
+            android:screenOrientation="portrait"
             android:label="登陆" />
         <activity
             android:name=".PersonalActivity"
+            android:screenOrientation="portrait"
             android:label="个人资料" />
         <activity
             android:name=".FeedbackActivity"
+            android:screenOrientation="portrait"
             android:label="意见反馈" />
         <activity
             android:name=".ModifyPasswordActivity"
+            android:screenOrientation="portrait"
             android:label="修改密码" />
         <activity
             android:name=".IDCardActivity"
+            android:screenOrientation="portrait"
             android:label="身份证信息" />
         <activity
             android:name=".RenameActivity"
+            android:screenOrientation="portrait"
             android:label="姓名" />
         <activity
             android:name=".OrderDetailActivity"
+            android:screenOrientation="portrait"
             android:label="订单信息"
             android:launchMode="singleTop" />
         <activity
             android:name=".PersonCodingActivity"
+            android:screenOrientation="portrait"
             android:label="人员编码" />
         <activity
             android:name=".StoreAddressActivity"
+            android:screenOrientation="portrait"
             android:label="所在门店" />
         <activity
             android:name=".WorkTimeActivity"
+            android:screenOrientation="portrait"
             android:label="上班时间" />
         <activity
             android:name=".MapActivity"
+            android:screenOrientation="portrait"
             android:label="我的位置" />
         <activity
             android:name=".GrabOrderActivity"
+            android:screenOrientation="portrait"
             android:label="抢单"
             android:launchMode="singleTop" />
         <activity
             android:name=".AddWorkTimeActivity"
+            android:screenOrientation="portrait"
             android:label="添加班次" />
         <activity
             android:name=".TimePickerActivity"
+            android:screenOrientation="portrait"
             android:label="时间选择" />
         <activity
             android:name=".WeekPickerActivity"
+            android:screenOrientation="portrait"
             android:label="执行日期"
             android:theme="@style/Theme.AppCompat.Dialog" />
         <activity
             android:name=".LoginByAccountActivity"
+            android:screenOrientation="portrait"
             android:label="账号登陆" />
         <activity
             android:name=".UpdateWorkTimeActivity"
+            android:screenOrientation="portrait"
             android:label="更新上班时间" />
         <!--<activity android:name=".WelcomeActivity" />-->
 

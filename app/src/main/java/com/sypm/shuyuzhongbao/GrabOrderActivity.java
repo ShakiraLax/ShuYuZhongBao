@@ -8,6 +8,7 @@ import android.media.RingtoneManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
@@ -36,6 +37,8 @@ import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.data.Order;
+import com.sypm.shuyuzhongbao.data.OrderBySn;
+import com.sypm.shuyuzhongbao.data.OrderCurrent;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
 import java.text.SimpleDateFormat;
@@ -64,14 +67,14 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
 
-    String WD, JD;//纬度，经度
-    private ArrayList<LatLng> latLngList = new ArrayList<>();
-    private Polyline polyline;
+    Double WD, JD;//纬度，经度
 
     TextView shipSn, name, phone, address, timer, reject;
     LinearLayout accept;
-    Order order;
-    Order orderComing;
+    OrderBySn order;
+    OrderBySn orderFromJP;
+    String orderFromYiPaiDan;
+
     final MediaPlayer mp = new MediaPlayer();
 
     CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
@@ -120,6 +123,8 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
             });
         }
     };
+    private TextView txtDialogNote;
+    private String shipSnUnacceptStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,15 +136,17 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         phone = (TextView) findViewById(R.id.phone);
         address = (TextView) findViewById(R.id.address);
         timer = (TextView) findViewById(R.id.timer);
+        txtDialogNote = (TextView) findViewById(R.id.txt_dialog_note);
         reject = (TextView) findViewById(R.id.reject);
         accept = (LinearLayout) findViewById(R.id.accept);
-        orderComing = (Order) getIntent().getSerializableExtra("orderComing");
-
-        if (orderComing != null) {
-            WD = orderComing.list.lat;
-            JD = orderComing.list.lng;
-            initDataFromIndex();
+        orderFromYiPaiDan = getIntent().getStringExtra("yipaidan");
+        if (orderFromYiPaiDan != null) {
+            Log.d("首页已派单", orderFromYiPaiDan);
+            initOrder(orderFromYiPaiDan);
+        } else {
+            initDataFromJP();
         }
+
         initData();
 
         //显示地图
@@ -169,40 +176,71 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         initLoc();
     }
 
-    private void initDataFromIndex() {
-//        shipSn.setText("单号：" + orderComing.list.orderSn);
-//        name.setText("姓名：" + orderComing.list.name);
-//        address.setText("地址：" + orderComing.list.address);
-//        phone.setText("电话：" + orderComing.list.mobile);
-    }
-
-    private void initData() {
-        /*未指派订单*/
-        Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
-        getOrder.enqueue(new Callback<Order>() {
+    /*极光推送自动打开抢单界面*/
+    private void initDataFromJP() {
+        /*未接受订单*/
+        Call<OrderBySn> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+        getOrder.enqueue(new Callback<OrderBySn>() {
             @Override
-            public void onResponse(Call<Order> call, Response<Order> response) {
+            public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
                 if (response.body() != null) {
                     if (response.body().status == 1) {
-//                        Toast.makeText(getApplicationContext(), "获取订单成功", Toast.LENGTH_LONG).show();
+                        orderFromJP = response.body();
+                        order = response.body();//接单拒单用
+                        countDownTimer.start();
+                        shipSn.setText("单号：" + orderFromJP.list.orderSn);
+                        name.setText("姓名：" + orderFromJP.list.name);
+                        address.setText("地址：" + orderFromJP.list.address);
+                        phone.setText("电话：" + orderFromJP.list.mobile);
+                        txtDialogNote.setText("备注：" + orderFromJP.list.note);
+                        WD = Double.valueOf(orderFromJP.list.lat);
+                        JD = Double.valueOf(orderFromJP.list.lng);
+                    } else {
+                        Toast.makeText(getActivity(), "订单无数据", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "无数据", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderBySn> call, Throwable t) {
+                Toast.makeText(getActivity(), "服务器获取失败", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void initOrder(String orderFromYiPaiDan) {
+        Call<OrderBySn> call = RetrofitClient.getInstance().getSYService().getOrderDetail(orderFromYiPaiDan);
+        call.enqueue(new Callback<OrderBySn>() {
+            @Override
+            public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
                         countDownTimer.start();
                         order = response.body();
                         shipSn.setText("单号：" + order.list.orderSn);
                         name.setText("姓名：" + order.list.name);
                         address.setText("地址：" + order.list.address);
                         phone.setText("电话：" + order.list.mobile);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "订单无数据", Toast.LENGTH_LONG).show();
+                        txtDialogNote.setText("备注：" + order.list.note);
+                        WD = Double.valueOf(order.list.lat);
+                        JD = Double.valueOf(order.list.lng);
                     }
+                } else {
+                    Log.d("首页已派单", "获取失败");
                 }
             }
 
             @Override
-            public void onFailure(Call<Order> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "获取订单失败", Toast.LENGTH_LONG).show();
+            public void onFailure(Call<OrderBySn> call, Throwable t) {
+                Log.d("首页已派单", "服务器获取失败");
             }
         });
 
+    }
+
+    private void initData() {
         /*接单*/
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,14 +253,18 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                             if (response.body().status.equals("1")) {
                                 countDownTimer.cancel();
                                 Toast.makeText(getActivity(), "接单成功！", Toast.LENGTH_LONG).show();
-//                                Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-//                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                                startActivity(intent);
-                                Intent intent = new Intent();
-                                setResult(RESULT_OK, intent);
+                                Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                                intent.putExtra("orderFromGrab", order.list.orderSn);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                setResult(RESULT_OK);
                                 finish();
-                            } else {
+                            } else if (response.body().status.equals("2")) {
+                                Toast.makeText(getActivity(), "单子没找到", Toast.LENGTH_LONG).show();
+                                finish();
+                            } else if (response.body().status.equals("0")) {
                                 Toast.makeText(getActivity(), "接单失败", Toast.LENGTH_LONG).show();
+                                finish();
                             }
                         }
                     }
@@ -230,6 +272,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
                         Toast.makeText(getActivity(), "接单操作失败", Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 });
             }
@@ -263,6 +306,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                 });
             }
         });
+
     }
 
     @Override
@@ -274,7 +318,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
     public void onBackPressed() {
         new AlertDialog.Builder(getActivity())
                 .setTitle("提示")
-                .setMessage("确定要返回吗")
+                .setMessage("请对订单进行操作")
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -328,9 +372,9 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-                    LatLng latLng = new LatLng(Double.valueOf(WD), Double.valueOf(JD));
-                    Log.d("抢单界面配送点", WD + JD);
-                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(Double.valueOf(WD), Double.valueOf(JD))));
+                    LatLng latLng = new LatLng(WD, JD);
+//                    Log.d("抢单界面配送点", WD + JD);
+                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(WD, JD)));
                     final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("配送点").snippet("DefaultMarker"));
                 }
             } else {

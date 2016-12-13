@@ -39,6 +39,13 @@ public class MyReceiver extends BroadcastReceiver {
 
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_MESSAGE));
+            Log.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_TITLE));
+            String type = bundle.getString(JPushInterface.EXTRA_TITLE);
+            if (type.equals("zhipai")) {
+                Intent intentGrab = new Intent(context, GrabOrderActivity.class);
+                intentGrab.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intentGrab);
+            }
             processCustomMessage(context, bundle);
 
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
@@ -49,11 +56,11 @@ public class MyReceiver extends BroadcastReceiver {
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
 //          //打开自定义的Activity
-            Intent i = new Intent(context, MainActivity.class);
+            /*Intent i = new Intent(context, MainActivity.class);
             i.putExtras(bundle);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            context.startActivity(i);
+            context.startActivity(i);*/
 
         } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 用户收到到RICH PUSH CALLBACK: " + bundle.getString(JPushInterface.EXTRA_EXTRA));
@@ -106,6 +113,8 @@ public class MyReceiver extends BroadcastReceiver {
         if (MainActivity.isForeground) {
             String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
             String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
+            Log.d("自定义消息", message);
+            Log.d("自定义消息", extras);
             Intent msgIntent = new Intent(MainActivity.MESSAGE_RECEIVED_ACTION);
             msgIntent.putExtra(MainActivity.KEY_MESSAGE, message);
             if (!ExampleUtil.isEmpty(extras)) {

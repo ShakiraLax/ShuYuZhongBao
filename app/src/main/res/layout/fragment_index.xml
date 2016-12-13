@@ -9,7 +9,7 @@
         android:id="@+id/refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="@color/orange"
         android:orientation="vertical">
 
         <LinearLayout
@@ -26,7 +26,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:text="在线：0.0小时"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="24sp" />
 
             <TextView
@@ -36,7 +36,7 @@
                 android:layout_weight="1"
                 android:gravity="right"
                 android:text="接单："
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="24sp" />
         </LinearLayout>
 
@@ -58,6 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="流水：0.0元"
+                android:textColor="@android:color/white"
                 android:textSize="16sp" />
 
             <TextView
@@ -67,6 +68,7 @@
                 android:layout_marginLeft="10dp"
                 android:gravity="right"
                 android:text="成交率：0%"
+                android:textColor="@android:color/white"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -77,32 +79,128 @@
             android:background="@color/line" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/translucent_background"
+        android:orientation="horizontal"
+        android:paddingTop="10dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_myorder_index"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:paddingBottom="10dp"
+                android:text="已派单"
+                android:textSize="20dp" />
+
+            <View
+                android:id="@+id/view_line1"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/orange"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_workingorder_index"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:paddingBottom="10dp"
+                android:text="执行中"
+                android:textColor="@color/orange"
+                android:textSize="20dp" />
+
+            <View
+                android:id="@+id/view_line2"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/orange" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_passorder_index"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:paddingBottom="10dp"
+                android:text="已拒单"
+                android:textSize="20dp" />
+
+            <View
+                android:id="@+id/view_line3"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/orange"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </LinearLayout>
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="15dp" />
+        android:layout_height="300dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="horizontal"
         android:gravity="center">
 
-        <LinearLayout
-            android:id="@+id/of"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@drawable/oval_off"
-            android:gravity="center">
+        <TextView
+            android:id="@+id/txt_online_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上线中"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/rect_onleft"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/txt_online_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我要下线"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/rect_onright"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/online"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="下线"
-                android:textColor="@android:color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
     </LinearLayout>
 
 

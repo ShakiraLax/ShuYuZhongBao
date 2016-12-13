@@ -5,7 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,14 +25,10 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.maps.model.Polyline;
-import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.maps.overlay.WalkRouteOverlay;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
-import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
-import com.amap.api.services.route.RidePath;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkPath;
@@ -39,9 +37,10 @@ import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.data.Order;
+import com.sypm.shuyuzhongbao.data.OrderBySn;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,12 +55,12 @@ import static android.R.attr.mode;
 public class OrderDetailActivity extends BaseActivity implements LocationSource, AMapLocationListener, RouteSearch.OnRouteSearchListener {
 
     private MoneyList.ListBean moneyList;
-    Order order;
-    Order orderByShipSn;
-    Order ordering;
-    TextView shipSn, name, phone, address, storeName, amount, feeWay;
+    OrderBySn orderByShipSn;
+    OrderBySn orderByIndex;
+    TextView shipSn, name, phone, address, storeName, amount, feeWay, txt_orderStatus_detail;
     Button customerReject, dispatchingDone;
     String phoneNumber;
+
 
     //显示地图需要的变量
     private MapView mapView;//地图控件
@@ -72,9 +71,14 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     private OnLocationChangedListener mListener = null;//定位监听器
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
-    String WD, JD;
+    double WD, JD;
     private RouteSearch mRouteSearch;
     private WalkRouteResult mWalkRouteResult;
+    private TextView txtNote;
+    private String shipSnFromFirstPage;
+    private String shipSnFromGrab;
+    private String SHIPSN;
+    private LinearLayout layoutOfOrderAndGoods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +92,14 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         amount = (TextView) findViewById(R.id.amount);
         storeName = (TextView) findViewById(R.id.storeName);
         feeWay = (TextView) findViewById(R.id.feeWay);
+        txtNote = (TextView) findViewById(R.id.txt_note);
+        txt_orderStatus_detail = (TextView) findViewById(R.id.txt_orderStatus_detail);
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
+        layoutOfOrderAndGoods = (LinearLayout) findViewById(R.id.layoutOfOrderAndGoods);
 
         mRouteSearch = new RouteSearch(this);
 
-        ordering = (Order) getIntent().getSerializableExtra("ordering");
         phone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,15 +109,24 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                 startActivity(intent);
             }
         });
-        if (ordering != null) {
-            WD = ordering.list.lat;
-            JD = ordering.list.lng;
-            initDataFromIndex();
+
+        shipSnFromGrab = getIntent().getStringExtra("orderFromGrab");
+        if (shipSnFromGrab != null) {
+            Log.d("shipSnFromGrab", shipSnFromGrab);
+            SHIPSN = shipSnFromGrab;
+            setupOrderDetail();
         }
+
         moneyList = (MoneyList.ListBean) getIntent().getSerializableExtra("item");
         if (moneyList != null) {
             Log.d("根据订单号获取订单详情", moneyList.shipSn);
             initOrderData();
+        }
+        shipSnFromFirstPage = getIntent().getStringExtra("shipSn");
+        if (shipSnFromFirstPage != null) {
+            Log.d("shipSnFromFirstPage", shipSnFromFirstPage);
+            SHIPSN = shipSnFromFirstPage;
+            setupOrderDetail();
         }
         initData();
         //显示地图
@@ -124,10 +139,8 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         UiSettings settings = aMap.getUiSettings();
         //设置定位监听
         aMap.setLocationSource(this);
-
         //设置数据回调监听器
         mRouteSearch.setRouteSearchListener(this);
-
         // 是否显示定位按钮
         settings.setMyLocationButtonEnabled(true);
         // 是否可触发定位并显示定位层
@@ -142,86 +155,184 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         initLoc();
     }
 
-    private void initDataFromIndex() {
+    //根据首页订单号展示订单详情包括商品信息
+    private void setupOrderDetail() {
+        final Call<OrderBySn> orderDetailCall = RetrofitClient.getInstance().getSYService().getOrderDetail(SHIPSN);
+        orderDetailCall.enqueue(new Callback<OrderBySn>() {
+            @Override
+            public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
+                        orderByIndex = response.body();
+                        address.setText("地址：" + orderByIndex.list.address);
+                        name.setText("姓名：" + orderByIndex.list.name);
+                        phone.setText("电话：" + orderByIndex.list.mobile);
+                        shipSn.setText("单号：" + orderByIndex.list.orderSn);
+                        amount.setText("订单金额：" + orderByIndex.list.amount);
+                        feeWay.setText("支付方式：" + orderByIndex.list.payCode);
+                        storeName.setText("门店名称：" + orderByIndex.list.storeName);
+                        txtNote.setText("备注：" + orderByIndex.list.note);
+                        txt_orderStatus_detail.setText("订单状态：" + orderByIndex.list.orderStatus);
+                        phoneNumber = orderByIndex.list.mobile;
+                        WD = Double.valueOf(orderByIndex.list.lat);
+                        JD = Double.valueOf(orderByIndex.list.lng);
+                        List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
+                        if (goodsList != null) {
+                            for (int i = 0; i < orderByIndex.list.goodsList.size(); i++) {
+                                TextView goodsTitle = new TextView(getApplicationContext());
+                                goodsTitle.setText("商品名称：" + goodsList.get(i).goodsTitle);
+                                goodsTitle.setTextColor(0xff000000);
+                                goodsTitle.setTextSize(14);
+                                TextView goodsSn = new TextView(getApplicationContext());
+                                goodsSn.setText("商品编码：" + goodsList.get(i).goodsSn);
+                                goodsSn.setTextColor(0xff000000);
+                                goodsSn.setTextSize(14);
+                                TextView originalPrice = new TextView(getApplicationContext());
+                                originalPrice.setText("商品原价格：" + goodsList.get(i).originalPrice);
+                                originalPrice.setTextColor(0xff000000);
+                                originalPrice.setTextSize(14);
+                                TextView goodsNumber = new TextView(getApplicationContext());
+                                goodsNumber.setText("商品数量：" + goodsList.get(i).goodsNumber);
+                                goodsNumber.setTextColor(0xff000000);
+                                goodsNumber.setTextSize(14);
+                                TextView preferentialPrice = new TextView(getApplicationContext());
+                                preferentialPrice.setText("商品优惠价格：" + goodsList.get(i).preferentialPrice);
+                                preferentialPrice.setTextColor(0xff000000);
+                                preferentialPrice.setTextSize(14);
+                                TextView isGift = new TextView(getApplicationContext());
+                                if (goodsList.get(i).isGift == 1) {
+                                    isGift.setText("是否是赠品：是");
+                                } else {
+                                    isGift.setText("是否是赠品：否");
+                                }
+                                isGift.setTextColor(0xff000000);
+                                isGift.setTextSize(14);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                params.setMargins(40, 10, 0, 0);
+                                layoutOfOrderAndGoods.addView(goodsTitle, params);
+                                layoutOfOrderAndGoods.addView(goodsSn, params);
+                                layoutOfOrderAndGoods.addView(originalPrice, params);
+                                layoutOfOrderAndGoods.addView(goodsNumber, params);
+                                layoutOfOrderAndGoods.addView(preferentialPrice, params);
+                                layoutOfOrderAndGoods.addView(isGift, params);
+                            }
+                        }
+                        if (orderByIndex.list.status != 1) {
+                            customerReject.setVisibility(View.INVISIBLE);
+                            dispatchingDone.setVisibility(View.INVISIBLE);
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "此单已无数据", Toast.LENGTH_LONG).show();
+                        customerReject.setVisibility(View.INVISIBLE);
+                        dispatchingDone.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
 
+            @Override
+            public void onFailure(Call<OrderBySn> call, Throwable t) {
+
+            }
+        });
     }
 
     /*根据收入列表传输过来的shipSn获取订单详情*/
     private void initOrderData() {
-        Call<Order> getOrderDetail = RetrofitClient.getInstance().getSYService().getOrderDetail(moneyList.shipSn);
-        getOrderDetail.enqueue(new Callback<Order>() {
+        Call<OrderBySn> call = RetrofitClient.getInstance().getSYService().getOrderDetail(moneyList.shipSn);
+        call.enqueue(new Callback<OrderBySn>() {
             @Override
-            public void onResponse(Call<Order> call, Response<Order> response) {
+            public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
                 if (response.body() != null) {
                     if (response.body().status == 1) {
+                        Toast.makeText(getActivity(), "成功" + moneyList.shipSn, Toast.LENGTH_LONG).show();
                         orderByShipSn = response.body();
-                        shipSn.setText("单号：" + orderByShipSn.list.orderSn);
-                        name.setText("姓名：" + orderByShipSn.list.name);
+                        WD = Double.valueOf(orderByShipSn.list.lat);
+                        JD = Double.valueOf(orderByShipSn.list.lng);
                         address.setText("地址：" + orderByShipSn.list.address);
+                        name.setText("姓名：" + orderByShipSn.list.name);
                         phone.setText("电话：" + orderByShipSn.list.mobile);
+                        shipSn.setText("单号：" + orderByShipSn.list.orderSn);
                         amount.setText("订单金额：" + orderByShipSn.list.amount);
                         feeWay.setText("支付方式：" + orderByShipSn.list.payCode);
                         storeName.setText("门店名称：" + orderByShipSn.list.storeName);
+                        txtNote.setText("备注：" + orderByShipSn.list.note);
+                        txt_orderStatus_detail.setText("订单状态：" + orderByShipSn.list.orderStatus);
                         phoneNumber = orderByShipSn.list.mobile;
-                        WD = orderByShipSn.list.lat;
-                        JD = orderByShipSn.list.lng;
+
+                        List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByShipSn.list.goodsList;
+                        if (goodsList != null) {
+                            for (int i = 0; i < orderByShipSn.list.goodsList.size(); i++) {
+                                TextView goodsTitle = new TextView(getApplicationContext());
+                                goodsTitle.setText("商品名称：" + goodsList.get(i).goodsTitle);
+                                goodsTitle.setTextColor(0xff000000);
+                                goodsTitle.setTextSize(14);
+                                TextView goodsSn = new TextView(getApplicationContext());
+                                goodsSn.setText("商品编码：" + goodsList.get(i).goodsSn);
+                                goodsSn.setTextColor(0xff000000);
+                                goodsSn.setTextSize(14);
+                                TextView originalPrice = new TextView(getApplicationContext());
+                                originalPrice.setText("商品原价格：" + goodsList.get(i).originalPrice);
+                                originalPrice.setTextColor(0xff000000);
+                                originalPrice.setTextSize(14);
+                                TextView goodsNumber = new TextView(getApplicationContext());
+                                goodsNumber.setText("商品数量：" + goodsList.get(i).goodsNumber);
+                                goodsNumber.setTextColor(0xff000000);
+                                goodsNumber.setTextSize(14);
+                                TextView preferentialPrice = new TextView(getApplicationContext());
+                                preferentialPrice.setText("商品优惠价格：" + goodsList.get(i).preferentialPrice);
+                                preferentialPrice.setTextColor(0xff000000);
+                                preferentialPrice.setTextSize(14);
+                                TextView isGift = new TextView(getApplicationContext());
+                                if (goodsList.get(i).isGift == 1) {
+                                    isGift.setText("是否是赠品：是");
+                                } else {
+                                    isGift.setText("是否是赠品：否");
+                                }
+                                isGift.setTextColor(0xff000000);
+                                isGift.setTextSize(14);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                params.setMargins(40, 10, 0, 0);
+                                layoutOfOrderAndGoods.addView(goodsTitle, params);
+                                layoutOfOrderAndGoods.addView(goodsSn, params);
+                                layoutOfOrderAndGoods.addView(originalPrice, params);
+                                layoutOfOrderAndGoods.addView(goodsNumber, params);
+                                layoutOfOrderAndGoods.addView(preferentialPrice, params);
+                                layoutOfOrderAndGoods.addView(isGift, params);
+                            }
+                        }
+
                         if (orderByShipSn.list.status != 1) {
                             customerReject.setVisibility(View.INVISIBLE);
                             dispatchingDone.setVisibility(View.INVISIBLE);
                         }
                     } else {
-
+                        Toast.makeText(getActivity(), "订单无数据", Toast.LENGTH_LONG).show();
+                        customerReject.setVisibility(View.INVISIBLE);
+                        dispatchingDone.setVisibility(View.INVISIBLE);
                     }
+
+                } else {
+                    Toast.makeText(getActivity(), "无数据", Toast.LENGTH_LONG).show();
+                    customerReject.setVisibility(View.INVISIBLE);
+                    dispatchingDone.setVisibility(View.INVISIBLE);
                 }
             }
 
             @Override
-            public void onFailure(Call<Order> call, Throwable t) {
-
+            public void onFailure(Call<OrderBySn> call, Throwable t) {
+                Toast.makeText(getActivity(), "获取失败", Toast.LENGTH_LONG).show();
+                customerReject.setVisibility(View.INVISIBLE);
+                dispatchingDone.setVisibility(View.INVISIBLE);
             }
         });
     }
 
     private void initData() {
-        /*现在执行订单*/
-        Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
-        callCurrentOrder.enqueue(new Callback<Order>() {
-            @Override
-            public void onResponse(Call<Order> call, Response<Order> response) {
-                if (response.body() != null) {
-                    if (response.body().status == 1) {
-                        order = response.body();
-                        WD = order.list.lat;
-                        JD = order.list.lng;
-                        shipSn.setText("单号：" + order.list.orderSn);
-                        name.setText("姓名：" + order.list.name);
-                        address.setText("地址：" + order.list.address);
-                        phone.setText("电话：" + order.list.mobile);
-                        amount.setText("订单金额：" + order.list.amount);
-                        feeWay.setText("支付方式：" + order.list.payCode);
-                        storeName.setText("门店名称：" + order.list.storeName);
-                        phoneNumber = order.list.mobile;
-                        if (order.list.status != 1) {
-                            customerReject.setVisibility(View.INVISIBLE);
-                            dispatchingDone.setVisibility(View.INVISIBLE);
-                        }
-                    } else {
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Order> call, Throwable t) {
-
-            }
-        });
-
         /*客户拒单*/
         customerReject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<DataResult> orderReject = RetrofitClient.getInstance().getSYService().orderReject(order.list.orderSn);
+                Call<DataResult> orderReject = RetrofitClient.getInstance().getSYService().orderReject(SHIPSN);
                 orderReject.enqueue(new Callback<DataResult>() {
                     @Override
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
@@ -248,7 +359,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         dispatchingDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<DataResult> orderFinish = RetrofitClient.getInstance().getSYService().orderFinish(order.list.orderSn);
+                Call<DataResult> orderFinish = RetrofitClient.getInstance().getSYService().orderFinish(SHIPSN);
                 orderFinish.enqueue(new Callback<DataResult>() {
                     @Override
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
@@ -258,7 +369,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                                 Toast.makeText(getActivity(), "提交成功", Toast.LENGTH_LONG).show();
                                 finish();
                             } else {
-                                Toast.makeText(getActivity(), "提价失败", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -310,16 +421,16 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     Log.d("第一次定位信息", buffer.toString());
                     isFirstLoc = false;
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-                    LatLng latLng = new LatLng(Double.valueOf(WD), Double.valueOf(JD));
-                    LatLonPoint endLatLonPoint = new LatLonPoint(Double.valueOf(WD), Double.valueOf(JD));
+                    LatLng latLng = new LatLng(WD, JD);
+                    LatLonPoint endLatLonPoint = new LatLonPoint(WD, JD);
                     LatLonPoint startLatLonPoint = new LatLonPoint(amapLocation.getLatitude(), amapLocation.getLongitude());
-                    Log.d("配送点", WD + JD);
+//                    Log.d("配送点", WD + JD);
                     final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(startLatLonPoint, endLatLonPoint);
 //                    RouteSearch.RideRouteQuery query = new RouteSearch.RideRouteQuery(fromAndTo, mode);
                     RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo, mode);
                     mRouteSearch.calculateWalkRouteAsyn(query);
 
-                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(Double.valueOf(WD), Double.valueOf(JD))));
+                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(WD, JD)));
                     final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("配送点").snippet("DefaultMarker"));
                 }
             } else {

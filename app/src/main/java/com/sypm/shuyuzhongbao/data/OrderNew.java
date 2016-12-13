@@ -1,23 +1,23 @@
 package com.sypm.shuyuzhongbao.data;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by Administrator on 2016/11/27.
+ * Created by Administrator on 2016/12/10.
+ * 现在正在执行的订单，多个订单接单可以同时执行。
  */
 
-public class Order implements Serializable {
+public class OrderNew {
 
     /**
      * status : 1
      * msg : 获取成功
-     * data : {"orderSn":"P708368376372284","mobile":"15169077170","address":"山东省济南市槐荫区济宁路3-商铺104号济宁路3-商铺104号","lat":36.66255951,"lng":116.90277863,"storeSn":"","storeLat":null,"storeLng":null,"storeName":null,"status":0,"endTime":"","countType":0,"payed":0,"amount":0,"unpayed":0,"payCode":"cash","note":"我叫备注","orderStatus":"订单状态","goodsList":[{"goodsTitle":"商品名称","goodsSn":"商品编码","originalPrice":"商品原价格","goodsNumber":"商品数量","preferentialPrice":"商品优惠价格","isGift":1}]}
+     * list : [{"orderSn":"Y929869746465783","mobile":"13561255885","address":"山东省聊城市临清市","lat":36.7939682,"lng":115.9197464,"storeSn":"","storeLat":null,"storeLng":null,"storeName":null,"status":0,"endTime":"","countType":0,"payed":null,"amount":3.6,"unpayed":3.6,"payCode":"cash","note":"我叫备注","orderStatus":"订单状态","goodsList":[{"goodsTitle":"商品名称","goodsSn":"商品编码","originalPrice":"商品原价格","goodsNumber":"商品数量","preferentialPrice":"商品优惠价格","isGift":1}]}]
      */
 
     private int status;
     private String msg;
-    private DataBean data;
+    private List<ListBean> list;
 
     public int getStatus() {
         return status;
@@ -35,20 +35,40 @@ public class Order implements Serializable {
         this.msg = msg;
     }
 
-    public DataBean getData() {
-        return data;
+    public List<ListBean> getList() {
+        return list;
     }
 
-    public void setData(DataBean data) {
-        this.data = data;
+    public void setList(List<ListBean> list) {
+        this.list = list;
     }
 
-    public static class DataBean {
+    public static class ListBean {
+        /**
+         * orderSn : Y929869746465783
+         * mobile : 13561255885
+         * address : 山东省聊城市临清市
+         * lat : 36.7939682
+         * lng : 115.9197464
+         * storeSn :
+         * storeLat : null
+         * storeLng : null
+         * storeName : null
+         * status : 0
+         * endTime :
+         * countType : 0
+         * payed : null
+         * amount : 3.6
+         * unpayed : 3.6
+         * payCode : cash
+         * note : 我叫备注
+         * orderStatus : 订单状态
+         * goodsList : [{"goodsTitle":"商品名称","goodsSn":"商品编码","originalPrice":"商品原价格","goodsNumber":"商品数量","preferentialPrice":"商品优惠价格","isGift":1}]
+         */
 
         private String orderSn;
         private String mobile;
         private String address;
-        private String name;
         private double lat;
         private double lng;
         private String storeSn;
@@ -58,9 +78,9 @@ public class Order implements Serializable {
         private int status;
         private String endTime;
         private int countType;
-        private int payed;
-        private int amount;
-        private int unpayed;
+        private Object payed;
+        private double amount;
+        private double unpayed;
         private String payCode;
         private String note;
         private String orderStatus;
@@ -88,14 +108,6 @@ public class Order implements Serializable {
 
         public void setAddress(String address) {
             this.address = address;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
         }
 
         public double getLat() {
@@ -170,27 +182,27 @@ public class Order implements Serializable {
             this.countType = countType;
         }
 
-        public int getPayed() {
+        public Object getPayed() {
             return payed;
         }
 
-        public void setPayed(int payed) {
+        public void setPayed(Object payed) {
             this.payed = payed;
         }
 
-        public int getAmount() {
+        public double getAmount() {
             return amount;
         }
 
-        public void setAmount(int amount) {
+        public void setAmount(double amount) {
             this.amount = amount;
         }
 
-        public int getUnpayed() {
+        public double getUnpayed() {
             return unpayed;
         }
 
-        public void setUnpayed(int unpayed) {
+        public void setUnpayed(double unpayed) {
             this.unpayed = unpayed;
         }
 

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,16 +27,19 @@ import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
 import com.sypm.shuyuzhongbao.data.Order;
+import com.sypm.shuyuzhongbao.data.OrderBySn;
+import com.sypm.shuyuzhongbao.data.SelecteOrder;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,27 +50,19 @@ import static android.app.Activity.RESULT_OK;
 
 /**
  * 首页
- * 所有操作都是建立在已将上线的基础上
- * 上线后每隔10秒获取一次是否有<指派未接受的订单><获取现在执行的订单>并且上传<配送员位置信息>
- * 如果有<指派未接受的订单>的话跳转到<接单界面>进行接单或者拒绝操作
- * 如接单跳转到<订单详情界面>
- * 订单配送完成访问<客户拒单接口>或<完成配送接口>
- * 如拒绝接单访问<拒绝单子接口>
- * 如果有<已经接单的订单>的话跳转到<订单详情界面>
- * 订单配送完成访问<客户拒单接口>或<完成配送接口>
  */
 
 public class IndexFragment extends BaseFragment implements LocationSource, AMapLocationListener {
 
     ListView listView;
-    LinearLayout linearLayout;
     private int recLen = 0;
     private boolean isOnline = true;
-    List<MessageList.ListBean> list;
-    TextView endure, accept_num, salary, percent, online;
+    List<SelecteOrder.ListBean> list;
+    TextView endure, accept_num, salary, percent;
     LinearLayout refresh;
     TotalLine totalLine;
     private double WD, JD;//纬度lat,经度lng
+    private boolean isFirstPass = true;
 
     /*高德start*/
     //显示地图需要的变量
@@ -92,12 +88,20 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             handler.postDelayed(this, 60000);
         }
     };
+    private TextView txtMyOrder;
+    private TextView txtWorkingOrder;
+    private TextView txtPassOrder;
+    private View viewLine1;
+    private View viewLine2;
+    private View viewLine3;
+    private Calendar calendar;
+    private ListAdapter listAdapter;
+    private TextView txtOnlinLeft;
+    private TextView txtOnlinRight;
 
     private void updateInfo() {
         /*上线后开始上传位置信息*/
-
         if (isOnline) {
-
             Call<DataResult> call = RetrofitClient.getInstance().getSYService().locationInsert(String.valueOf(WD), String.valueOf(JD), null);
             call.enqueue(new Callback<DataResult>() {
                 @Override
@@ -116,55 +120,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
                 }
             });
-            /*未接受订单*/
-//            Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
-//            getOrder.enqueue(new Callback<Order>() {
-//                @Override
-//                public void onResponse(Call<Order> call, Response<Order> response) {
-//                    if (response.body() != null) {
-//                        if (response.body().status == 1) {
-//                            //跳转到接单界面
-//                            Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-//                            intent.putExtra("orderComing", response.body());
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                            startActivity(intent);
-//                        } else {
-//
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<Order> call, Throwable t) {
-//
-//                }
-//            });
-        /*现在执行订单*/
-//            Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
-//            callCurrentOrder.enqueue(new Callback<Order>() {
-//                @Override
-//                public void onResponse(Call<Order> call, Response<Order> response) {
-//                    if (response.body() != null) {
-//                        if (response.body().status == 1) {
-//                            //跳转到订单详情界面
-//                            Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-//                            intent.putExtra("ordering", response.body());
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                            startActivity(intent);
-//                        } else {
-//
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<Order> call, Throwable t) {
-//
-//                }
-//            });
         }
         return;
-
     }
 
     @Override
@@ -175,24 +132,35 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         runnable.run();
     }
 
+    private void initView(View inflate) {
+        txtMyOrder = (TextView) inflate.findViewById(R.id.txt_myorder_index);
+        txtWorkingOrder = (TextView) inflate.findViewById(R.id.txt_workingorder_index);
+        txtPassOrder = (TextView) inflate.findViewById(R.id.txt_passorder_index);
+        viewLine1 = inflate.findViewById(R.id.view_line1);
+        viewLine2 = inflate.findViewById(R.id.view_line2);
+        viewLine3 = inflate.findViewById(R.id.view_line3);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_index, container, false);
+        View inflate = inflater.inflate(R.layout.fragment_index, container, false);
+        initView(inflate);
+        return inflate;
 
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        calendar = Calendar.getInstance();
         endure = (TextView) getView().findViewById(R.id.endure);
         accept_num = (TextView) getView().findViewById(R.id.accept_num);
         salary = (TextView) getView().findViewById(R.id.salary);
         percent = (TextView) getView().findViewById(R.id.percent);
-        online = (TextView) getView().findViewById(R.id.online);
         listView = (ListView) getView().findViewById(R.id.listView);
-        linearLayout = (LinearLayout) getView().findViewById(R.id.of);
+        txtOnlinLeft = (TextView) getView().findViewById(R.id.txt_online_left);
+        txtOnlinRight = (TextView) getView().findViewById(R.id.txt_online_right);
         refresh = (LinearLayout) getView().findViewById(R.id.refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,6 +169,25 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 setupListView();
             }
         });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (list != null) {
+                    if (viewLine1.getVisibility() == View.VISIBLE) {
+                        Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
+                        intent.putExtra("yipaidan", list.get(position).getShipSn());
+                        Log.i("yipaidan", list.get(position).getShipSn());
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                        intent.putExtra("shipSn", list.get(position).getShipSn());
+                        Log.i("shipSn", list.get(position).getShipSn());
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+        list = new ArrayList<>();
         autoLine();
         initData();
         setupListView();
@@ -231,6 +218,104 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         //开始定位
         initLoc();
 
+
+        //筛选订单
+        txtMyOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtMyOrder.setTextColor(0xfff7ac47);
+                txtWorkingOrder.setTextColor(0xff92928e);
+                txtPassOrder.setTextColor(0xff92928e);
+                viewLine1.setVisibility(View.VISIBLE);
+                viewLine2.setVisibility(View.INVISIBLE);
+                viewLine3.setVisibility(View.INVISIBLE);
+                list.clear();
+                listAdapter = new ListAdapter(getContext(), list, isOnline);
+                listView.setAdapter(listAdapter);
+                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("1", getDate(), "1");
+                selectCall.enqueue(new Callback<SelecteOrder>() {
+                    @Override
+                    public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().getStatus() == 1) {
+                                list = response.body().getList();
+//                                listView.setAdapter(new ListAdapter(getContext(), list));
+                                listAdapter.refresh(list);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+        txtWorkingOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtMyOrder.setTextColor(0xff92928e);
+                txtWorkingOrder.setTextColor(0xfff7ac47);
+                txtPassOrder.setTextColor(0xff92928e);
+                viewLine1.setVisibility(View.INVISIBLE);
+                viewLine2.setVisibility(View.VISIBLE);
+                viewLine3.setVisibility(View.INVISIBLE);
+                list.clear();
+                listAdapter = new ListAdapter(getContext(), list, isOnline);
+                listView.setAdapter(listAdapter);
+                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("2", getDate(), "1");
+                selectCall.enqueue(new Callback<SelecteOrder>() {
+                    @Override
+                    public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().getStatus() == 1) {
+                                list = response.body().getList();
+//                                listView.setAdapter(new ListAdapter(getContext(), list));
+                                listAdapter.refresh(list);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+        txtPassOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtMyOrder.setTextColor(0xff92928e);
+                txtWorkingOrder.setTextColor(0xff92928e);
+                txtPassOrder.setTextColor(0xfff7ac47);
+                viewLine1.setVisibility(View.INVISIBLE);
+                viewLine2.setVisibility(View.INVISIBLE);
+                viewLine3.setVisibility(View.VISIBLE);
+                list.clear();
+                listAdapter = new ListAdapter(getContext(), list, isOnline);
+                listView.setAdapter(listAdapter);
+                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("3", getDate(), "1");
+                selectCall.enqueue(new Callback<SelecteOrder>() {
+                    @Override
+                    public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().getStatus() == 1) {
+                                list = response.body().getList();
+//                                listView.setAdapter(new ListAdapter(getContext(), list));
+                                listAdapter.refresh(list);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
     }
 
     private void autoLine() {
@@ -251,17 +336,18 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     private void initData() {
         /*未接受订单*/
-        Call<Order> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
-        getOrder.enqueue(new Callback<Order>() {
+        Call<OrderBySn> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+        getOrder.enqueue(new Callback<OrderBySn>() {
             @Override
-            public void onResponse(Call<Order> call, Response<Order> response) {
+            public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
                 if (response.body() != null) {
                     if (response.body().status == 1) {
                         //跳转到接单界面
                         Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                        intent.putExtra("orderComing", response.body());
+                        intent.putExtra("indexRefresh", response.body());
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivityForResult(intent, 1000);
+                        startActivity(intent);
+//                        startActivityForResult(intent, 1000);
                     } else {
 
                     }
@@ -269,30 +355,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             }
 
             @Override
-            public void onFailure(Call<Order> call, Throwable t) {
-
-            }
-        });
-        /*现在执行订单*/
-        Call<Order> callCurrentOrder = RetrofitClient.getInstance().getSYService().getCurrentOrder();
-        callCurrentOrder.enqueue(new Callback<Order>() {
-            @Override
-            public void onResponse(Call<Order> call, Response<Order> response) {
-                if (response.body() != null) {
-                    if (response.body().status == 1) {
-                        //跳转到订单详情界面
-                        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-                        intent.putExtra("ordering", response.body());
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivityForResult(intent, 2000);
-                    } else {
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Order> call, Throwable t) {
+            public void onFailure(Call<OrderBySn> call, Throwable t) {
 
             }
         });
@@ -322,10 +385,10 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         });
 
         /*上线按钮点击事件*/
-        linearLayout.setOnClickListener(new View.OnClickListener() {
+        txtOnlinRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (online.getText().equals("下线")) {
+                if (txtOnlinRight.getText().equals("我要下线")) {
                     Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
                     call.enqueue(new Callback<DataResult>() {
                         @Override
@@ -334,9 +397,28 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                             snackbar.getView().setBackgroundResource(R.color.orange);
                             snackbar.setActionTextColor(Color.WHITE);
                             snackbar.show();
-                            online.setText("上线");
-                            isOnline = true;
-                            linearLayout.setBackgroundResource(R.drawable.oval_on);
+                            txtOnlinLeft.setText("我要上线");
+                            txtOnlinLeft.setBackgroundResource(R.drawable.rect_offleft);
+                            txtOnlinRight.setText("离线中");
+                            txtOnlinRight.setBackgroundResource(R.drawable.rect_offright);
+                            refresh.setBackgroundResource(R.color.translucent_background);
+                            endure.setText("已离线");
+                            endure.setTextColor(Color.GRAY);
+                            accept_num.setTextColor(Color.GRAY);
+                            salary.setTextColor(Color.GRAY);
+                            percent.setTextColor(Color.GRAY);
+                            txtMyOrder.setTextColor(Color.GRAY);
+                            txtMyOrder.setClickable(false);
+                            txtWorkingOrder.setTextColor(Color.GRAY);
+                            txtWorkingOrder.setClickable(false);
+                            txtPassOrder.setTextColor(Color.GRAY);
+                            txtPassOrder.setClickable(false);
+                            viewLine1.setBackgroundResource(R.color.txtcolornoclick);
+                            viewLine2.setBackgroundResource(R.color.txtcolornoclick);
+                            viewLine3.setBackgroundResource(R.color.txtcolornoclick);
+
+                            isOnline = false;
+                            listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
                         }
 
                         @Override
@@ -344,20 +426,50 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
                         }
                     });
-                } else {
+                }
+            }
+        });
+        txtOnlinLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (txtOnlinLeft.getText().equals("我要上线")) {
                     Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
                     call.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                             initData();
-                            setupListView();
+//                            setupListView();
                             Snackbar snackbar = Snackbar.make(getView(), "上线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
                             snackbar.getView().setBackgroundResource(R.color.orange);
                             snackbar.setActionTextColor(Color.WHITE);
                             snackbar.show();
-                            online.setText("下线");
-                            isOnline = false;
-                            linearLayout.setBackgroundResource(R.drawable.oval_off);
+                            txtOnlinLeft.setText("上线中");
+                            txtOnlinLeft.setBackgroundResource(R.drawable.rect_onleft);
+                            txtOnlinRight.setText("我要下线");
+                            txtOnlinRight.setBackgroundResource(R.drawable.rect_onright);
+                            refresh.setBackgroundResource(R.color.orange);
+//                            endure.setText("在线：" + totalLine.endure + "小时");
+                            endure.setTextColor(Color.WHITE);
+                            accept_num.setTextColor(Color.WHITE);
+                            salary.setTextColor(Color.WHITE);
+                            percent.setTextColor(Color.WHITE);
+                            if (viewLine1.getVisibility() == View.VISIBLE) {
+                                txtMyOrder.setTextColor(getResources().getColor(R.color.orange));
+                            }
+                            txtMyOrder.setClickable(true);
+                            if (viewLine2.getVisibility() == View.VISIBLE) {
+                                txtWorkingOrder.setTextColor(getResources().getColor(R.color.orange));
+                            }
+                            txtWorkingOrder.setClickable(true);
+                            if (viewLine3.getVisibility() == View.VISIBLE) {
+                                txtPassOrder.setTextColor(getResources().getColor(R.color.orange));
+                            }
+                            txtPassOrder.setClickable(true);
+                            viewLine1.setBackgroundResource(R.color.orange);
+                            viewLine2.setBackgroundResource(R.color.orange);
+                            viewLine3.setBackgroundResource(R.color.orange);
+                            isOnline = true;
+                            listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
                         }
 
                         @Override
@@ -383,35 +495,46 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         }
     }
 
-    private void setupListView() {
+    //获取当前日期
+    public String getDate() {
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        StringBuffer sb = new StringBuffer();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        Log.i(">>>>calendar", year + " -" + month + " -" + day);
+        sb.append(year + "." + month + "." + day);
+        return sb.toString();
+    }
 
-        listView.setAdapter(new ListAdapter(getContext(), null));
-        /*首页消息列表*/
-        Call<MessageList> call = RetrofitClient.getInstance().getSYService().messageList("1", "20");
-        call.enqueue(new Callback<MessageList>() {
+    //获取正在执行的订单
+    private void setupListView() {
+//        listView.setAdapter(new ListAdapter(getContext(), null));
+        Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("2", getDate(), "1");
+        selectCall.enqueue(new Callback<SelecteOrder>() {
             @Override
-            public void onResponse(Call<MessageList> call, Response<MessageList> response) {
-                if (response.body() != null) {
-                    if (response.body().status == 1) {
-                        list = response.body().list;
-                        listView.setAdapter(new ListAdapter(getActivity(), list));
-                    } else {
-                        Toast.makeText(getActivity(), "无数据", Toast.LENGTH_SHORT).show();
+            public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
+                        list = response.body().getList();
+                        listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<MessageList> call, Throwable t) {
+            public void onFailure(Call<SelecteOrder> call, Throwable t) {
 
             }
         });
     }
 
     public static class ListAdapter extends MyBaseAdapter {
+        private boolean isOnline;
 
-        public ListAdapter(Context context, List list) {
+        public ListAdapter(Context context, List list, boolean isOnline) {
             super(context, list);
+            this.isOnline = isOnline;
         }
 
         @Override
@@ -420,26 +543,39 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.item_pay_list, parent, false);
                 holder = new ViewHolder();
-                holder.content = (TextView) convertView.findViewById(R.id.content);
-                holder.shipSn = (TextView) convertView.findViewById(R.id.messageHead);
-                holder.createTime = (TextView) convertView.findViewById(R.id.time);
+                holder.txtAdress = (TextView) convertView.findViewById(R.id.txt_adress_show);
+                holder.txtPhone = (TextView) convertView.findViewById(R.id.txt_phone_show);
+                holder.txtShipStatus = (TextView) convertView.findViewById(R.id.txt_shipStatus_show);
+                holder.txtName = (TextView) convertView.findViewById(R.id.txt_name_show);
+                holder.txtPaytype = (TextView) convertView.findViewById(R.id.txt_paytype_show);
+                holder.txtAmount = (TextView) convertView.findViewById(R.id.txt_amount_show);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            final MessageList.ListBean item = (MessageList.ListBean) getItem(position);
-            holder.content.setText(item.content);
-            holder.createTime.setText(item.createTime);
-            holder.shipSn.setText(item.shipSn);
+            final SelecteOrder.ListBean item = (SelecteOrder.ListBean) getItem(position);
+            holder.txtAdress.setText(item.getAddress());
+            holder.txtPhone.setText(item.getMobile());
+            holder.txtName.setText(item.getName());
+            holder.txtShipStatus.setText(item.getShipStatus());
+            holder.txtPaytype.setText(item.getPaycode() + ":");
+            holder.txtAmount.setText("¥" + item.getAmount());
+            if (!isOnline) {
+                holder.txtAdress.setTextColor(Color.GRAY);
+                holder.txtAmount.setTextColor(Color.GRAY);
+            }
             return convertView;
         }
     }
 
     private static class ViewHolder {
-        public TextView fromId;
-        public TextView content;
-        public TextView createTime;
-        public TextView shipSn;
+        public TextView txtAdress;
+        public TextView txtPhone;
+        public TextView txtName;
+        public TextView txtPaytype;
+        public TextView txtAmount;
+        public TextView txtShipStatus;
+
     }
 
     /*-----------------高德地图相关类----------------*/
@@ -486,6 +622,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     Log.d("定位信息", buffer.toString());
                     isFirstLoc = false;
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+
+                }
+                if (isFirstPass) {
+                    updateInfo();
+                    isFirstPass = false;
+                    Log.i(">>>>isFirstPass", "" + isFirstPass);
+//                    ToastUtils.show("定位成功！");
                 }
 
             } else {
@@ -561,4 +704,5 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             }
         });
     }
+
 }
