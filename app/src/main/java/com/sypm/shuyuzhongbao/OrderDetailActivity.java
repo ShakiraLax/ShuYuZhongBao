@@ -79,6 +79,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     private TextView txtNote;
     private String shipSnFromFirstPage;
     private String shipSnFromGrab;
+    private String shipSnFromJP;
     private String SHIPSN;
     private LinearLayout layoutOfOrderAndGoods, goods;
 
@@ -133,6 +134,14 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         if (shipSnFromFirstPage != null) {
             Log.d("shipSnFromFirstPage", shipSnFromFirstPage);
             SHIPSN = shipSnFromFirstPage;
+            setupOrderDetail();
+        }
+
+        /*极光推送传过来的sn*/
+        shipSnFromJP = getIntent().getStringExtra("quhuo");
+        if (shipSnFromJP != null) {
+            Log.d("shipSnFromJP", shipSnFromJP);
+            SHIPSN = shipSnFromJP;
             setupOrderDetail();
         }
         initData();

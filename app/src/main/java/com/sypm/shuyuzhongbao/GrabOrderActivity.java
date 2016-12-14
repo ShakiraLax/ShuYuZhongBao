@@ -252,10 +252,12 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                                 finish();
                             } else if (response.body().status.equals("2")) {
                                 countDownTimer.cancel();
+                                setResult(RESULT_OK);
                                 Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 finish();
                             } else if (response.body().status.equals("0")) {
                                 countDownTimer.cancel();
+                                setResult(RESULT_OK);
                                 Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 finish();
                             }
@@ -289,6 +291,8 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                                 finish();
                             } else {
                                 countDownTimer.cancel();
+                                setResult(RESULT_OK);
+                                finish();
                                 Toast.makeText(getApplicationContext(), "拒单失败", Toast.LENGTH_LONG).show();
                             }
                         }

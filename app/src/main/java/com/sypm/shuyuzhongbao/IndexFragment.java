@@ -325,7 +325,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         call.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                Log.d("自动上线", response.body().msg);
+//                Log.d("自动上线", response.body().msg);
             }
 
             @Override
