@@ -68,7 +68,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
 
     final MediaPlayer mp = new MediaPlayer();
 
-    CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+    CountDownTimer countDownTimer = new CountDownTimer(5000, 1000) {
         @Override
         public void onTick(long millisUntilFinished) {
             timer.setText("倒计时" + (millisUntilFinished / 1000));
@@ -326,6 +326,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getActivity(), MainActivity.class);
                         setResult(RESULT_OK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         countDownTimer.cancel();
                         mp.stop();
                         startActivity(intent);

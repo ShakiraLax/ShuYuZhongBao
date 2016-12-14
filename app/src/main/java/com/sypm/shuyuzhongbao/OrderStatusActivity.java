@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +66,7 @@ public class OrderStatusActivity extends BaseActivity {
     private String shipSnFromQuHuo;
     private String shipSnFromKeFu;
     private String SHIPSN;
-    private LinearLayout layoutOfOrderAndGoods;
+    private LinearLayout layoutOfOrderAndGoods, goods;
     private Button know;
 
     @Override
@@ -83,6 +85,7 @@ public class OrderStatusActivity extends BaseActivity {
         txt_orderStatus_detail = (TextView) findViewById(R.id.txt_orderStatus_detail);
         layoutOfOrderAndGoods = (LinearLayout) findViewById(R.id.layoutOfOrderAndGoods);
         know = (Button) findViewById(R.id.know);
+        goods = (LinearLayout) findViewById(R.id.goods);
 
 
         phone.setOnClickListener(new View.OnClickListener() {
@@ -133,49 +136,52 @@ public class OrderStatusActivity extends BaseActivity {
                         txt_orderStatus_detail.setText("订单状态：" + orderByIndex.list.orderStatus);
                         phoneNumber = orderByIndex.list.mobile;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
-                        /*if (goodsList != null) {
+                        if (goodsList != null) {
+                            goods.setVisibility(View.VISIBLE);
                             for (int i = 0; i < orderByIndex.list.goodsList.size(); i++) {
                                 TextView goodsTitle = new TextView(getApplicationContext());
-                                goodsTitle.setText("商品名称：" + goodsList.get(i).goodsTitle);
                                 goodsTitle.setTextColor(0xff000000);
                                 goodsTitle.setTextSize(14);
+                                goodsTitle.setLines(2);
+                                goodsTitle.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                                //"商品编码：" +
                                 TextView goodsSn = new TextView(getApplicationContext());
-                                goodsSn.setText("商品编码：" + goodsList.get(i).goodsSn);
+                                goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
                                 goodsSn.setTextSize(14);
-                                TextView originalPrice = new TextView(getApplicationContext());
-                                originalPrice.setText("商品原价格：" + goodsList.get(i).originalPrice);
-                                originalPrice.setTextColor(0xff000000);
-                                originalPrice.setTextSize(14);
+                                //"商品数量："
                                 TextView goodsNumber = new TextView(getApplicationContext());
-                                goodsNumber.setText("商品数量：" + goodsList.get(i).goodsNumber);
+                                goodsNumber.setText(goodsList.get(i).goodsNumber + "");
                                 goodsNumber.setTextColor(0xff000000);
+                                goodsNumber.setGravity(Gravity.CENTER);
                                 goodsNumber.setTextSize(14);
+                                //"商品优惠价格：" +
                                 TextView preferentialPrice = new TextView(getApplicationContext());
-                                preferentialPrice.setText("商品优惠价格：" + goodsList.get(i).preferentialPrice);
+                                preferentialPrice.setText(goodsList.get(i).preferentialPrice + "");
                                 preferentialPrice.setTextColor(0xff000000);
+                                preferentialPrice.setGravity(Gravity.CENTER);
                                 preferentialPrice.setTextSize(14);
-                                TextView isGift = new TextView(getApplicationContext());
                                 if (goodsList.get(i).isGift == 1) {
-                                    isGift.setText("是否是赠品：是");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle + "（赠品）");
                                 } else {
-                                    isGift.setText("是否是赠品：否");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle);
                                 }
-                                isGift.setTextColor(0xff000000);
-                                isGift.setTextSize(14);
-                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                params.setMargins(40, 10, 0, 0);
-                                layoutOfOrderAndGoods.addView(goodsTitle, params);
-                                layoutOfOrderAndGoods.addView(goodsSn, params);
-                                layoutOfOrderAndGoods.addView(originalPrice, params);
-                                layoutOfOrderAndGoods.addView(goodsNumber, params);
-                                layoutOfOrderAndGoods.addView(preferentialPrice, params);
-                                layoutOfOrderAndGoods.addView(isGift, params);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+                                LinearLayout.LayoutParams paramsTitle = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 3.0f);
+                                params.setMargins(0, 10, 0, 10);
+                                paramsTitle.setMargins(20, 10, 0, 10);
+                                LinearLayout linearLayout = new LinearLayout(getApplicationContext());
+                                linearLayout.setGravity(Gravity.HORIZONTAL_GRAVITY_MASK);
+                                linearLayout.addView(goodsSn, params);
+//                                linearLayout.addView(goodsSn, params);
+                                linearLayout.addView(goodsTitle, paramsTitle);
+                                linearLayout.addView(preferentialPrice, params);
+                                linearLayout.addView(goodsNumber, params);
+                                layoutOfOrderAndGoods.addView(linearLayout);
                             }
-                        }*/
+                        }
                     } else {
                         Toast.makeText(getActivity(), "此单已无数据", Toast.LENGTH_LONG).show();
-
                     }
                 }
             }
@@ -207,49 +213,52 @@ public class OrderStatusActivity extends BaseActivity {
                         txt_orderStatus_detail.setText("订单状态：" + orderByIndex.list.orderStatus);
                         phoneNumber = orderByIndex.list.mobile;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
-                        /*if (goodsList != null) {
+                        if (goodsList != null) {
+                            goods.setVisibility(View.VISIBLE);
                             for (int i = 0; i < orderByIndex.list.goodsList.size(); i++) {
                                 TextView goodsTitle = new TextView(getApplicationContext());
-                                goodsTitle.setText("商品名称：" + goodsList.get(i).goodsTitle);
                                 goodsTitle.setTextColor(0xff000000);
                                 goodsTitle.setTextSize(14);
+                                goodsTitle.setLines(2);
+                                goodsTitle.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                                //"商品编码：" +
                                 TextView goodsSn = new TextView(getApplicationContext());
-                                goodsSn.setText("商品编码：" + goodsList.get(i).goodsSn);
+                                goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
                                 goodsSn.setTextSize(14);
-                                TextView originalPrice = new TextView(getApplicationContext());
-                                originalPrice.setText("商品原价格：" + goodsList.get(i).originalPrice);
-                                originalPrice.setTextColor(0xff000000);
-                                originalPrice.setTextSize(14);
+                                //"商品数量："
                                 TextView goodsNumber = new TextView(getApplicationContext());
-                                goodsNumber.setText("商品数量：" + goodsList.get(i).goodsNumber);
+                                goodsNumber.setText(goodsList.get(i).goodsNumber + "");
                                 goodsNumber.setTextColor(0xff000000);
+                                goodsNumber.setGravity(Gravity.CENTER);
                                 goodsNumber.setTextSize(14);
+                                //"商品优惠价格：" +
                                 TextView preferentialPrice = new TextView(getApplicationContext());
-                                preferentialPrice.setText("商品优惠价格：" + goodsList.get(i).preferentialPrice);
+                                preferentialPrice.setText(goodsList.get(i).preferentialPrice + "");
                                 preferentialPrice.setTextColor(0xff000000);
+                                preferentialPrice.setGravity(Gravity.CENTER);
                                 preferentialPrice.setTextSize(14);
-                                TextView isGift = new TextView(getApplicationContext());
                                 if (goodsList.get(i).isGift == 1) {
-                                    isGift.setText("是否是赠品：是");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle + "（赠品）");
                                 } else {
-                                    isGift.setText("是否是赠品：否");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle);
                                 }
-                                isGift.setTextColor(0xff000000);
-                                isGift.setTextSize(14);
-                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                params.setMargins(40, 10, 0, 0);
-                                layoutOfOrderAndGoods.addView(goodsTitle, params);
-                                layoutOfOrderAndGoods.addView(goodsSn, params);
-                                layoutOfOrderAndGoods.addView(originalPrice, params);
-                                layoutOfOrderAndGoods.addView(goodsNumber, params);
-                                layoutOfOrderAndGoods.addView(preferentialPrice, params);
-                                layoutOfOrderAndGoods.addView(isGift, params);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+                                LinearLayout.LayoutParams paramsTitle = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 3.0f);
+                                params.setMargins(0, 10, 0, 10);
+                                paramsTitle.setMargins(20, 10, 0, 10);
+                                LinearLayout linearLayout = new LinearLayout(getApplicationContext());
+                                linearLayout.setGravity(Gravity.HORIZONTAL_GRAVITY_MASK);
+                                linearLayout.addView(goodsSn, params);
+//                                linearLayout.addView(goodsSn, params);
+                                linearLayout.addView(goodsTitle, paramsTitle);
+                                linearLayout.addView(preferentialPrice, params);
+                                linearLayout.addView(goodsNumber, params);
+                                layoutOfOrderAndGoods.addView(linearLayout);
                             }
-                        }*/
+                        }
                     } else {
                         Toast.makeText(getActivity(), "此单已无数据", Toast.LENGTH_LONG).show();
-
                     }
                 }
             }

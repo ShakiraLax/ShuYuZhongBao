@@ -135,7 +135,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="编号" />
+                        android:text="编号"
+                        android:textColor="@android:color/black" />
 
                     <View
                         android:layout_width="1dp"
@@ -147,7 +148,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:gravity="center"
-                        android:text="品名" />
+                        android:text="品名"
+                        android:textColor="@android:color/black" />
 
                     <View
                         android:layout_width="1dp"
@@ -159,7 +161,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="价格" />
+                        android:text="价格"
+                        android:textColor="@android:color/black" />
 
                     <View
                         android:layout_width="1dp"
@@ -171,7 +174,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="数量" />
+                        android:text="数量"
+                        android:textColor="@android:color/black" />
 
                 </LinearLayout>
 
