@@ -3,7 +3,10 @@ package com.sypm.shuyuzhongbao;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -36,7 +39,6 @@ import com.amap.api.services.route.WalkRouteResult;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MoneyList;
-import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.data.OrderBySn;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
@@ -55,11 +57,11 @@ import static android.R.attr.mode;
 public class OrderDetailActivity extends BaseActivity implements LocationSource, AMapLocationListener, RouteSearch.OnRouteSearchListener {
 
     private MoneyList.ListBean moneyList;
-    OrderBySn orderByShipSn;
-    OrderBySn orderByIndex;
-    TextView shipSn, name, phone, address, storeName, amount, feeWay, txt_orderStatus_detail;
-    Button customerReject, dispatchingDone;
-    String phoneNumber;
+    private OrderBySn orderByShipSn;
+    private OrderBySn orderByIndex;
+    private TextView shipSn, name, phone, address, storeName, amount, feeWay, txt_orderStatus_detail;
+    private Button customerReject, dispatchingDone;
+    private String phoneNumber;
 
 
     //显示地图需要的变量
@@ -71,14 +73,14 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     private OnLocationChangedListener mListener = null;//定位监听器
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
-    double WD, JD;
+    private String WD, JD;
     private RouteSearch mRouteSearch;
     private WalkRouteResult mWalkRouteResult;
     private TextView txtNote;
     private String shipSnFromFirstPage;
     private String shipSnFromGrab;
     private String SHIPSN;
-    private LinearLayout layoutOfOrderAndGoods;
+    private LinearLayout layoutOfOrderAndGoods, goods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
         layoutOfOrderAndGoods = (LinearLayout) findViewById(R.id.layoutOfOrderAndGoods);
+        goods = (LinearLayout) findViewById(R.id.goods);
 
         mRouteSearch = new RouteSearch(this);
 
@@ -110,6 +113,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
             }
         });
 
+        /*接单界面传过来的sn*/
         shipSnFromGrab = getIntent().getStringExtra("orderFromGrab");
         if (shipSnFromGrab != null) {
             Log.d("shipSnFromGrab", shipSnFromGrab);
@@ -117,11 +121,14 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
             setupOrderDetail();
         }
 
+        /*流水列表传过来的sn*/
         moneyList = (MoneyList.ListBean) getIntent().getSerializableExtra("item");
         if (moneyList != null) {
             Log.d("根据订单号获取订单详情", moneyList.shipSn);
             initOrderData();
         }
+
+        /*首页列表item传过来的sn*/
         shipSnFromFirstPage = getIntent().getStringExtra("shipSn");
         if (shipSnFromFirstPage != null) {
             Log.d("shipSnFromFirstPage", shipSnFromFirstPage);
@@ -164,6 +171,9 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                 if (response.body() != null) {
                     if (response.body().status == 1) {
                         orderByIndex = response.body();
+                        WD = orderByIndex.list.lat;
+                        JD = orderByIndex.list.lng;
+
                         address.setText("地址：" + orderByIndex.list.address);
                         name.setText("姓名：" + orderByIndex.list.name);
                         phone.setText("电话：" + orderByIndex.list.mobile);
@@ -174,50 +184,54 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                         txtNote.setText("备注：" + orderByIndex.list.note);
                         txt_orderStatus_detail.setText("订单状态：" + orderByIndex.list.orderStatus);
                         phoneNumber = orderByIndex.list.mobile;
-                        WD = Double.valueOf(orderByIndex.list.lat);
-                        JD = Double.valueOf(orderByIndex.list.lng);
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
                         if (goodsList != null) {
+                            goods.setVisibility(View.VISIBLE);
                             for (int i = 0; i < orderByIndex.list.goodsList.size(); i++) {
                                 TextView goodsTitle = new TextView(getApplicationContext());
-                                goodsTitle.setText("商品名称：" + goodsList.get(i).goodsTitle);
                                 goodsTitle.setTextColor(0xff000000);
                                 goodsTitle.setTextSize(14);
+                                goodsTitle.setLines(2);
+                                goodsTitle.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                                //"商品编码：" +
                                 TextView goodsSn = new TextView(getApplicationContext());
-                                goodsSn.setText("商品编码：" + goodsList.get(i).goodsSn);
+                                goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
                                 goodsSn.setTextSize(14);
-                                TextView originalPrice = new TextView(getApplicationContext());
-                                originalPrice.setText("商品原价格：" + goodsList.get(i).originalPrice);
-                                originalPrice.setTextColor(0xff000000);
-                                originalPrice.setTextSize(14);
+                                //"商品数量："
                                 TextView goodsNumber = new TextView(getApplicationContext());
-                                goodsNumber.setText("商品数量：" + goodsList.get(i).goodsNumber);
+                                goodsNumber.setText(goodsList.get(i).goodsNumber + "");
                                 goodsNumber.setTextColor(0xff000000);
+                                goodsNumber.setGravity(Gravity.CENTER);
                                 goodsNumber.setTextSize(14);
+                                //"商品优惠价格：" +
                                 TextView preferentialPrice = new TextView(getApplicationContext());
-                                preferentialPrice.setText("商品优惠价格：" + goodsList.get(i).preferentialPrice);
+                                preferentialPrice.setText(goodsList.get(i).preferentialPrice + "");
                                 preferentialPrice.setTextColor(0xff000000);
+                                preferentialPrice.setGravity(Gravity.CENTER);
                                 preferentialPrice.setTextSize(14);
-                                TextView isGift = new TextView(getApplicationContext());
                                 if (goodsList.get(i).isGift == 1) {
-                                    isGift.setText("是否是赠品：是");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle + "（赠品）");
+
+
                                 } else {
-                                    isGift.setText("是否是赠品：否");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle);
                                 }
-                                isGift.setTextColor(0xff000000);
-                                isGift.setTextSize(14);
-                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                params.setMargins(40, 10, 0, 0);
-                                layoutOfOrderAndGoods.addView(goodsTitle, params);
-                                layoutOfOrderAndGoods.addView(goodsSn, params);
-                                layoutOfOrderAndGoods.addView(originalPrice, params);
-                                layoutOfOrderAndGoods.addView(goodsNumber, params);
-                                layoutOfOrderAndGoods.addView(preferentialPrice, params);
-                                layoutOfOrderAndGoods.addView(isGift, params);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+                                LinearLayout.LayoutParams paramsTitle = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 3.0f);
+                                params.setMargins(0, 10, 0, 10);
+                                paramsTitle.setMargins(20, 10, 0, 10);
+                                LinearLayout linearLayout = new LinearLayout(getApplicationContext());
+                                linearLayout.setGravity(Gravity.HORIZONTAL_GRAVITY_MASK);
+                                linearLayout.addView(goodsSn, params);
+//                                linearLayout.addView(goodsSn, params);
+                                linearLayout.addView(goodsTitle, paramsTitle);
+                                linearLayout.addView(preferentialPrice, params);
+                                linearLayout.addView(goodsNumber, params);
+                                layoutOfOrderAndGoods.addView(linearLayout);
                             }
                         }
-                        if (orderByIndex.list.status != 1) {
+                        if (orderByIndex.list.status != 1 || !orderByIndex.list.orderStatus.equals("派送中")) {
                             customerReject.setVisibility(View.INVISIBLE);
                             dispatchingDone.setVisibility(View.INVISIBLE);
                         }
@@ -246,8 +260,8 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     if (response.body().status == 1) {
                         Toast.makeText(getActivity(), "成功" + moneyList.shipSn, Toast.LENGTH_LONG).show();
                         orderByShipSn = response.body();
-                        WD = Double.valueOf(orderByShipSn.list.lat);
-                        JD = Double.valueOf(orderByShipSn.list.lng);
+                        WD = orderByShipSn.list.lat;
+                        JD = orderByShipSn.list.lng;
                         address.setText("地址：" + orderByShipSn.list.address);
                         name.setText("姓名：" + orderByShipSn.list.name);
                         phone.setText("电话：" + orderByShipSn.list.mobile);
@@ -261,43 +275,48 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
 
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByShipSn.list.goodsList;
                         if (goodsList != null) {
+                            goods.setVisibility(View.VISIBLE);
                             for (int i = 0; i < orderByShipSn.list.goodsList.size(); i++) {
                                 TextView goodsTitle = new TextView(getApplicationContext());
-                                goodsTitle.setText("商品名称：" + goodsList.get(i).goodsTitle);
                                 goodsTitle.setTextColor(0xff000000);
                                 goodsTitle.setTextSize(14);
+                                goodsTitle.setLines(2);
+                                goodsTitle.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                                //"商品编码：" +
                                 TextView goodsSn = new TextView(getApplicationContext());
-                                goodsSn.setText("商品编码：" + goodsList.get(i).goodsSn);
+                                goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
                                 goodsSn.setTextSize(14);
-                                TextView originalPrice = new TextView(getApplicationContext());
-                                originalPrice.setText("商品原价格：" + goodsList.get(i).originalPrice);
-                                originalPrice.setTextColor(0xff000000);
-                                originalPrice.setTextSize(14);
+                                //"商品数量："
                                 TextView goodsNumber = new TextView(getApplicationContext());
-                                goodsNumber.setText("商品数量：" + goodsList.get(i).goodsNumber);
+                                goodsNumber.setText(goodsList.get(i).goodsNumber + "");
                                 goodsNumber.setTextColor(0xff000000);
+                                goodsNumber.setGravity(Gravity.CENTER);
                                 goodsNumber.setTextSize(14);
+                                //"商品优惠价格：" +
                                 TextView preferentialPrice = new TextView(getApplicationContext());
-                                preferentialPrice.setText("商品优惠价格：" + goodsList.get(i).preferentialPrice);
+                                preferentialPrice.setText(goodsList.get(i).preferentialPrice + "");
                                 preferentialPrice.setTextColor(0xff000000);
+                                preferentialPrice.setGravity(Gravity.CENTER);
                                 preferentialPrice.setTextSize(14);
-                                TextView isGift = new TextView(getApplicationContext());
                                 if (goodsList.get(i).isGift == 1) {
-                                    isGift.setText("是否是赠品：是");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle + "（赠品）");
+
                                 } else {
-                                    isGift.setText("是否是赠品：否");
+                                    goodsTitle.setText(goodsList.get(i).goodsTitle);
                                 }
-                                isGift.setTextColor(0xff000000);
-                                isGift.setTextSize(14);
-                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                params.setMargins(40, 10, 0, 0);
-                                layoutOfOrderAndGoods.addView(goodsTitle, params);
-                                layoutOfOrderAndGoods.addView(goodsSn, params);
-                                layoutOfOrderAndGoods.addView(originalPrice, params);
-                                layoutOfOrderAndGoods.addView(goodsNumber, params);
-                                layoutOfOrderAndGoods.addView(preferentialPrice, params);
-                                layoutOfOrderAndGoods.addView(isGift, params);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
+                                LinearLayout.LayoutParams paramsTitle = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 3.0f);
+                                params.setMargins(0, 10, 0, 10);
+                                paramsTitle.setMargins(20, 10, 0, 10);
+                                LinearLayout linearLayout = new LinearLayout(getApplicationContext());
+                                linearLayout.setGravity(Gravity.HORIZONTAL_GRAVITY_MASK);
+                                linearLayout.addView(goodsSn, params);
+//                                linearLayout.addView(goodsSn, params);
+                                linearLayout.addView(goodsTitle, paramsTitle);
+                                linearLayout.addView(preferentialPrice, params);
+                                linearLayout.addView(goodsNumber, params);
+                                layoutOfOrderAndGoods.addView(linearLayout);
                             }
                         }
 
@@ -338,8 +357,11 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 setResult(RESULT_OK);
                                 Toast.makeText(getActivity(), "客户拒单提交成功", Toast.LENGTH_LONG).show();
+                                startActivity(intent);
                                 finish();
                             } else {
                                 Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
@@ -365,8 +387,11 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 setResult(RESULT_OK);
                                 Toast.makeText(getActivity(), "提交成功", Toast.LENGTH_LONG).show();
+                                startActivity(intent);
                                 finish();
                             } else {
                                 Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
@@ -381,6 +406,17 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                 });
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        finish();
     }
 
     /*-----------------高德地图相关-----------------*/
@@ -404,7 +440,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(30000);
+        mLocationOption.setInterval(2000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -419,19 +455,18 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                     mListener.onLocationChanged(amapLocation);
                     StringBuffer buffer = new StringBuffer();
                     Log.d("第一次定位信息", buffer.toString());
-                    isFirstLoc = false;
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-                    LatLng latLng = new LatLng(WD, JD);
-                    LatLonPoint endLatLonPoint = new LatLonPoint(WD, JD);
+                    LatLng latLng = new LatLng(Double.valueOf(WD), Double.valueOf(JD));
+                    LatLonPoint endLatLonPoint = new LatLonPoint(Double.valueOf(WD), Double.valueOf(JD));
                     LatLonPoint startLatLonPoint = new LatLonPoint(amapLocation.getLatitude(), amapLocation.getLongitude());
 //                    Log.d("配送点", WD + JD);
                     final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(startLatLonPoint, endLatLonPoint);
 //                    RouteSearch.RideRouteQuery query = new RouteSearch.RideRouteQuery(fromAndTo, mode);
                     RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo, mode);
                     mRouteSearch.calculateWalkRouteAsyn(query);
-
-                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(WD, JD)));
+                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(Double.valueOf(WD), Double.valueOf(JD))));
                     final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("配送点").snippet("DefaultMarker"));
+                    isFirstLoc = false;
                 }
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。

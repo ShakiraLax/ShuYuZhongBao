@@ -3,9 +3,7 @@ package com.sypm.shuyuzhongbao.api;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
 import com.sypm.shuyuzhongbao.data.MoneyList;
-import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.data.OrderBySn;
-import com.sypm.shuyuzhongbao.data.OrderDetail;
 import com.sypm.shuyuzhongbao.data.OrderNew;
 import com.sypm.shuyuzhongbao.data.SelecteOrder;
 import com.sypm.shuyuzhongbao.data.TotalLine;
@@ -88,6 +86,10 @@ public interface ShuYuService {
     @FormUrlEncoded
     @POST("shiporder/order.html")
     Call<OrderBySn> getOrderDetail(@Field("orderSn") String orderSn);
+
+    @FormUrlEncoded
+    @POST("shiporder/order.html")
+    Call<OrderBySn> getOrderDetail(@Field("orderSn") String orderSn, @Field("force") String force);
 
     /*筛选订单*/
     @FormUrlEncoded

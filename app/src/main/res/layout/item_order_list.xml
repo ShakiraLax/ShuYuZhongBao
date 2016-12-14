@@ -27,7 +27,7 @@
             android:id="@+id/shipSn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.5"
+            android:layout_weight="2"
             android:gravity="center"
             android:text="203216"
             android:textSize="16sp" />

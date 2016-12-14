@@ -12,7 +12,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,7 +21,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/layoutOfOrderAndGoods"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
@@ -113,7 +114,7 @@
                     android:layout_marginTop="7dp"
                     android:paddingLeft="20dp"
                     android:text="订单状态："
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/holo_red_light"
                     android:textSize="16sp" />
 
                 <View
@@ -121,20 +122,78 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="5dp"
                     android:background="@color/line" />
+
+                <LinearLayout
+                    android:id="@+id/goods"
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="编号" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/line" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="center"
+                        android:text="品名" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/line" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="价格" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/line" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="数量" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOfOrderAndGoods"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
             </LinearLayout>
 
             <com.amap.api.maps.MapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="@color/line" />
+                android:layout_margin="5dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"

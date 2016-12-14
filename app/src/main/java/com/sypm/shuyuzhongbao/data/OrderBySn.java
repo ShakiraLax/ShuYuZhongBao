@@ -49,8 +49,8 @@ public class OrderBySn implements Serializable {
         public String mobile;
         public String address;
         public String name;
-        public double lat;
-        public double lng;
+        public String lat;
+        public String lng;
         public String store;
         public String shippingStoreSn;
         public String storeSn;
@@ -82,7 +82,7 @@ public class OrderBySn implements Serializable {
             public String goodsSn;
             public String goodsTitle;
             public int goodsNumber;
-            public int originalPrice;
+            public String originalPrice;
             public String preferentialPrice;
             public int isGift;
 

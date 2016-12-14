@@ -41,10 +41,33 @@ public class MyReceiver extends BroadcastReceiver {
             Log.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_MESSAGE));
             Log.d(TAG, "[MyReceiver] 接收到推送下来的自定义消息: " + bundle.getString(JPushInterface.EXTRA_TITLE));
             String type = bundle.getString(JPushInterface.EXTRA_TITLE);
+
+
             if (type.equals("zhipai")) {
                 Intent intentGrab = new Intent(context, GrabOrderActivity.class);
                 intentGrab.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intentGrab);
+            } else if (type.equals("mendian")) {
+                Intent intent1 = new Intent(context, OrderStatusActivity.class);
+//                intent1.putExtra("mendian", Sn);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent1);
+            } else if (type.equals("quhuo")) {
+                String shipSn = bundle.getString(JPushInterface.EXTRA_MESSAGE);
+                String Sn = shipSn.substring(3, 19);
+                Log.d("Sn", Sn);
+                Intent intent2 = new Intent(context, OrderStatusActivity.class);
+                intent2.putExtra("quhuo", Sn);
+                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent2);
+            } else if (type.equals("kefu")) {
+                String shipSn = bundle.getString(JPushInterface.EXTRA_MESSAGE);
+                String Sn = shipSn.substring(17, 33);
+                Log.d("Sn", Sn);
+                Intent intent3 = new Intent(context, OrderStatusActivity.class);
+                intent3.putExtra("kefu", Sn);
+                intent3.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent3);
             }
             processCustomMessage(context, bundle);
 

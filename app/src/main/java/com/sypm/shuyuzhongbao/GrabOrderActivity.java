@@ -2,13 +2,10 @@ package com.sypm.shuyuzhongbao;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,18 +28,12 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.maps.model.Polyline;
-import com.amap.api.maps.model.PolylineOptions;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
-import com.sypm.shuyuzhongbao.data.MoneyList;
-import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.data.OrderBySn;
-import com.sypm.shuyuzhongbao.data.OrderCurrent;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import retrofit2.Call;
@@ -111,7 +102,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                             setResult(RESULT_OK, intent);
                         } else {
                             Log.d("自动接单失败", order.list.orderSn);
-                            Toast.makeText(getActivity(), "自动接单失败或您已接单", Toast.LENGTH_LONG).show();
+//                            Toast.makeText(getActivity(), "自动接单失败或您已接单", Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -256,14 +247,16 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                                 Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
                                 intent.putExtra("orderFromGrab", order.list.orderSn);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(intent);
                                 setResult(RESULT_OK);
+                                startActivity(intent);
                                 finish();
                             } else if (response.body().status.equals("2")) {
-                                Toast.makeText(getActivity(), "单子没找到", Toast.LENGTH_LONG).show();
+                                countDownTimer.cancel();
+                                Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 finish();
                             } else if (response.body().status.equals("0")) {
-                                Toast.makeText(getActivity(), "接单失败", Toast.LENGTH_LONG).show();
+                                countDownTimer.cancel();
+                                Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 finish();
                             }
                         }
@@ -271,6 +264,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
+                        countDownTimer.cancel();
                         Toast.makeText(getActivity(), "接单操作失败", Toast.LENGTH_LONG).show();
                         finish();
                     }
@@ -294,6 +288,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                                 setResult(RESULT_OK);
                                 finish();
                             } else {
+                                countDownTimer.cancel();
                                 Toast.makeText(getApplicationContext(), "拒单失败", Toast.LENGTH_LONG).show();
                             }
                         }
@@ -301,6 +296,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
+                        countDownTimer.cancel();
                         Toast.makeText(getApplicationContext(), "拒单操作失败", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -328,9 +324,11 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
                         setResult(RESULT_OK);
                         countDownTimer.cancel();
                         mp.stop();
+                        startActivity(intent);
                         finish();
                     }
                 }).show();
@@ -355,7 +353,7 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(30000);
+        mLocationOption.setInterval(2000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -370,12 +368,13 @@ public class GrabOrderActivity extends BaseActivity implements LocationSource, A
                     mListener.onLocationChanged(amapLocation);
                     StringBuffer buffer = new StringBuffer();
                     Log.d("定位信息", buffer.toString());
-                    isFirstLoc = false;
+
                     aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
                     LatLng latLng = new LatLng(WD, JD);
 //                    Log.d("抢单界面配送点", WD + JD);
                     aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(WD, JD)));
                     final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("配送点").snippet("DefaultMarker"));
+                    isFirstLoc = false;
                 }
             } else {
                 //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。

@@ -54,13 +54,13 @@ import static android.app.Activity.RESULT_OK;
 
 public class IndexFragment extends BaseFragment implements LocationSource, AMapLocationListener {
 
-    ListView listView;
+    private ListView listView;
     private int recLen = 0;
     private boolean isOnline = true;
-    List<SelecteOrder.ListBean> list;
-    TextView endure, accept_num, salary, percent;
-    LinearLayout refresh;
-    TotalLine totalLine;
+    private List<SelecteOrder.ListBean> list;
+    private TextView endure, accept_num, salary, percent;
+    private LinearLayout refresh;
+    private TotalLine totalLine;
     private double WD, JD;//纬度lat,经度lng
     private boolean isFirstPass = true;
 
@@ -166,7 +166,6 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             @Override
             public void onClick(View v) {
                 initData();
-                setupListView();
             }
         });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -177,12 +176,14 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
                         intent.putExtra("yipaidan", list.get(position).getShipSn());
                         Log.i("yipaidan", list.get(position).getShipSn());
-                        startActivity(intent);
-                    } else {
+                        startActivityForResult(intent, 1000);
+                    } else if (viewLine2.getVisibility() == View.VISIBLE) {
                         Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
                         intent.putExtra("shipSn", list.get(position).getShipSn());
                         Log.i("shipSn", list.get(position).getShipSn());
-                        startActivity(intent);
+                        startActivityForResult(intent, 2000);
+                    } else {
+                        Toast.makeText(getActivity(), "已拒单不可查看", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

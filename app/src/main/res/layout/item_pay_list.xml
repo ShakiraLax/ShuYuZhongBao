@@ -43,7 +43,7 @@
             android:id="@+id/txt_shipStatus_show"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="0.6"
             android:text="已拒单"
             android:textSize="14sp" />
 
