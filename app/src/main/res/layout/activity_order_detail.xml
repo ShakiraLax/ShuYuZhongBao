@@ -117,6 +117,16 @@
                     android:textColor="@android:color/holo_red_light"
                     android:textSize="16sp" />
 
+                <TextView
+                    android:id="@+id/isGet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:paddingLeft="20dp"
+                    android:text="是否取货："
+                    android:textColor="@android:color/holo_red_light"
+                    android:textSize="16sp" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"

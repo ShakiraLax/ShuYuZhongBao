@@ -59,7 +59,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
     private MoneyList.ListBean moneyList;
     private OrderBySn orderByShipSn;
     private OrderBySn orderByIndex;
-    private TextView shipSn, name, phone, address, storeName, amount, feeWay, txt_orderStatus_detail;
+    private TextView shipSn, name, phone, address, storeName, amount, feeWay, txt_orderStatus_detail, isGet;
     private Button customerReject, dispatchingDone;
     private String phoneNumber;
 
@@ -97,6 +97,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
         feeWay = (TextView) findViewById(R.id.feeWay);
         txtNote = (TextView) findViewById(R.id.txt_note);
         txt_orderStatus_detail = (TextView) findViewById(R.id.txt_orderStatus_detail);
+        isGet = (TextView) findViewById(R.id.isGet);
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
         layoutOfOrderAndGoods = (LinearLayout) findViewById(R.id.layoutOfOrderAndGoods);
@@ -192,6 +193,11 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                         storeName.setText("门店名称：" + orderByIndex.list.storeName);
                         txtNote.setText("备注：" + orderByIndex.list.note);
                         txt_orderStatus_detail.setText("订单状态：" + orderByIndex.list.orderStatus);
+                        if (orderByIndex.list.isGet == 1) {
+                            isGet.setText("是否取货：" + "已取货");
+                        } else {
+                            isGet.setText("是否取货：" + "未取货");
+                        }
                         phoneNumber = orderByIndex.list.mobile;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
                         if (goodsList != null) {
@@ -280,6 +286,11 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
                         storeName.setText("门店名称：" + orderByShipSn.list.storeName);
                         txtNote.setText("备注：" + orderByShipSn.list.note);
                         txt_orderStatus_detail.setText("订单状态：" + orderByShipSn.list.orderStatus);
+                        if (orderByShipSn.list.isGet == 1) {
+                            isGet.setText("是否取货：" + "已取货");
+                        } else {
+                            isGet.setText("是否取货：" + "未取货");
+                        }
                         phoneNumber = orderByShipSn.list.mobile;
 
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByShipSn.list.goodsList;

@@ -67,6 +67,8 @@ public class OrderBySn implements Serializable {
         public String note;
         public String orderStatus;
         public int deliverId;
+        public int isGet;
+
         public List<GoodsListBean> goodsList;
 
         public static class GoodsListBean implements Serializable {
