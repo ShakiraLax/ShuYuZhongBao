@@ -267,7 +267,7 @@ public class OrderDetailActivity extends BaseActivity implements LocationSource,
             public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
                 if (response.body() != null) {
                     if (response.body().status == 1) {
-                        Toast.makeText(getActivity(), "成功" + moneyList.shipSn, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getActivity(), "成功" + moneyList.shipSn, Toast.LENGTH_LONG).show();
                         orderByShipSn = response.body();
                         WD = orderByShipSn.list.lat;
                         JD = orderByShipSn.list.lng;

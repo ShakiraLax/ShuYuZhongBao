@@ -30,8 +30,6 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
-import com.sypm.shuyuzhongbao.data.MessageList;
-import com.sypm.shuyuzhongbao.data.Order;
 import com.sypm.shuyuzhongbao.data.OrderBySn;
 import com.sypm.shuyuzhongbao.data.SelecteOrder;
 import com.sypm.shuyuzhongbao.data.TotalLine;
@@ -317,6 +315,14 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 });
             }
         });
+    }
+
+    /*fragment切换时执行*/
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Log.d("生命周期", "执行");
+        super.onHiddenChanged(hidden);
+        setupListView();
     }
 
     private void autoLine() {

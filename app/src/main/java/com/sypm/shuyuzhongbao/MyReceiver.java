@@ -56,11 +56,11 @@ public class MyReceiver extends BroadcastReceiver {
                 String shipSn = bundle.getString(JPushInterface.EXTRA_MESSAGE);
                 String Sn = shipSn.substring(3, 19);
                 Log.d("Sn", Sn);
-//                Intent intent2 = new Intent(context, OrderStatusActivity.class);
-                Intent intent2 = new Intent(context, OrderDetailActivity.class);
+                Intent intent2 = new Intent(context, OrderStatusActivity.class);
+//                Intent intent2 = new Intent(context, OrderDetailActivity.class);
                 intent2.putExtra("quhuo", Sn);
-//                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 context.startActivity(intent2);
             } else if (type.equals("kefu")) {
                 String shipSn = bundle.getString(JPushInterface.EXTRA_MESSAGE);
