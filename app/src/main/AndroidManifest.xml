@@ -132,7 +132,19 @@
             android:name=".UpdateWorkTimeActivity"
             android:label="更新上班时间"
             android:screenOrientation="portrait" />
-        <!--<activity android:name=".WelcomeActivity" />-->
+        <activity
+            android:name=".OrderDetailActivity2"
+            android:label="订单信息"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".GrabOrderActivity2"
+            android:label="抢单"
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
+        <!--android:theme="@style/Dialog.NoTitle"-->
+        <!--android:theme="@style/Theme.AppCompat.Dialog.Alert"-->
+        <!--android:theme="@style/Base.Theme.AppCompat.Dialog.MinWidth"-->
+        <!--android:theme="@style/Base.Theme.AppCompat.Dialog.FixedSize"-->
 
         <!-- 高德 -->
         <meta-data

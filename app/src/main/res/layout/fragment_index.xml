@@ -101,7 +101,7 @@
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingBottom="10dp"
-                android:text="已派单"
+                android:text="进行中"
                 android:textSize="20dp" />
 
             <View
@@ -127,7 +127,7 @@
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingBottom="10dp"
-                android:text="执行中"
+                android:text="已完成"
                 android:textColor="@color/orange"
                 android:textSize="20dp" />
 
@@ -153,7 +153,7 @@
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingBottom="10dp"
-                android:text="已拒单"
+                android:text="待处理"
                 android:textSize="20dp" />
 
             <View
@@ -173,31 +173,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/txt_online_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="上线中"
+            android:background="@drawable/rect_onleft"
+            android:paddingBottom="10dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:background="@drawable/rect_onleft"
+            android:text="上线中"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
+
         <TextView
             android:id="@+id/txt_online_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="我要下线"
+            android:background="@drawable/rect_onright"
+            android:paddingBottom="10dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:background="@drawable/rect_onright"
+            android:text="我要下线"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 

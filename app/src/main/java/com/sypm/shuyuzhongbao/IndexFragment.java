@@ -318,12 +318,12 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     /*fragment切换时执行*/
-    @Override
+    /*@Override
     public void onHiddenChanged(boolean hidden) {
         Log.d("生命周期", "执行");
         super.onHiddenChanged(hidden);
         setupListView();
-    }
+    }*/
 
     private void autoLine() {
         /*自动上线*/
