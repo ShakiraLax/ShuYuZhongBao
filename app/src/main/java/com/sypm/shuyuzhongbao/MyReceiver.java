@@ -44,7 +44,8 @@ public class MyReceiver extends BroadcastReceiver {
 
 
             if (type.equals("zhipai")) {
-                Intent intentGrab = new Intent(context, GrabOrderActivity.class);
+//                Intent intentGrab = new Intent(context, GrabOrderActivity.class);
+                Intent intentGrab = new Intent(context, GrabOrderActivity2.class);
                 intentGrab.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intentGrab);
             } else if (type.equals("mendian")) {

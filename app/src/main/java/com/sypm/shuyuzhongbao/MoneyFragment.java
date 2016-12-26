@@ -105,7 +105,7 @@ public class MoneyFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (moneyList != null) {
-                    Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                    Intent intent = new Intent(getActivity(), OrderDetailActivity2.class);
                     intent.putExtra("item", moneyList.get(position));
                     startActivity(intent);
                 }

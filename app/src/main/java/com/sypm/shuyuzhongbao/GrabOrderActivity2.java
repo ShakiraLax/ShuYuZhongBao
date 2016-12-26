@@ -48,15 +48,14 @@ import retrofit2.Response;
 
 public class GrabOrderActivity2 extends BaseActivity {
 
-    /*TextView shipSn, name, phone, address, timer, reject;
+    TextView totalDistance, storeNameAddress, distanceA, distanceB, address, timer, reject;
     LinearLayout accept;
     OrderBySn order;
     OrderBySn orderFromJP;
-    String orderFromYiPaiDan;*/
 
     final MediaPlayer mp = new MediaPlayer();
 
-    /*CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+    CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
         @Override
         public void onTick(long millisUntilFinished) {
             timer.setText("倒计时" + (millisUntilFinished / 1000));
@@ -70,7 +69,7 @@ public class GrabOrderActivity2 extends BaseActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            *//*设置倒计时完毕时自动接单*//*
+            /*设置倒计时完毕时自动接单*/
             Call<DataResult> orderSure = RetrofitClient.getInstance().getSYService().orderSure(order.list.orderSn);
             orderSure.enqueue(new Callback<DataResult>() {
                 @Override
@@ -90,7 +89,6 @@ public class GrabOrderActivity2 extends BaseActivity {
                             setResult(RESULT_OK, intent);
                         } else {
                             Log.d("自动接单失败", order.list.orderSn);
-//                            Toast.makeText(getActivity(), "自动接单失败或您已接单", Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -101,9 +99,7 @@ public class GrabOrderActivity2 extends BaseActivity {
                 }
             });
         }
-    };*/
-    private TextView txtDialogNote;
-    private String shipSnUnacceptStr;
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,39 +108,22 @@ public class GrabOrderActivity2 extends BaseActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
         setContentView(R.layout.activity_dialog2);
 
-        /*shipSn = (TextView) findViewById(R.id.shipSn);
-        name = (TextView) findViewById(R.id.name);
-        phone = (TextView) findViewById(R.id.phone);
+        totalDistance = (TextView) findViewById(R.id.totalDistance);
+        storeNameAddress = (TextView) findViewById(R.id.storeNameAddress);
+        distanceA = (TextView) findViewById(R.id.distanceA);
+        distanceB = (TextView) findViewById(R.id.distanceB);
         address = (TextView) findViewById(R.id.address);
         timer = (TextView) findViewById(R.id.timer);
-        txtDialogNote = (TextView) findViewById(R.id.txt_dialog_note);
         reject = (TextView) findViewById(R.id.reject);
         accept = (LinearLayout) findViewById(R.id.accept);
-        orderFromYiPaiDan = getIntent().getStringExtra("yipaidan");
-        if (orderFromYiPaiDan != null) {
-            Log.d("首页已派单", orderFromYiPaiDan);
-            initOrder(orderFromYiPaiDan);
-        } else {
-            initDataFromJP();
-        }*/
 
-//        initData();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (MotionEvent.ACTION_OUTSIDE == event.getAction()) {
-            Log.d("点击外部事件", "点击了");
-            return true;
-        }
-
-        // Delegate everything else to Activity.
-        return super.onTouchEvent(event);
+        initDataFromJP();
+        initData();
     }
 
     /*极光推送自动打开抢单界面*/
-    /*private void initDataFromJP() {
-        *//*未接受订单*//*
+    private void initDataFromJP() {
+        /*未接受订单*/
         Call<OrderBySn> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
         getOrder.enqueue(new Callback<OrderBySn>() {
             @Override
@@ -154,13 +133,12 @@ public class GrabOrderActivity2 extends BaseActivity {
                         orderFromJP = response.body();
                         order = response.body();//接单拒单用
                         countDownTimer.start();
-                        shipSn.setText("单号：" + orderFromJP.list.orderSn);
-                        name.setText("姓名：" + orderFromJP.list.name);
-                        address.setText("地址：" + orderFromJP.list.address);
-                        phone.setText("电话：" + orderFromJP.list.mobile);
-                        txtDialogNote.setText("备注：" + orderFromJP.list.note);
-                        WD = Double.valueOf(orderFromJP.list.lat);
-                        JD = Double.valueOf(orderFromJP.list.lng);
+                        totalDistance.setText("订单总距离：" + (Integer.valueOf(orderFromJP.list.distanceA) + Integer.valueOf(orderFromJP.list.distanceB)) + "米");
+                        distanceA.setText("距您：" + orderFromJP.list.distanceA + "米");
+                        distanceB.setText("距发货地点：" + orderFromJP.list.distanceB + "米");
+                        storeNameAddress.setText("发：" + orderFromJP.list.storeName + "  " + orderFromJP.list.storeAddress);
+                        address.setText("收：" + orderFromJP.list.address);
+
                     } else {
                         Toast.makeText(getActivity(), "订单无数据", Toast.LENGTH_LONG).show();
                     }
@@ -174,40 +152,10 @@ public class GrabOrderActivity2 extends BaseActivity {
                 Toast.makeText(getActivity(), "服务器获取失败", Toast.LENGTH_LONG).show();
             }
         });
-    }*/
+    }
 
-    /*public void initOrder(String orderFromYiPaiDan) {
-        Call<OrderBySn> call = RetrofitClient.getInstance().getSYService().getOrderDetail(orderFromYiPaiDan);
-        call.enqueue(new Callback<OrderBySn>() {
-            @Override
-            public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
-                if (response.body() != null) {
-                    if (response.body().status == 1) {
-                        countDownTimer.start();
-                        order = response.body();
-                        shipSn.setText("单号：" + order.list.orderSn);
-                        name.setText("姓名：" + order.list.name);
-                        address.setText("地址：" + order.list.address);
-                        phone.setText("电话：" + order.list.mobile);
-                        txtDialogNote.setText("备注：" + order.list.note);
-                        WD = Double.valueOf(order.list.lat);
-                        JD = Double.valueOf(order.list.lng);
-                    }
-                } else {
-                    Log.d("首页已派单", "获取失败");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<OrderBySn> call, Throwable t) {
-                Log.d("首页已派单", "服务器获取失败");
-            }
-        });
-
-    }*/
-
-    /*private void initData() {
-        *//*接单*//*
+    private void initData() {
+        /*接单*/
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,7 +167,7 @@ public class GrabOrderActivity2 extends BaseActivity {
                             if (response.body().status.equals("1")) {
                                 countDownTimer.cancel();
                                 Toast.makeText(getActivity(), "接单成功！", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
+                                Intent intent = new Intent(getActivity(), OrderDetailActivity2.class);
                                 intent.putExtra("orderFromGrab", order.list.orderSn);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 setResult(RESULT_OK);
@@ -249,7 +197,7 @@ public class GrabOrderActivity2 extends BaseActivity {
             }
         });
 
-        *//*拒单*//*
+        /*拒单*/
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -282,7 +230,7 @@ public class GrabOrderActivity2 extends BaseActivity {
             }
         });
 
-    }*/
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -303,12 +251,12 @@ public class GrabOrderActivity2 extends BaseActivity {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        /*Intent intent = new Intent(getActivity(), MainActivity.class);
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
                         setResult(RESULT_OK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         countDownTimer.cancel();
                         mp.stop();
-                        startActivity(intent);*/
+                        startActivity(intent);
                         finish();
                     }
                 }).show();

@@ -59,8 +59,8 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     private MoneyList.ListBean moneyList;
     private OrderBySn orderByShipSn;
     private OrderBySn orderByIndex;
-    private TextView shipSn, name, phone, address, storeName, amount, feeWay, txt_orderStatus_detail, isGet;
-    private Button customerReject, dispatchingDone;
+    private TextView shipSn, name, phone, address, storeName, storeAddress, amount, feeWay, txt_orderStatus_detail, isGet, modify, distanceA, distanceB, txtNote, payed;
+    private Button customerReject, dispatchingDone, connectStore, connectUser;
     private String phoneNumber;
 
 
@@ -76,7 +76,6 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     private String WD, JD;
     private RouteSearch mRouteSearch;
     private WalkRouteResult mWalkRouteResult;
-    private TextView txtNote;
     private String shipSnFromFirstPage;
     private String shipSnFromGrab;
     private String shipSnFromJP;
@@ -88,7 +87,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail2);
 
-        /*shipSn = (TextView) findViewById(R.id.shipSn);
+        shipSn = (TextView) findViewById(R.id.shipSn);
         name = (TextView) findViewById(R.id.name);
         phone = (TextView) findViewById(R.id.phone);
         address = (TextView) findViewById(R.id.address);
@@ -98,14 +97,41 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         txtNote = (TextView) findViewById(R.id.txt_note);
         txt_orderStatus_detail = (TextView) findViewById(R.id.txt_orderStatus_detail);
         isGet = (TextView) findViewById(R.id.isGet);
+        modify = (TextView) findViewById(R.id.modify);
+        storeAddress = (TextView) findViewById(R.id.storeAddress);
+        distanceA = (TextView) findViewById(R.id.distanceA);
+        distanceB = (TextView) findViewById(R.id.distanceB);
+        payed = (TextView) findViewById(R.id.payed);
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
+        connectStore = (Button) findViewById(R.id.connectStore);
+        connectUser = (Button) findViewById(R.id.connectUser);
         layoutOfOrderAndGoods = (LinearLayout) findViewById(R.id.layoutOfOrderAndGoods);
-        goods = (LinearLayout) findViewById(R.id.goods);*/
+        goods = (LinearLayout) findViewById(R.id.goods);
 
+        /*修改门店，跳转到门店列表*/
+        modify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), StoreListActivity.class);
+                intent.putExtra("shipSnFromOrderDetail2", SHIPSN);
+                startActivityForResult(intent, 3000);
+            }
+        });
+
+        /*路线规划*/
         mRouteSearch = new RouteSearch(this);
 
-        /*phone.setOnClickListener(new View.OnClickListener() {
+        /*联系门店*/
+        connectStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "暂无电话", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*联系买家*/
+        connectUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -113,24 +139,35 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                 intent.setData(data);
                 startActivity(intent);
             }
-        });*/
+        });
+
+        /*拨打电话*/
+        phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                Uri data = Uri.parse("tel:" + phoneNumber);
+                intent.setData(data);
+                startActivity(intent);
+            }
+        });
 
         /*接单界面传过来的sn*/
-        /*shipSnFromGrab = getIntent().getStringExtra("orderFromGrab");
+        shipSnFromGrab = getIntent().getStringExtra("orderFromGrab");
         if (shipSnFromGrab != null) {
             Log.d("shipSnFromGrab", shipSnFromGrab);
             SHIPSN = shipSnFromGrab;
             setupOrderDetail();
         }
 
-        *//*流水列表传过来的sn*//*
+        /*流水列表传过来的sn*/
         moneyList = (MoneyList.ListBean) getIntent().getSerializableExtra("item");
         if (moneyList != null) {
             Log.d("根据订单号获取订单详情", moneyList.shipSn);
             initOrderData();
         }
 
-        *//*首页列表item传过来的sn*//*
+        /*首页列表item传过来的sn*/
         shipSnFromFirstPage = getIntent().getStringExtra("shipSn");
         if (shipSnFromFirstPage != null) {
             Log.d("shipSnFromFirstPage", shipSnFromFirstPage);
@@ -138,14 +175,14 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             setupOrderDetail();
         }
 
-        *//*极光推送传过来的sn*//*
+        /*极光推送传过来的sn*/
         shipSnFromJP = getIntent().getStringExtra("quhuo");
         if (shipSnFromJP != null) {
             Log.d("shipSnFromJP", shipSnFromJP);
             SHIPSN = shipSnFromJP;
             setupOrderDetail();
         }
-        initData();*/
+        initData();
         //显示地图
         mapView = (MapView) findViewById(R.id.mapView);
         //必须要写
@@ -173,7 +210,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     }
 
     //根据首页订单号展示订单详情包括商品信息
-    /*private void setupOrderDetail() {
+    private void setupOrderDetail() {
         final Call<OrderBySn> orderDetailCall = RetrofitClient.getInstance().getSYService().getOrderDetail(SHIPSN);
         orderDetailCall.enqueue(new Callback<OrderBySn>() {
             @Override
@@ -183,20 +220,23 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         orderByIndex = response.body();
                         WD = orderByIndex.list.lat;
                         JD = orderByIndex.list.lng;
-
-                        address.setText("地址：" + orderByIndex.list.address);
+                        shipSn.setText("定单号：" + orderByIndex.list.orderSn);
+                        storeName.setText("发：" + orderByIndex.list.storeName);
+                        storeAddress.setText(orderByIndex.list.storeAddress);
+                        address.setText("收：" + orderByIndex.list.address);
                         name.setText("姓名：" + orderByIndex.list.name);
                         phone.setText("电话：" + orderByIndex.list.mobile);
-                        shipSn.setText("单号：" + orderByIndex.list.orderSn);
-                        amount.setText("订单金额：" + orderByIndex.list.amount);
+                        distanceA.setText(orderByIndex.list.distanceA + "米");
+                        distanceB.setText(orderByIndex.list.distanceB + "米");
+                        amount.setText("订单总额：" + orderByIndex.list.amount);
+                        payed.setText("实付金额：" + orderByIndex.list.payed);
                         feeWay.setText("支付方式：" + orderByIndex.list.payCode);
-                        storeName.setText("门店名称：" + orderByIndex.list.storeName);
                         txtNote.setText("备注：" + orderByIndex.list.note);
-                        txt_orderStatus_detail.setText("订单状态：" + orderByIndex.list.orderStatus);
                         if (orderByIndex.list.isGet == 1) {
-                            isGet.setText("是否取货：" + "已取货");
+                            txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "已取货");
                         } else {
-                            isGet.setText("是否取货：" + "未取货");
+                            modify.setVisibility(View.VISIBLE);
+                            txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "未取货");
                         }
                         phoneNumber = orderByIndex.list.mobile;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
@@ -208,7 +248,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 goodsTitle.setTextSize(14);
                                 goodsTitle.setLines(2);
                                 goodsTitle.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-                                //"商品编码：" +
+                                //"商品编码："
                                 TextView goodsSn = new TextView(getApplicationContext());
                                 goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
@@ -219,7 +259,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 goodsNumber.setTextColor(0xff000000);
                                 goodsNumber.setGravity(Gravity.CENTER);
                                 goodsNumber.setTextSize(14);
-                                //"商品优惠价格：" +
+                                //"商品优惠价格："
                                 TextView preferentialPrice = new TextView(getApplicationContext());
                                 preferentialPrice.setText(goodsList.get(i).preferentialPrice + "");
                                 preferentialPrice.setTextColor(0xff000000);
@@ -227,8 +267,6 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 preferentialPrice.setTextSize(14);
                                 if (goodsList.get(i).isGift == 1) {
                                     goodsTitle.setText(goodsList.get(i).goodsTitle + "（赠品）");
-
-
                                 } else {
                                     goodsTitle.setText(goodsList.get(i).goodsTitle);
                                 }
@@ -239,7 +277,6 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 LinearLayout linearLayout = new LinearLayout(getApplicationContext());
                                 linearLayout.setGravity(Gravity.HORIZONTAL_GRAVITY_MASK);
                                 linearLayout.addView(goodsSn, params);
-//                                linearLayout.addView(goodsSn, params);
                                 linearLayout.addView(goodsTitle, paramsTitle);
                                 linearLayout.addView(preferentialPrice, params);
                                 linearLayout.addView(goodsNumber, params);
@@ -265,7 +302,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         });
     }
 
-    *//*根据收入列表传输过来的shipSn获取订单详情*//*
+    /*根据收入列表传输过来的shipSn获取订单详情*/
     private void initOrderData() {
         Call<OrderBySn> call = RetrofitClient.getInstance().getSYService().getOrderDetail(moneyList.shipSn);
         call.enqueue(new Callback<OrderBySn>() {
@@ -277,19 +314,23 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         orderByShipSn = response.body();
                         WD = orderByShipSn.list.lat;
                         JD = orderByShipSn.list.lng;
-                        address.setText("地址：" + orderByShipSn.list.address);
+                        shipSn.setText("定单号：" + orderByShipSn.list.orderSn);
+                        storeName.setText("发：" + orderByShipSn.list.storeName);
+                        storeAddress.setText(orderByShipSn.list.storeAddress);
+                        address.setText("收：" + orderByShipSn.list.address);
                         name.setText("姓名：" + orderByShipSn.list.name);
                         phone.setText("电话：" + orderByShipSn.list.mobile);
-                        shipSn.setText("单号：" + orderByShipSn.list.orderSn);
-                        amount.setText("订单金额：" + orderByShipSn.list.amount);
+                        distanceA.setText(orderByShipSn.list.distanceA + "米");
+                        distanceB.setText(orderByShipSn.list.distanceB + "米");
+                        amount.setText("订单总额：" + orderByShipSn.list.amount);
+                        payed.setText("实付金额：" + orderByShipSn.list.payed);
                         feeWay.setText("支付方式：" + orderByShipSn.list.payCode);
-                        storeName.setText("门店名称：" + orderByShipSn.list.storeName);
                         txtNote.setText("备注：" + orderByShipSn.list.note);
-                        txt_orderStatus_detail.setText("订单状态：" + orderByShipSn.list.orderStatus);
                         if (orderByShipSn.list.isGet == 1) {
-                            isGet.setText("是否取货：" + "已取货");
+                            txt_orderStatus_detail.setText(orderByShipSn.list.orderStatus + "  " + "已取货");
                         } else {
-                            isGet.setText("是否取货：" + "未取货");
+                            modify.setVisibility(View.VISIBLE);
+                            txt_orderStatus_detail.setText(orderByShipSn.list.orderStatus + "  " + "未取货");
                         }
                         phoneNumber = orderByShipSn.list.mobile;
 
@@ -367,7 +408,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     }
 
     private void initData() {
-        *//*客户拒单*//*
+        /*客户拒单*/
         customerReject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -397,7 +438,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             }
         });
 
-        *//*完成配送*//*
+        /*完成配送*/
         dispatchingDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -426,7 +467,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                 });
             }
         });
-    }*/
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -437,6 +478,14 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     public void onBackPressed() {
         setResult(RESULT_OK);
         finish();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 3000 && resultCode == RESULT_OK) {
+            setupOrderDetail();
+        }
     }
 
     /*-----------------高德地图相关-----------------*/
@@ -581,9 +630,5 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
 
     }
 
-    public void qiangdanClick(View view) {
-        Intent intent = new Intent(getActivity(), GrabOrderActivity2.class);
-        startActivity(intent);
-    }
 }
 

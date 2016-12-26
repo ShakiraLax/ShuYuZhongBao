@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,9 +90,11 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     private TextView txtMyOrder;
     private TextView txtWorkingOrder;
     private TextView txtPassOrder;
+    private TextView txtPassOrder2;
     private View viewLine1;
     private View viewLine2;
     private View viewLine3;
+    private View viewLine4;
     private Calendar calendar;
     private ListAdapter listAdapter;
     private TextView txtOnlinLeft;
@@ -134,9 +137,11 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         txtMyOrder = (TextView) inflate.findViewById(R.id.txt_myorder_index);
         txtWorkingOrder = (TextView) inflate.findViewById(R.id.txt_workingorder_index);
         txtPassOrder = (TextView) inflate.findViewById(R.id.txt_passorder_index);
+        txtPassOrder2 = (TextView) inflate.findViewById(R.id.txt_passorder2_index);
         viewLine1 = inflate.findViewById(R.id.view_line1);
         viewLine2 = inflate.findViewById(R.id.view_line2);
         viewLine3 = inflate.findViewById(R.id.view_line3);
+        viewLine4 = inflate.findViewById(R.id.view_line4);
     }
 
     @Nullable
@@ -170,7 +175,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (list != null) {
-                    if (viewLine1.getVisibility() == View.VISIBLE) {
+                    /*if (viewLine1.getVisibility() == View.VISIBLE) {
                         Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
                         intent.putExtra("yipaidan", list.get(position).getShipSn());
                         Log.i("yipaidan", list.get(position).getShipSn());
@@ -182,6 +187,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         startActivityForResult(intent, 2000);
                     } else {
                         Toast.makeText(getActivity(), "已拒单不可查看", Toast.LENGTH_SHORT).show();
+                    }*/
+                    if (viewLine4.getVisibility() == View.VISIBLE) {
+                        Toast.makeText(getActivity(), "已拒单不可查看", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Intent intent = new Intent(getActivity(), OrderDetailActivity2.class);
+                        intent.putExtra("shipSn", list.get(position).getShipSn());
+                        startActivityForResult(intent, 2000);
                     }
                 }
             }
@@ -225,13 +237,15 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 txtMyOrder.setTextColor(0xfff7ac47);
                 txtWorkingOrder.setTextColor(0xff92928e);
                 txtPassOrder.setTextColor(0xff92928e);
+                txtPassOrder2.setTextColor(0xff92928e);
                 viewLine1.setVisibility(View.VISIBLE);
                 viewLine2.setVisibility(View.INVISIBLE);
                 viewLine3.setVisibility(View.INVISIBLE);
+                viewLine4.setVisibility(View.INVISIBLE);
                 list.clear();
                 listAdapter = new ListAdapter(getContext(), list, isOnline);
                 listView.setAdapter(listAdapter);
-                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("1", getDate(), "1");
+                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("5", getDate(), "1");
                 selectCall.enqueue(new Callback<SelecteOrder>() {
                     @Override
                     public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
@@ -257,13 +271,15 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 txtMyOrder.setTextColor(0xff92928e);
                 txtWorkingOrder.setTextColor(0xfff7ac47);
                 txtPassOrder.setTextColor(0xff92928e);
+                txtPassOrder2.setTextColor(0xff92928e);
                 viewLine1.setVisibility(View.INVISIBLE);
                 viewLine2.setVisibility(View.VISIBLE);
                 viewLine3.setVisibility(View.INVISIBLE);
+                viewLine4.setVisibility(View.INVISIBLE);
                 list.clear();
                 listAdapter = new ListAdapter(getContext(), list, isOnline);
                 listView.setAdapter(listAdapter);
-                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("2", getDate(), "1");
+                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("6", getDate(), "1");
                 selectCall.enqueue(new Callback<SelecteOrder>() {
                     @Override
                     public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
@@ -289,9 +305,45 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 txtMyOrder.setTextColor(0xff92928e);
                 txtWorkingOrder.setTextColor(0xff92928e);
                 txtPassOrder.setTextColor(0xfff7ac47);
+                txtPassOrder2.setTextColor(0xff92928e);
                 viewLine1.setVisibility(View.INVISIBLE);
                 viewLine2.setVisibility(View.INVISIBLE);
                 viewLine3.setVisibility(View.VISIBLE);
+                viewLine4.setVisibility(View.INVISIBLE);
+                list.clear();
+                listAdapter = new ListAdapter(getContext(), list, isOnline);
+                listView.setAdapter(listAdapter);
+                Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("4", getDate(), "1");
+                selectCall.enqueue(new Callback<SelecteOrder>() {
+                    @Override
+                    public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().getStatus() == 1) {
+                                list = response.body().getList();
+//                                listView.setAdapter(new ListAdapter(getContext(), list));
+                                listAdapter.refresh(list);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+        txtPassOrder2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtMyOrder.setTextColor(0xff92928e);
+                txtWorkingOrder.setTextColor(0xff92928e);
+                txtPassOrder.setTextColor(0xff92928e);
+                txtPassOrder2.setTextColor(0xfff7ac47);
+                viewLine1.setVisibility(View.INVISIBLE);
+                viewLine2.setVisibility(View.INVISIBLE);
+                viewLine3.setVisibility(View.INVISIBLE);
+                viewLine4.setVisibility(View.VISIBLE);
                 list.clear();
                 listAdapter = new ListAdapter(getContext(), list, isOnline);
                 listView.setAdapter(listAdapter);
@@ -350,11 +402,9 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 if (response.body() != null) {
                     if (response.body().status == 1) {
                         //跳转到接单界面
-                        Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                        intent.putExtra("indexRefresh", response.body());
+                        Intent intent = new Intent(getActivity(), GrabOrderActivity2.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
-//                        startActivityForResult(intent, 1000);
                     } else {
 
                     }
@@ -420,9 +470,12 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                             txtWorkingOrder.setClickable(false);
                             txtPassOrder.setTextColor(Color.GRAY);
                             txtPassOrder.setClickable(false);
+                            txtPassOrder2.setTextColor(Color.GRAY);
+                            txtPassOrder2.setClickable(false);
                             viewLine1.setBackgroundResource(R.color.txtcolornoclick);
                             viewLine2.setBackgroundResource(R.color.txtcolornoclick);
                             viewLine3.setBackgroundResource(R.color.txtcolornoclick);
+                            viewLine4.setBackgroundResource(R.color.txtcolornoclick);
 
                             isOnline = false;
                             listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
@@ -472,9 +525,14 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                                 txtPassOrder.setTextColor(getResources().getColor(R.color.orange));
                             }
                             txtPassOrder.setClickable(true);
+                            if (viewLine4.getVisibility() == View.VISIBLE) {
+                                txtPassOrder2.setTextColor(getResources().getColor(R.color.orange));
+                            }
+                            txtPassOrder2.setClickable(true);
                             viewLine1.setBackgroundResource(R.color.orange);
                             viewLine2.setBackgroundResource(R.color.orange);
                             viewLine3.setBackgroundResource(R.color.orange);
+                            viewLine4.setBackgroundResource(R.color.orange);
                             isOnline = true;
                             listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
                         }
@@ -492,13 +550,17 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000 && resultCode == RESULT_OK) {
-            initData();
-            setupListView();
-        }
         if (requestCode == 2000 && resultCode == RESULT_OK) {
             initData();
-            setupListView();
+            if (viewLine1.getVisibility() == View.VISIBLE) {
+                setupListView2("5");
+            } else if (viewLine2.getVisibility() == View.VISIBLE) {
+                setupListView2("6");
+            } else if (viewLine3.getVisibility() == View.VISIBLE) {
+                setupListView2("4");
+            } else {
+                setupListView2("3");
+            }
         }
     }
 
@@ -517,7 +579,28 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     //获取正在执行的订单
     private void setupListView() {
 //        listView.setAdapter(new ListAdapter(getContext(), null));
-        Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("2", getDate(), "1");
+        Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("5", getDate(), "1");
+        selectCall.enqueue(new Callback<SelecteOrder>() {
+            @Override
+            public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
+                        list = response.body().getList();
+                        listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void setupListView2(String type) {
+//        listView.setAdapter(new ListAdapter(getContext(), null));
+        Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder(type, getDate(), "1");
         selectCall.enqueue(new Callback<SelecteOrder>() {
             @Override
             public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {

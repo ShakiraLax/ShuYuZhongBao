@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
+        android:lines="2"
         android:text="山大北路56号，金泰花园1楼"
         android:textColor="#000000"
         android:textSize="18sp" />

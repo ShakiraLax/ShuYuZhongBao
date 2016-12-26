@@ -68,6 +68,11 @@ public class OrderBySn implements Serializable {
         public String orderStatus;
         public int deliverId;
         public int isGet;
+        public int distanceA;
+        public int distanceB;
+        public String createTime;
+        public String storeAddress;
+        public String storeTel;
 
         public List<GoodsListBean> goodsList;
 

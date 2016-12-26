@@ -101,15 +101,15 @@
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingBottom="10dp"
-                android:text="进行中"
+                android:text="未取货"
+                android:textColor="@color/orange"
                 android:textSize="20dp" />
 
             <View
                 android:id="@+id/view_line1"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/orange"
-                android:visibility="invisible" />
+                android:background="@color/orange" />
         </LinearLayout>
 
         <LinearLayout
@@ -127,15 +127,15 @@
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingBottom="10dp"
-                android:text="已完成"
-                android:textColor="@color/orange"
+                android:text="已取货"
                 android:textSize="20dp" />
 
             <View
                 android:id="@+id/view_line2"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/orange" />
+                android:background="@color/orange"
+                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
@@ -153,11 +153,37 @@
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingBottom="10dp"
-                android:text="待处理"
+                android:text="已完成"
                 android:textSize="20dp" />
 
             <View
                 android:id="@+id/view_line3"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/orange"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_passorder2_index"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:paddingBottom="10dp"
+                android:text="待处理"
+                android:textSize="20dp" />
+
+            <View
+                android:id="@+id/view_line4"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:background="@color/orange"

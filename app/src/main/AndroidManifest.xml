@@ -141,10 +141,15 @@
             android:label="抢单"
             android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
-        <!--android:theme="@style/Dialog.NoTitle"-->
-        <!--android:theme="@style/Theme.AppCompat.Dialog.Alert"-->
-        <!--android:theme="@style/Base.Theme.AppCompat.Dialog.MinWidth"-->
-        <!--android:theme="@style/Base.Theme.AppCompat.Dialog.FixedSize"-->
+        <!-- android:theme="@style/Dialog.NoTitle" -->
+        <!-- android:theme="@style/Theme.AppCompat.Dialog.Alert" -->
+        <!-- android:theme="@style/Base.Theme.AppCompat.Dialog.MinWidth" -->
+        <!-- android:theme="@style/Base.Theme.AppCompat.Dialog.FixedSize" -->
+        <activity
+            android:name=".StoreListActivity"
+            android:label="修改门店"
+            android:screenOrientation="portrait" />
+
 
         <!-- 高德 -->
         <meta-data

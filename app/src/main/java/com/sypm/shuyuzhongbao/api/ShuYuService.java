@@ -4,6 +4,7 @@ import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.MessageList;
 import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.data.OrderBySn;
+import com.sypm.shuyuzhongbao.data.OrderList;
 import com.sypm.shuyuzhongbao.data.OrderNew;
 import com.sypm.shuyuzhongbao.data.SelecteOrder;
 import com.sypm.shuyuzhongbao.data.TotalLine;
@@ -168,5 +169,20 @@ public interface ShuYuService {
     /*退出登录*/
     @GET("site/logout.html")
     Call<DataResult> logout();
+
+    /*搜索门店*/
+    @FormUrlEncoded
+    @POST("shiporder/searchstore.html")
+    Call<DataResult> searchStore(@Field("key") String key);
+
+    /*修改门店*/
+    @FormUrlEncoded
+    @POST("shiporder/setstore.html")
+    Call<DataResult> setStore(@Field("storeSn") String storeSn, @Field("orderSn") String orderSn);
+
+    /*门店列表*/
+    @FormUrlEncoded
+    @POST("shiporder/storelist.html")
+    Call<OrderList> storeList(@Field("orderSn") String orderSn, @Field("radius") String radius);
 
 }

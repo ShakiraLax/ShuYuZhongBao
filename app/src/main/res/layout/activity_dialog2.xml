@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/totalDistance"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical|center"
@@ -26,6 +27,7 @@
             android:background="@color/line" />
 
         <TextView
+            android:id="@+id/storeNameAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -36,6 +38,7 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/distanceA"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
@@ -46,6 +49,7 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -56,6 +60,7 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/distanceB"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
