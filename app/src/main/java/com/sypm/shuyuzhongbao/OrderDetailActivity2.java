@@ -63,7 +63,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     private OrderBySn orderByIndex;
     private TextView shipSn, name, phone, address, storeName, storeAddress, amount, feeWay, txt_orderStatus_detail, isGet, modify, distanceA, distanceB, txtNote, payed, reachTime;
     private Button customerReject, dispatchingDone, connectStore, connectUser;
-    private String phoneNumber;
+    private String phoneNumber, storeTel;
 
 
     //显示地图需要的变量
@@ -129,7 +129,10 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         connectStore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "暂无电话", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                Uri data = Uri.parse("tel:" + storeTel.substring(0, 8));
+                intent.setData(data);
+                startActivity(intent);
             }
         });
 
@@ -264,6 +267,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
 
                         }
                         phoneNumber = orderByIndex.list.mobile;
+                        storeTel = orderByIndex.list.storeTel;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
                         if (goodsList != null) {
                             goods.setVisibility(View.VISIBLE);
@@ -277,6 +281,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 TextView goodsSn = new TextView(getApplicationContext());
                                 goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
+                                goodsSn.setGravity(Gravity.CENTER);
                                 goodsSn.setTextSize(14);
                                 //"商品数量："
                                 TextView goodsNumber = new TextView(getApplicationContext());
@@ -362,7 +367,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                             }
                         }
                         phoneNumber = orderByShipSn.list.mobile;
-
+                        storeTel = orderByShipSn.list.storeTel;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByShipSn.list.goodsList;
                         if (goodsList != null) {
                             goods.setVisibility(View.VISIBLE);
@@ -376,6 +381,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 TextView goodsSn = new TextView(getApplicationContext());
                                 goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
+                                goodsSn.setGravity(Gravity.CENTER);
                                 goodsSn.setTextSize(14);
                                 //"商品数量："
                                 TextView goodsNumber = new TextView(getApplicationContext());
