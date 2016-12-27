@@ -42,6 +42,8 @@ import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.data.OrderBySn;
 import com.sypm.shuyuzhongbao.utils.BaseActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -59,7 +61,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     private MoneyList.ListBean moneyList;
     private OrderBySn orderByShipSn;
     private OrderBySn orderByIndex;
-    private TextView shipSn, name, phone, address, storeName, storeAddress, amount, feeWay, txt_orderStatus_detail, isGet, modify, distanceA, distanceB, txtNote, payed;
+    private TextView shipSn, name, phone, address, storeName, storeAddress, amount, feeWay, txt_orderStatus_detail, isGet, modify, distanceA, distanceB, txtNote, payed, reachTime;
     private Button customerReject, dispatchingDone, connectStore, connectUser;
     private String phoneNumber;
 
@@ -102,6 +104,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         distanceA = (TextView) findViewById(R.id.distanceA);
         distanceB = (TextView) findViewById(R.id.distanceB);
         payed = (TextView) findViewById(R.id.payed);
+        reachTime = (TextView) findViewById(R.id.reachTime);
         customerReject = (Button) findViewById(R.id.customerReject);
         dispatchingDone = (Button) findViewById(R.id.dispatchingDone);
         connectStore = (Button) findViewById(R.id.connectStore);
@@ -209,6 +212,22 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         initLoc();
     }
 
+    /**
+     * 时间前推或后推分钟,其中JJ表示分钟.
+     */
+    public static String getPreTime(String time, String minute) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String reachingTime = "";
+        try {
+            Date date1 = format.parse(time);
+            long Time = (date1.getTime() / 1000) + Integer.parseInt(minute) * 60;
+            date1.setTime(Time * 1000);
+            reachingTime = format.format(date1);
+        } catch (Exception e) {
+        }
+        return reachingTime;
+    }
+
     //根据首页订单号展示订单详情包括商品信息
     private void setupOrderDetail() {
         final Call<OrderBySn> orderDetailCall = RetrofitClient.getInstance().getSYService().getOrderDetail(SHIPSN);
@@ -220,6 +239,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         orderByIndex = response.body();
                         WD = orderByIndex.list.lat;
                         JD = orderByIndex.list.lng;
+                        reachTime.setText("请于" + getPreTime(orderByIndex.list.createTime, "60") + "之前送达");
                         shipSn.setText("定单号：" + orderByIndex.list.orderSn);
                         storeName.setText("发：" + orderByIndex.list.storeName);
                         storeAddress.setText(orderByIndex.list.storeAddress);
@@ -235,8 +255,13 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         if (orderByIndex.list.isGet == 1) {
                             txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "已取货");
                         } else {
-                            modify.setVisibility(View.VISIBLE);
-                            txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "未取货");
+                            if (orderByIndex.list.orderStatus.equals("已完成")) {
+                                txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "未取货");
+                            } else {
+                                modify.setVisibility(View.VISIBLE);
+                                txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "未取货");
+                            }
+
                         }
                         phoneNumber = orderByIndex.list.mobile;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
@@ -310,10 +335,10 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
                 if (response.body() != null) {
                     if (response.body().status == 1) {
-//                        Toast.makeText(getActivity(), "成功" + moneyList.shipSn, Toast.LENGTH_LONG).show();
                         orderByShipSn = response.body();
                         WD = orderByShipSn.list.lat;
                         JD = orderByShipSn.list.lng;
+                        reachTime.setText("请于" + getPreTime(orderByShipSn.list.createTime, "60") + "之前送达");
                         shipSn.setText("定单号：" + orderByShipSn.list.orderSn);
                         storeName.setText("发：" + orderByShipSn.list.storeName);
                         storeAddress.setText(orderByShipSn.list.storeAddress);
@@ -329,8 +354,12 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         if (orderByShipSn.list.isGet == 1) {
                             txt_orderStatus_detail.setText(orderByShipSn.list.orderStatus + "  " + "已取货");
                         } else {
-                            modify.setVisibility(View.VISIBLE);
-                            txt_orderStatus_detail.setText(orderByShipSn.list.orderStatus + "  " + "未取货");
+                            if (orderByShipSn.list.orderStatus.equals("已完成")) {
+                                txt_orderStatus_detail.setText(orderByShipSn.list.orderStatus + "  " + "未取货");
+                            } else {
+                                modify.setVisibility(View.VISIBLE);
+                                txt_orderStatus_detail.setText(orderByShipSn.list.orderStatus + "  " + "未取货");
+                            }
                         }
                         phoneNumber = orderByShipSn.list.mobile;
 
@@ -373,7 +402,6 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 LinearLayout linearLayout = new LinearLayout(getApplicationContext());
                                 linearLayout.setGravity(Gravity.HORIZONTAL_GRAVITY_MASK);
                                 linearLayout.addView(goodsSn, params);
-//                                linearLayout.addView(goodsSn, params);
                                 linearLayout.addView(goodsTitle, paramsTitle);
                                 linearLayout.addView(preferentialPrice, params);
                                 linearLayout.addView(goodsNumber, params);

@@ -173,7 +173,7 @@ public interface ShuYuService {
     /*搜索门店*/
     @FormUrlEncoded
     @POST("shiporder/searchstore.html")
-    Call<DataResult> searchStore(@Field("key") String key);
+    Call<OrderList> searchStore(@Field("key") String key);
 
     /*修改门店*/
     @FormUrlEncoded
