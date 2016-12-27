@@ -41,7 +41,7 @@
                     android:layout_height="40dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical|right"
-                    android:text="已确认    已取货"
+                    android:text=""
                     android:textColor="@color/orange"
                     android:textSize="15sp" />
             </LinearLayout>
@@ -79,7 +79,7 @@
                                 android:layout_weight="3"
                                 android:gravity="center_vertical"
                                 android:singleLine="true"
-                                android:text="发：山大北三店"
+                                android:text=""
                                 android:textColor="@android:color/black"
                                 android:textSize="18sp" />
 
@@ -103,7 +103,7 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:paddingLeft="30dp"
-                            android:text="山大北路56号路北"
+                            android:text=""
                             android:textSize="16sp" />
                     </LinearLayout>
 
@@ -141,7 +141,7 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:lines="2"
-                            android:text="收：山师东路山东师范大学山师东路山东师范大学"
+                            android:text=""
                             android:textColor="@android:color/black"
                             android:textSize="18sp" />
                     </LinearLayout>
@@ -175,7 +175,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="30dp"
-                            android:text="300米"
+                            android:text=""
                             android:textColor="@color/orange"
                             android:textSize="18sp" />
 
@@ -184,7 +184,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="30dp"
-                            android:text="1500米"
+                            android:text=""
                             android:textColor="@color/orange"
                             android:textSize="18sp" />
                     </LinearLayout>
@@ -369,7 +369,7 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
-                    android:text="备注：帮我捎两瓶啤酒"
+                    android:text=""
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
 

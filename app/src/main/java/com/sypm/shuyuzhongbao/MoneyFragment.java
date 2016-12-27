@@ -3,7 +3,9 @@ package com.sypm.shuyuzhongbao;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
+import com.sypm.shuyuzhongbao.utils.LoadingFooter;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
 
 import java.util.List;
@@ -35,6 +38,11 @@ public class MoneyFragment extends BaseFragment {
     List<MoneyList.ListBean> moneyList;
 
     LinearLayout refresh, refresh2;
+
+    /*下拉加载更多*/
+    private LoadingFooter mLoadingFooter;
+    private MoneyListAdapter moneyListAdapter;
+    private int page = 1;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,17 +65,59 @@ public class MoneyFragment extends BaseFragment {
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initData();
             }
         });
         refresh2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initData();
             }
         });
         setupListView();
+        setupLoadingFooter();
         initData();
+    }
+
+    private void setupLoadingFooter() {
+        mLoadingFooter = new LoadingFooter(getActivity());
+        listView.addFooterView(mLoadingFooter);
+        listView.setFooterDividersEnabled(false);
+        listView.setOnScrollListener(mLoadingFooter);
+        mLoadingFooter.setOnLoadMoreListener(new LoadingFooter.OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                mLoadingFooter.setLoadState(LoadingFooter.State.Loading);
+                page++;
+                loadMoreData();
+            }
+        });
+    }
+
+    private void loadMoreData() {
+        Call<MoneyList> call = RetrofitClient.getInstance().getSYService().salaryList(String.valueOf(page), "20");
+        call.enqueue(new Callback<MoneyList>() {
+            @Override
+            public void onResponse(Call<MoneyList> call, final Response<MoneyList> response) {
+                if (response.body() == null || response.body().list == null || response.body().list.isEmpty()) {
+                    mLoadingFooter.setLoadState(LoadingFooter.State.End);
+                    return;
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        moneyListAdapter.addAll(response.body().list);
+                        mLoadingFooter.setLoadState(LoadingFooter.State.Default);
+                    }
+                }, 1000);
+            }
+
+            @Override
+            public void onFailure(Call<MoneyList> call, Throwable t) {
+                Log.d("上滑加载", "加载失败");
+                mLoadingFooter.setLoadState(LoadingFooter.State.End);
+                page--;
+                return;
+            }
+        });
     }
 
     private void initData() {
@@ -81,7 +131,8 @@ public class MoneyFragment extends BaseFragment {
                 if (response.body() != null) {
                     if (response.isSuccessful()) {
                         moneyList = response.body().list;
-                        listView.setAdapter(new MoneyListAdapter(getActivity(), moneyList));
+                        moneyListAdapter.refresh(moneyList);
+//                        listView.setAdapter(new MoneyListAdapter(getActivity(), moneyList));
                         today.setText(response.body().todaytotal + "元");
                         total.setText(response.body().total + "元");
                     } else {
@@ -92,11 +143,10 @@ public class MoneyFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<MoneyList> call, Throwable t) {
-
+                Toast.makeText(getActivity(), "获取失败", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     private void setupListView() {
         listView = (ListView) getView().findViewById(R.id.listView);
@@ -111,6 +161,8 @@ public class MoneyFragment extends BaseFragment {
                 }
             }
         });
+        moneyListAdapter = new MoneyListAdapter(getActivity(), moneyList);
+        listView.setAdapter(moneyListAdapter);
     }
 
     public static class MoneyListAdapter extends MyBaseAdapter {

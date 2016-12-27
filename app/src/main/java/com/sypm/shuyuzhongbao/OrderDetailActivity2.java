@@ -213,7 +213,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     }
 
     /**
-     * 时间前推或后推分钟,其中JJ表示分钟.
+     * 时间前推或后推分钟,其中minute表示分钟.
      */
     public static String getPreTime(String time, String minute) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
