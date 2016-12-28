@@ -548,7 +548,8 @@
             android:background="@android:color/white"
             android:text="拒收"
             android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/dispatchingDone"
@@ -559,6 +560,7 @@
             android:background="@color/orange"
             android:text="完成配送"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:visibility="gone" />
     </LinearLayout>
 </FrameLayout>

@@ -29,6 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:singleLine="true"
             android:text="15947001565"
             android:textSize="14sp" />
 
@@ -37,6 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
+            android:singleLine="true"
             android:text="张三"
             android:textSize="14sp" />
 
@@ -45,6 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.6"
+            android:singleLine="true"
             android:text="已拒单"
             android:textSize="14sp" />
 
@@ -54,6 +57,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.6"
             android:gravity="center"
+            android:singleLine="true"
             android:text="现金："
             android:textSize="14sp" />
 
@@ -62,6 +66,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
+            android:singleLine="true"
             android:text="¥46.00"
             android:textColor="#fe0303"
             android:textSize="14sp" />

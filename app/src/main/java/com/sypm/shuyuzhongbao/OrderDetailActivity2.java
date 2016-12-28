@@ -257,6 +257,10 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         txtNote.setText("备注：" + orderByIndex.list.note);
                         if (orderByIndex.list.isGet == 1) {
                             txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "已取货");
+                            if (orderByIndex.list.orderStatus.equals("已确认") || orderByIndex.list.orderStatus.equals("派送中")) {
+                                customerReject.setVisibility(View.VISIBLE);
+                                dispatchingDone.setVisibility(View.VISIBLE);
+                            }
                         } else {
                             if (orderByIndex.list.orderStatus.equals("已完成")) {
                                 txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "未取货");
@@ -264,7 +268,6 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 modify.setVisibility(View.VISIBLE);
                                 txt_orderStatus_detail.setText(orderByIndex.list.orderStatus + "  " + "未取货");
                             }
-
                         }
                         phoneNumber = orderByIndex.list.mobile;
                         storeTel = orderByIndex.list.storeTel;
@@ -313,21 +316,17 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 layoutOfOrderAndGoods.addView(linearLayout);
                             }
                         }
-                        if (orderByIndex.list.status != 1 || !orderByIndex.list.orderStatus.equals("派送中")) {
-                            customerReject.setVisibility(View.INVISIBLE);
-                            dispatchingDone.setVisibility(View.INVISIBLE);
-                        }
                     } else {
-                        Toast.makeText(getActivity(), "此单已无数据", Toast.LENGTH_LONG).show();
-                        customerReject.setVisibility(View.INVISIBLE);
-                        dispatchingDone.setVisibility(View.INVISIBLE);
+                        Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                     }
+                } else {
+                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<OrderBySn> call, Throwable t) {
-
+                Toast.makeText(getActivity(), "服务器获取失败", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -377,7 +376,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 goodsTitle.setTextSize(14);
                                 goodsTitle.setLines(2);
                                 goodsTitle.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-                                //"商品编码：" +
+                                //"商品编码："
                                 TextView goodsSn = new TextView(getApplicationContext());
                                 goodsSn.setText(goodsList.get(i).goodsSn);
                                 goodsSn.setTextColor(0xff000000);
@@ -389,7 +388,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 goodsNumber.setTextColor(0xff000000);
                                 goodsNumber.setGravity(Gravity.CENTER);
                                 goodsNumber.setTextSize(14);
-                                //"商品优惠价格：" +
+                                //"商品优惠价格："
                                 TextView preferentialPrice = new TextView(getApplicationContext());
                                 preferentialPrice.setText(goodsList.get(i).preferentialPrice + "");
                                 preferentialPrice.setTextColor(0xff000000);
@@ -414,29 +413,17 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 layoutOfOrderAndGoods.addView(linearLayout);
                             }
                         }
-
-                        if (orderByShipSn.list.status != 1) {
-                            customerReject.setVisibility(View.INVISIBLE);
-                            dispatchingDone.setVisibility(View.INVISIBLE);
-                        }
                     } else {
-                        Toast.makeText(getActivity(), "订单无数据", Toast.LENGTH_LONG).show();
-                        customerReject.setVisibility(View.INVISIBLE);
-                        dispatchingDone.setVisibility(View.INVISIBLE);
+                        Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                     }
-
                 } else {
-                    Toast.makeText(getActivity(), "无数据", Toast.LENGTH_LONG).show();
-                    customerReject.setVisibility(View.INVISIBLE);
-                    dispatchingDone.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<OrderBySn> call, Throwable t) {
-                Toast.makeText(getActivity(), "获取失败", Toast.LENGTH_LONG).show();
-                customerReject.setVisibility(View.INVISIBLE);
-                dispatchingDone.setVisibility(View.INVISIBLE);
+                Toast.makeText(getActivity(), "服务器获取失败", Toast.LENGTH_LONG).show();
             }
         });
     }
