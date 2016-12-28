@@ -65,11 +65,13 @@ public class MoneyFragment extends BaseFragment {
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
             }
         });
         refresh2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
             }
         });
         setupListView();
@@ -110,12 +112,12 @@ public class MoneyFragment extends BaseFragment {
                 }, 1000);
             }
 
+            //由于数据结构发生变化造成解析失败
             @Override
             public void onFailure(Call<MoneyList> call, Throwable t) {
-                Log.d("上滑加载", "加载失败");
                 mLoadingFooter.setLoadState(LoadingFooter.State.End);
-                page--;
-                return;
+                /*mLoadingFooter.setLoadState(LoadingFooter.State.Error);
+                page--;*/
             }
         });
     }

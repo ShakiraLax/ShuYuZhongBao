@@ -104,7 +104,7 @@
                             android:gravity="center_vertical"
                             android:paddingLeft="30dp"
                             android:text=""
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
 
@@ -160,7 +160,7 @@
                 </LinearLayout>
 
                 <!--您发收-->
-                <FrameLayout
+                <!--<FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp">
 
@@ -226,7 +226,46 @@
                             android:layout_height="24dp"
                             android:background="@drawable/shou" />
                     </LinearLayout>
-                </FrameLayout>
+                </FrameLayout>-->
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|bottom"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/nin" />
+
+                    <TextView
+                        android:id="@+id/distanceA"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/orange"
+                        android:textSize="18sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/fa" />
+
+                    <TextView
+                        android:id="@+id/distanceB"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/orange"
+                        android:textSize="18sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/shou" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -448,10 +487,12 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/goods"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <View
                     android:layout_width="match_parent"
@@ -459,7 +500,6 @@
                     android:background="@color/line" />
 
                 <LinearLayout
-                    android:id="@+id/goods"
                     android:layout_width="match_parent"
                     android:layout_height="28dp"
                     android:gravity="center_vertical"

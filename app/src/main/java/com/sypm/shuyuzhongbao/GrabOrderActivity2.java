@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ public class GrabOrderActivity2 extends BaseActivity {
     LinearLayout accept;
     OrderBySn order;
     OrderBySn orderFromJP;
+    Button button;
 
     final MediaPlayer mp = new MediaPlayer();
 
@@ -75,27 +77,40 @@ public class GrabOrderActivity2 extends BaseActivity {
                 @Override
                 public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                     if (response.body() != null) {
-                        Log.d("自动接单状态", response.body().status);
+//                        Log.d("自动接单状态", response.body().status);
                         if (response.body().status.equals("1")) {
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
                             Date curDate = new Date(System.currentTimeMillis());
                             String str = formatter.format(curDate);
-                            Log.d("自动接单成功", order.list.orderSn);
+//                            Log.d("自动接单成功", order.list.orderSn);
                             timer.setText("已默认接单" + str);
                             accept.setVisibility(View.INVISIBLE);
                             reject.setVisibility(View.INVISIBLE);
                             mp.start();
                             Intent intent = new Intent();
                             setResult(RESULT_OK, intent);
+                            button.setVisibility(View.VISIBLE);
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mp.stop();
+                                    finish();
+                                }
+                            });
                         } else {
-                            Log.d("自动接单失败", order.list.orderSn);
+                            Toast.makeText(getActivity(), "订单状态异常，已取消接单", Toast.LENGTH_LONG).show();
+                            finish();
                         }
+                    } else {
+                        Toast.makeText(getActivity(), "订单状态异常，已取消接单", Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<DataResult> call, Throwable t) {
                     Toast.makeText(getActivity(), "自动接单操作失败", Toast.LENGTH_LONG).show();
+                    finish();
                 }
             });
         }
@@ -116,6 +131,7 @@ public class GrabOrderActivity2 extends BaseActivity {
         timer = (TextView) findViewById(R.id.timer);
         reject = (TextView) findViewById(R.id.reject);
         accept = (LinearLayout) findViewById(R.id.accept);
+        button = (Button) findViewById(R.id.know);
 
         initDataFromJP();
         initData();
@@ -140,16 +156,19 @@ public class GrabOrderActivity2 extends BaseActivity {
                         address.setText("收：" + orderFromJP.list.address);
 
                     } else {
-                        Toast.makeText(getActivity(), "订单无数据", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 } else {
-                    Toast.makeText(getActivity(), "无数据", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<OrderBySn> call, Throwable t) {
                 Toast.makeText(getActivity(), "服务器获取失败", Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }
