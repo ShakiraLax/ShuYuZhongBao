@@ -7,8 +7,8 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:orientation="vertical">
 
@@ -33,7 +33,7 @@
             android:layout_marginTop="30dp"
             android:paddingLeft="10dp"
             android:singleLine="true"
-            android:text="发：山大北三店 山大北路56号北"
+            android:text=""
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
@@ -44,7 +44,7 @@
             android:gravity="right"
             android:paddingRight="10dp"
             android:singleLine="true"
-            android:text="距您800米"
+            android:text=""
             android:textColor="@color/orange"
             android:textSize="16sp" />
 
@@ -55,7 +55,7 @@
             android:layout_marginTop="30dp"
             android:paddingLeft="10dp"
             android:singleLine="true"
-            android:text="收：山师东路山师大3号宿舍楼男生宿舍"
+            android:text=""
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
@@ -66,7 +66,7 @@
             android:gravity="right"
             android:paddingRight="10dp"
             android:singleLine="true"
-            android:text="距发货地点1.8千米"
+            android:text=""
             android:textColor="@color/orange"
             android:textSize="16sp" />
 
