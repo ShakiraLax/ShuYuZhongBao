@@ -447,13 +447,20 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 finish();
                             } else {
                                 Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
+                                setResult(RESULT_OK);
+                                finish();
                             }
+                        } else {
+                            setResult(RESULT_OK);
+                            finish();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
                         Toast.makeText(getActivity(), "客户拒单操作失败", Toast.LENGTH_LONG).show();
+                        setResult(RESULT_OK);
+                        finish();
                     }
                 });
             }
@@ -469,21 +476,29 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
+                                Toast.makeText(getActivity(), "提交成功", Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(getActivity(), MainActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 setResult(RESULT_OK);
-                                Toast.makeText(getActivity(), "提交成功", Toast.LENGTH_LONG).show();
                                 startActivity(intent);
                                 finish();
                             } else {
                                 Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
+                                setResult(RESULT_OK);
+                                finish();
                             }
+                        } else {
+                            Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
+                            setResult(RESULT_OK);
+                            finish();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
                         Toast.makeText(getActivity(), "完成配送操作失败", Toast.LENGTH_LONG).show();
+                        setResult(RESULT_OK);
+                        finish();
                     }
                 });
             }

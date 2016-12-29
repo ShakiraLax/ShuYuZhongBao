@@ -183,19 +183,22 @@ public class OrderStatusActivity extends BaseActivity {
                             }
                         }
                     } else {
-                        Toast.makeText(getActivity(), "此单已无数据", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "无数据", Toast.LENGTH_LONG).show();
+                        finish();
                     }
+                } else {
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<OrderBySn> call, Throwable t) {
-
+                finish();
             }
         });
     }
 
-    //根据首页订单号展示订单详情包括商品信息
+    //根据极光推送传递过来的订单号展示订单详情包括商品信息
     private void setupOrderDetail() {
         Call<OrderBySn> orderDetailCall = RetrofitClient.getInstance().getSYService().getOrderDetail(SHIPSN);
         orderDetailCall.enqueue(new Callback<OrderBySn>() {
@@ -267,12 +270,15 @@ public class OrderStatusActivity extends BaseActivity {
                     } else {
                         Toast.makeText(getActivity(), "此单已无数据", Toast.LENGTH_LONG).show();
                     }
+                } else {
+                    Toast.makeText(getActivity(), "程序已被后台清理，清重新打开", Toast.LENGTH_LONG).show();
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<OrderBySn> call, Throwable t) {
-
+                finish();
             }
         });
     }

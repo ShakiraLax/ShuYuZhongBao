@@ -404,7 +404,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         //跳转到接单界面
                         Intent intent = new Intent(getActivity(), GrabOrderActivity2.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+//                        startActivity(intent);
+                        startActivityForResult(intent, 1000);
                     } else {
 
                     }
@@ -562,7 +563,11 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 setupListView2("3");
             }
         }
+        if (requestCode == 1000 && resultCode == RESULT_OK) {
+            initData();
+        }
     }
+
 
     //获取当前日期
     public String getDate() {

@@ -29,7 +29,7 @@
                     android:id="@+id/shipSn"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:gravity="center_vertical"
                     android:text="订单号"
                     android:textSize="15sp" />
@@ -39,7 +39,7 @@
                     android:id="@+id/txt_orderStatus_detail"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="center_vertical|right"
                     android:text=""
                     android:textColor="@color/orange"

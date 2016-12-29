@@ -145,7 +145,7 @@ public class MoneyFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<MoneyList> call, Throwable t) {
-                Toast.makeText(getActivity(), "获取失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "无数据", Toast.LENGTH_SHORT).show();
             }
         });
     }

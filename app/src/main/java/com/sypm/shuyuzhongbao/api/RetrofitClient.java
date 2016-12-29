@@ -18,7 +18,7 @@ public class RetrofitClient {
 
     private OkHttpClient okHttpClient;
 
-    public static final String FORMAL_HOST = "http://yys.sypm.cn/ship/";//正式访问用HOST
+    public static final String FORMAL_HOST = "https://yys.sypm.cn/ship/";//正式访问用HOST
 
     public static final String TEST_HOST = "http://test.sypm.cn/ship/";//测试访问用HOST
 

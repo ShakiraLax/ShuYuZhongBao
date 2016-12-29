@@ -77,12 +77,10 @@ public class GrabOrderActivity2 extends BaseActivity {
                 @Override
                 public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                     if (response.body() != null) {
-//                        Log.d("自动接单状态", response.body().status);
                         if (response.body().status.equals("1")) {
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
                             Date curDate = new Date(System.currentTimeMillis());
                             String str = formatter.format(curDate);
-//                            Log.d("自动接单成功", order.list.orderSn);
                             timer.setText("已默认接单" + str);
                             accept.setVisibility(View.INVISIBLE);
                             reject.setVisibility(View.INVISIBLE);
@@ -160,7 +158,7 @@ public class GrabOrderActivity2 extends BaseActivity {
                         finish();
                     }
                 } else {
-                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "程序已被后台清理，清重新打开", Toast.LENGTH_LONG).show();
                     finish();
                 }
             }
@@ -184,8 +182,8 @@ public class GrabOrderActivity2 extends BaseActivity {
                     public void onResponse(Call<DataResult> call, Response<DataResult> response) {
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
-                                countDownTimer.cancel();
                                 Toast.makeText(getActivity(), "接单成功！", Toast.LENGTH_LONG).show();
+                                countDownTimer.cancel();
                                 Intent intent = new Intent(getActivity(), OrderDetailActivity2.class);
                                 intent.putExtra("orderFromGrab", order.list.orderSn);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -193,23 +191,28 @@ public class GrabOrderActivity2 extends BaseActivity {
                                 startActivity(intent);
                                 finish();
                             } else if (response.body().status.equals("2")) {
+                                Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 countDownTimer.cancel();
                                 setResult(RESULT_OK);
-                                Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 finish();
                             } else if (response.body().status.equals("0")) {
+                                Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 countDownTimer.cancel();
                                 setResult(RESULT_OK);
-                                Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                                 finish();
                             }
+                        } else {
+                            countDownTimer.cancel();
+                            setResult(RESULT_OK);
+                            finish();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
-                        countDownTimer.cancel();
                         Toast.makeText(getActivity(), "接单操作失败", Toast.LENGTH_LONG).show();
+                        countDownTimer.cancel();
+                        setResult(RESULT_OK);
                         finish();
                     }
                 });
@@ -229,21 +232,40 @@ public class GrabOrderActivity2 extends BaseActivity {
                                 Toast.makeText(getApplicationContext(), "拒单成功", Toast.LENGTH_LONG).show();
                                 accept.setVisibility(View.INVISIBLE);
                                 countDownTimer.cancel();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 setResult(RESULT_OK);
+                                startActivity(intent);
                                 finish();
                             } else {
-                                countDownTimer.cancel();
-                                setResult(RESULT_OK);
-                                finish();
                                 Toast.makeText(getApplicationContext(), "拒单失败", Toast.LENGTH_LONG).show();
+                                countDownTimer.cancel();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                setResult(RESULT_OK);
+                                startActivity(intent);
+                                finish();
+
                             }
+                        } else {
+                            countDownTimer.cancel();
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            setResult(RESULT_OK);
+                            startActivity(intent);
+                            finish();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<DataResult> call, Throwable t) {
-                        countDownTimer.cancel();
                         Toast.makeText(getApplicationContext(), "拒单操作失败", Toast.LENGTH_LONG).show();
+                        countDownTimer.cancel();
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        setResult(RESULT_OK);
+                        startActivity(intent);
+                        finish();
                     }
                 });
             }
