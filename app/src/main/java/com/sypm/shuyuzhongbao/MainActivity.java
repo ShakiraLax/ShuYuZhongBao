@@ -143,7 +143,7 @@ public class MainActivity extends FragmentManagerActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
+        /*Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
         call.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
@@ -154,7 +154,7 @@ public class MainActivity extends FragmentManagerActivity {
             public void onFailure(Call<DataResult> call, Throwable t) {
 
             }
-        });
+        });*/
     }
 
 

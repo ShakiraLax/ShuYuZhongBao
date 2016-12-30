@@ -66,8 +66,9 @@ public class OrderStatusActivity extends BaseActivity {
     private String shipSnFromQuHuo;
     private String shipSnFromKeFu;
     private String SHIPSN;
+    private String SHIPSN2;
     private LinearLayout layoutOfOrderAndGoods, goods;
-    private Button know;
+    private Button know, cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class OrderStatusActivity extends BaseActivity {
         isGet = (TextView) findViewById(R.id.isGet);
         layoutOfOrderAndGoods = (LinearLayout) findViewById(R.id.layoutOfOrderAndGoods);
         know = (Button) findViewById(R.id.know);
+        cancel = (Button) findViewById(R.id.cancel);
         goods = (LinearLayout) findViewById(R.id.goods);
 
 
@@ -110,8 +112,8 @@ public class OrderStatusActivity extends BaseActivity {
         shipSnFromKeFu = getIntent().getStringExtra("kefu");
         if (shipSnFromKeFu != null) {
             Log.d("shipSnFromKeFu", shipSnFromKeFu);
-            SHIPSN = shipSnFromKeFu;
-            Log.d("shipSnFromKeFu", SHIPSN);
+            SHIPSN2 = shipSnFromKeFu;
+            Log.d("shipSnFromKeFu", SHIPSN2);
             setupOrder();
         }
         initData();
@@ -119,7 +121,7 @@ public class OrderStatusActivity extends BaseActivity {
 
     /*G3状态为取消时 强制获取订单*/
     private void setupOrder() {
-        Call<OrderBySn> orderDetailCall = RetrofitClient.getInstance().getSYService().getOrderDetail(SHIPSN, "1");
+        Call<OrderBySn> orderDetailCall = RetrofitClient.getInstance().getSYService().getOrderDetail(SHIPSN2, "1");
         orderDetailCall.enqueue(new Callback<OrderBySn>() {
             @Override
             public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
@@ -136,6 +138,8 @@ public class OrderStatusActivity extends BaseActivity {
                         txtNote.setText("备注：" + orderByIndex.list.note);
                         txt_orderStatus_detail.setText("订单状态：" + orderByIndex.list.orderStatus);
                         isGet.setText("此订单已取消，请知晓！");
+                        know.setVisibility(View.INVISIBLE);
+                        cancel.setVisibility(View.VISIBLE);
                         phoneNumber = orderByIndex.list.mobile;
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
                         if (goodsList != null) {
@@ -285,6 +289,16 @@ public class OrderStatusActivity extends BaseActivity {
 
     private void initData() {
         know.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), OrderDetailActivity2.class);
+                intent.putExtra("wozhidao", SHIPSN);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MainActivity.class);

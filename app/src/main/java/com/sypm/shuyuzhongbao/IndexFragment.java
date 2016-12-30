@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -14,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +53,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class IndexFragment extends BaseFragment implements LocationSource, AMapLocationListener {
 
+    public static final int UPDATE = 1;
+
     private ListView listView;
     private int recLen = 0;
     private boolean isOnline = true;
@@ -87,6 +89,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             handler.postDelayed(this, 60000);
         }
     };
+
     private TextView txtMyOrder;
     private TextView txtWorkingOrder;
     private TextView txtPassOrder;
@@ -113,6 +116,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         } else {
 
                         }
+                    } else {
+
                     }
                 }
 
@@ -127,6 +132,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d("执行顺序", "onCreate");
         //允许刷新按钮
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
@@ -134,6 +140,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     private void initView(View inflate) {
+        Log.d("执行顺序", "initView");
         txtMyOrder = (TextView) inflate.findViewById(R.id.txt_myorder_index);
         txtWorkingOrder = (TextView) inflate.findViewById(R.id.txt_workingorder_index);
         txtPassOrder = (TextView) inflate.findViewById(R.id.txt_passorder_index);
@@ -147,6 +154,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d("执行顺序", "onCreateView");
         View inflate = inflater.inflate(R.layout.fragment_index, container, false);
         initView(inflate);
         return inflate;
@@ -155,6 +163,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.d("执行顺序", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
         calendar = Calendar.getInstance();
         endure = (TextView) getView().findViewById(R.id.endure);
@@ -175,19 +184,6 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (list != null) {
-                    /*if (viewLine1.getVisibility() == View.VISIBLE) {
-                        Intent intent = new Intent(getActivity(), GrabOrderActivity.class);
-                        intent.putExtra("yipaidan", list.get(position).getShipSn());
-                        Log.i("yipaidan", list.get(position).getShipSn());
-                        startActivityForResult(intent, 1000);
-                    } else if (viewLine2.getVisibility() == View.VISIBLE) {
-                        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-                        intent.putExtra("shipSn", list.get(position).getShipSn());
-                        Log.i("shipSn", list.get(position).getShipSn());
-                        startActivityForResult(intent, 2000);
-                    } else {
-                        Toast.makeText(getActivity(), "已拒单不可查看", Toast.LENGTH_SHORT).show();
-                    }*/
                     if (viewLine4.getVisibility() == View.VISIBLE) {
                         Toast.makeText(getActivity(), "已拒单不可查看", Toast.LENGTH_SHORT).show();
                     } else {
@@ -378,6 +374,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }*/
 
     private void autoLine() {
+        Log.d("执行顺序", "autoLine");
         /*自动上线*/
         Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
         call.enqueue(new Callback<DataResult>() {
@@ -394,6 +391,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     private void initData() {
+        Log.d("执行顺序", "initData");
         /*未接受订单*/
         Call<OrderBySn> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
         getOrder.enqueue(new Callback<OrderBySn>() {
@@ -552,6 +550,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2000 && resultCode == RESULT_OK) {
+            Log.d("执行顺序", "requestCode == 2000");
             initData();
             if (viewLine1.getVisibility() == View.VISIBLE) {
                 setupListView2("5");
@@ -564,6 +563,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             }
         }
         if (requestCode == 1000 && resultCode == RESULT_OK) {
+            Log.d("执行顺序", "requestCode == 1000");
             initData();
         }
     }
@@ -581,8 +581,9 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         return sb.toString();
     }
 
-    //获取正在执行的订单
+    //获取未取货的订单
     private void setupListView() {
+        Log.d("执行顺序", "setupListView");
 //        listView.setAdapter(new ListAdapter(getContext(), null));
         Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("5", getDate(), "1");
         selectCall.enqueue(new Callback<SelecteOrder>() {
@@ -603,7 +604,9 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         });
     }
 
+    //未通过接单界面进入的订单详情界面的情况根据tab状态更新相应的type
     private void setupListView2(String type) {
+        Log.d("执行顺序", "setupListView2");
 //        listView.setAdapter(new ListAdapter(getContext(), null));
         Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder(type, getDate(), "1");
         selectCall.enqueue(new Callback<SelecteOrder>() {
@@ -677,6 +680,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     //定位
     private void initLoc() {
+        Log.d("执行顺序", "initLoc");
         //初始化定位
         mLocationClient = new AMapLocationClient(getContext());//getApplicationContext
         //设置定位回调监听
@@ -781,12 +785,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
      */
     @Override
     public void onDestroy() {
+        Log.d("执行顺序", "onDestroy");
         super.onDestroy();
         mLocationClient.stopLocation();
         mapView.onDestroy();
         handler.removeCallbacks(runnable);
         /*退出应用时下线*/
-        Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
+        /*Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
         call.enqueue(new Callback<DataResult>() {
             @Override
             public void onResponse(Call<DataResult> call, Response<DataResult> response) {
@@ -797,7 +802,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             public void onFailure(Call<DataResult> call, Throwable t) {
 
             }
-        });
+        });*/
     }
 
 }

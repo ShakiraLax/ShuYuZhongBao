@@ -81,6 +81,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     private String shipSnFromFirstPage;
     private String shipSnFromGrab;
     private String shipSnFromJP;
+    private String shipSnFromStatusChange;
     private String SHIPSN;
     private LinearLayout layoutOfOrderAndGoods, goods;
 
@@ -188,6 +189,15 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             SHIPSN = shipSnFromJP;
             setupOrderDetail();
         }
+
+        /*订单状态发生变化后传过来的sn*/
+        shipSnFromStatusChange = getIntent().getStringExtra("wozhidao");
+        if (shipSnFromStatusChange != null) {
+            Log.d("shipSnFromStatusChange", shipSnFromStatusChange);
+            SHIPSN = shipSnFromStatusChange;
+            setupOrderDetail();
+        }
+
         initData();
         //显示地图
         mapView = (MapView) findViewById(R.id.mapView);
@@ -317,16 +327,20 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                             }
                         }
                     } else {
-                        Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
+                        finish();
+//                        Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
+                    finish();
+//                    Toast.makeText(getActivity(), response.body().msg, Toast.LENGTH_LONG).show();
+
                 }
             }
 
             @Override
             public void onFailure(Call<OrderBySn> call, Throwable t) {
                 Toast.makeText(getActivity(), "服务器获取失败", Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }
@@ -512,7 +526,10 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent(getActivity(),MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         setResult(RESULT_OK);
+        startActivity(intent);
         finish();
     }
 

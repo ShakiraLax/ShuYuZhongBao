@@ -219,7 +219,7 @@ public class GrabOrderActivity2 extends BaseActivity {
             }
         });
 
-        /*拒单*/
+        /*拒绝接单*/
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -292,8 +292,8 @@ public class GrabOrderActivity2 extends BaseActivity {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
                         setResult(RESULT_OK);
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         countDownTimer.cancel();
                         mp.stop();

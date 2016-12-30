@@ -212,5 +212,15 @@
         android:text="我知道了"
         android:textColor="@android:color/white"
         android:textSize="20sp" />
+    <Button
+        android:visibility="gone"
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="@color/orange"
+        android:text="好的，我不送了！"
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
 
 </FrameLayout>
