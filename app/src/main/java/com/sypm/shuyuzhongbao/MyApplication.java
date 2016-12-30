@@ -16,6 +16,19 @@ import cn.jpush.android.api.JPushInterface;
  */
 
 public class MyApplication extends Application {
+
+    private IndexFragment.MyHandler handler = null;
+
+    // set方法
+    public void setHandler(IndexFragment.MyHandler handler) {
+        this.handler = handler;
+    }
+
+    // get方法
+    public IndexFragment.MyHandler getHandler() {
+        return handler;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -32,4 +45,5 @@ public class MyApplication extends Application {
         set.add("113802");//名字任意，可多添加几个
         JPushInterface.setTags(this, set, null);//设置标签
     }
+
 }

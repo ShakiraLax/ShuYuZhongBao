@@ -85,10 +85,18 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     private String SHIPSN;
     private LinearLayout layoutOfOrderAndGoods, goods;
 
+    public static final int UPDATE = 1;
+    private MyApplication mAPP = null;
+    private IndexFragment.MyHandler mHandler = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail2);
+
+        mAPP = (MyApplication) getApplication();
+        // 获得该共享变量实例
+        mHandler = mAPP.getHandler();
 
         shipSn = (TextView) findViewById(R.id.shipSn);
         name = (TextView) findViewById(R.id.name);
@@ -526,10 +534,11 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getActivity(),MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+//        Intent intent = new Intent(getActivity(),MainActivity.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         setResult(RESULT_OK);
-        startActivity(intent);
+//        startActivity(intent);
+        mHandler.sendEmptyMessage(UPDATE);
         finish();
     }
 

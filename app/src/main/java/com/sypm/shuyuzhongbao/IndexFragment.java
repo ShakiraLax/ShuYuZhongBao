@@ -53,8 +53,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class IndexFragment extends BaseFragment implements LocationSource, AMapLocationListener {
 
-    public static final int UPDATE = 1;
-
     private ListView listView;
     private int recLen = 0;
     private boolean isOnline = true;
@@ -79,6 +77,11 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     private boolean isFirstLoc = true;
     /*高德end*/
 
+    /*共享handler*/
+    public static final int UPDATE = 1;
+    private MyHandler myHandler = null;
+    private MyApplication mAPP = null;
+
     Handler handler = new Handler();
     Runnable runnable = new Runnable() {
         @Override
@@ -89,6 +92,22 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             handler.postDelayed(this, 60000);
         }
     };
+
+    /**
+     * 自己实现 Handler 处理消息更新UI
+     *
+     * @author mark
+     */
+    final class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == UPDATE) {
+                /**接受来自订单详情界面的消息，实现适时获取订单*/
+                getOrder();
+            }
+        }
+    }
 
     private TextView txtMyOrder;
     private TextView txtWorkingOrder;
@@ -165,6 +184,11 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         Log.d("执行顺序", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
+
+        mAPP = (MyApplication) getActivity().getApplication();
+        myHandler = new MyHandler();
+        mAPP.setHandler(myHandler);
+
         calendar = Calendar.getInstance();
         endure = (TextView) getView().findViewById(R.id.endure);
         accept_num = (TextView) getView().findViewById(R.id.accept_num);
@@ -390,6 +414,32 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         });
     }
 
+    private void getOrder() {
+        Log.d("执行顺序", "getOrder");
+        Call<OrderBySn> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
+        getOrder.enqueue(new Callback<OrderBySn>() {
+            @Override
+            public void onResponse(Call<OrderBySn> call, Response<OrderBySn> response) {
+                if (response.body() != null) {
+                    if (response.body().status == 1) {
+                        //跳转到接单界面
+                        Intent intent = new Intent(getActivity(), GrabOrderActivity2.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        startActivity(intent);
+                        startActivityForResult(intent, 1000);
+                    } else {
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderBySn> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void initData() {
         Log.d("执行顺序", "initData");
         /*未接受订单*/
@@ -551,7 +601,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2000 && resultCode == RESULT_OK) {
             Log.d("执行顺序", "requestCode == 2000");
-            initData();
+//            initData();
             if (viewLine1.getVisibility() == View.VISIBLE) {
                 setupListView2("5");
             } else if (viewLine2.getVisibility() == View.VISIBLE) {
@@ -564,7 +614,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         }
         if (requestCode == 1000 && resultCode == RESULT_OK) {
             Log.d("执行顺序", "requestCode == 1000");
-            initData();
+//            initData();
+            getOrder();
         }
     }
 
