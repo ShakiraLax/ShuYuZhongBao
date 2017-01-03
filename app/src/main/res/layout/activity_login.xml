@@ -97,15 +97,4 @@
         android:onClick="loginByAccount"
         android:text="账号密码登陆" />
 
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.amap.api.maps.MapView
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
-
 </LinearLayout>

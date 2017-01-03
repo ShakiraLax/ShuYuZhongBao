@@ -22,7 +22,7 @@ public class RetrofitClient {
 
     public static final String TEST_HOST = "http://test.sypm.cn/ship/";//测试访问用HOST
 
-    public static String HOST = TEST_HOST;
+    public static String HOST = FORMAL_HOST;
 
     private RetrofitClient() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
