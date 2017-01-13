@@ -455,6 +455,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         customerReject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                customerReject.setClickable(false);
                 Call<DataResult> orderReject = RetrofitClient.getInstance().getSYService().orderReject(SHIPSN);
                 orderReject.enqueue(new Callback<DataResult>() {
                     @Override
@@ -492,6 +493,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         dispatchingDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dispatchingDone.setClickable(false);
                 Call<DataResult> orderFinish = RetrofitClient.getInstance().getSYService().orderFinish(SHIPSN);
                 orderFinish.enqueue(new Callback<DataResult>() {
                     @Override

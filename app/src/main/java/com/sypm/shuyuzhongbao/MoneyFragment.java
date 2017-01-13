@@ -20,6 +20,7 @@ import com.sypm.shuyuzhongbao.data.MoneyList;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.LoadingFooter;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
+import com.sypm.shuyuzhongbao.utils.RefreshableView;
 
 import java.util.List;
 
@@ -32,14 +33,13 @@ import retrofit2.Response;
  */
 
 public class MoneyFragment extends BaseFragment {
-
     ListView listView;
     TextView today, total;
     List<MoneyList.ListBean> moneyList;
 
     LinearLayout refresh, refresh2;
 
-    /*下拉加载更多*/
+    /*上拉加载更多*/
     private LoadingFooter mLoadingFooter;
     private MoneyListAdapter moneyListAdapter;
     private int page = 1;
@@ -60,6 +60,7 @@ public class MoneyFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         refresh = (LinearLayout) getView().findViewById(R.id.refresh);
         refresh2 = (LinearLayout) getView().findViewById(R.id.refresh2);
         refresh.setOnClickListener(new View.OnClickListener() {

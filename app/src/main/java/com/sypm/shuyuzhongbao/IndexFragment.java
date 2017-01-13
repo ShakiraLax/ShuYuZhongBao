@@ -36,6 +36,7 @@ import com.sypm.shuyuzhongbao.data.SelecteOrder;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.MyBaseAdapter;
+import com.sypm.shuyuzhongbao.utils.RefreshableView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,6 +53,8 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class IndexFragment extends BaseFragment implements LocationSource, AMapLocationListener {
+
+    private RefreshableView refreshableView;
 
     private ListView listView;
     private int recLen = 0;
@@ -198,6 +201,94 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         txtOnlinLeft = (TextView) getView().findViewById(R.id.txt_online_left);
         txtOnlinRight = (TextView) getView().findViewById(R.id.txt_online_right);
         refresh = (LinearLayout) getView().findViewById(R.id.refresh);
+
+        list = new ArrayList<>();
+        listAdapter = new ListAdapter(getContext(), null, isOnline);
+        listView.setAdapter(listAdapter);
+        refreshableView = (RefreshableView) getView().findViewById(R.id.refreshable_view);
+        refreshableView.setOnRefreshListener(new RefreshableView.PullToRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (viewLine1.getVisibility() == View.VISIBLE) {
+                    Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("5", getDate(), "1");
+                    selectCall.enqueue(new Callback<SelecteOrder>() {
+                        @Override
+                        public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                            if (response.isSuccessful()) {
+                                if (response.body().getStatus() == 1) {
+                                    list = response.body().getList();
+                                    listAdapter.refresh(list);
+                                    Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                        }
+                    });
+                } else if (viewLine2.getVisibility() == View.VISIBLE) {
+                    Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("6", getDate(), "1");
+                    selectCall.enqueue(new Callback<SelecteOrder>() {
+                        @Override
+                        public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                            if (response.isSuccessful()) {
+                                if (response.body().getStatus() == 1) {
+                                    list = response.body().getList();
+                                    listAdapter.refresh(list);
+                                    Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                        }
+                    });
+                } else if (viewLine3.getVisibility() == View.VISIBLE) {
+                    Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("4", getDate(), "1");
+                    selectCall.enqueue(new Callback<SelecteOrder>() {
+                        @Override
+                        public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                            if (response.isSuccessful()) {
+                                if (response.body().getStatus() == 1) {
+                                    list = response.body().getList();
+                                    listAdapter.refresh(list);
+                                    Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                        }
+                    });
+                } else if (viewLine4.getVisibility() == View.VISIBLE) {
+                    Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("3", getDate(), "1");
+                    selectCall.enqueue(new Callback<SelecteOrder>() {
+                        @Override
+                        public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
+                            if (response.isSuccessful()) {
+                                if (response.body().getStatus() == 1) {
+                                    list = response.body().getList();
+                                    listAdapter.refresh(list);
+                                    Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<SelecteOrder> call, Throwable t) {
+
+                        }
+                    });
+                }
+                refreshableView.finishRefreshing();
+            }
+        }, 0);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,7 +309,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 }
             }
         });
-        list = new ArrayList<>();
+
         autoLine();
         initData();
         setupListView();

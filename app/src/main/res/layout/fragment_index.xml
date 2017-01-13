@@ -191,10 +191,18 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/listView"
+    <!--下拉刷新控件-->
+    <com.sypm.shuyuzhongbao.utils.RefreshableView
+        android:id="@+id/refreshable_view"
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        android:layout_height="300dp">
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+    </com.sypm.shuyuzhongbao.utils.RefreshableView>
+
 
     <LinearLayout
         android:layout_width="match_parent"

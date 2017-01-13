@@ -7,9 +7,7 @@ import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -17,20 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.LocationSource;
-import com.amap.api.maps.MapView;
-import com.amap.api.maps.UiSettings;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.MyLocationStyle;
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
 import com.sypm.shuyuzhongbao.data.OrderBySn;
@@ -57,7 +41,7 @@ public class GrabOrderActivity2 extends BaseActivity {
 
     final MediaPlayer mp = new MediaPlayer();
 
-    CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+    CountDownTimer countDownTimer = new CountDownTimer(6000, 1000) {
         @Override
         public void onTick(long millisUntilFinished) {
             timer.setText("倒计时" + (millisUntilFinished / 1000));
@@ -96,19 +80,37 @@ public class GrabOrderActivity2 extends BaseActivity {
                                 }
                             });
                         } else {
-                            Toast.makeText(getActivity(), "订单状态异常，已取消接单", Toast.LENGTH_LONG).show();
-                            finish();
+                            reject.setVisibility(View.INVISIBLE);
+                            accept.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Toast.makeText(getActivity(), "订单状态异常，无法接单", Toast.LENGTH_LONG).show();
+                                    finish();
+                                }
+                            });
                         }
                     } else {
-                        Toast.makeText(getActivity(), "订单状态异常，已取消接单", Toast.LENGTH_LONG).show();
-                        finish();
+                        reject.setVisibility(View.INVISIBLE);
+                        accept.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getActivity(), "订单状态异常，无法接单", Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                        });
                     }
                 }
 
                 @Override
                 public void onFailure(Call<DataResult> call, Throwable t) {
-                    Toast.makeText(getActivity(), "自动接单操作失败", Toast.LENGTH_LONG).show();
-                    finish();
+                    reject.setVisibility(View.INVISIBLE);
+                    accept.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getActivity(), "订单状态异常，无法接单", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    });
                 }
             });
         }
