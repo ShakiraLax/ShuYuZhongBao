@@ -20,8 +20,6 @@ import com.sypm.shuyuzhongbao.api.RetrofitClient;
 
 import java.io.File;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Callback;
 
 /**
@@ -88,13 +86,19 @@ public class AVUpdates {
                 Log.d("版本更新", "onResponse");
                 appInfo = response.body();
 
-                //此处切换回主线程
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        onCompareVersion(appInfo);
-                    }
-                });
+                try {
+                    //此处切换回主线程
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onCompareVersion(appInfo);
+                        }
+                    });
+
+                } catch (Exception e) {
+
+                }
+
             }
 
             @Override
@@ -137,7 +141,8 @@ public class AVUpdates {
     }
 
     private void downloadNewVersion(AppInfo appInfo) {
-        String apkPath = getDefaultSaveRootPath(mContext) + File.separator + String.valueOf(System.currentTimeMillis());
+        Log.d("版本更新", "downloadNewVersion");
+        String apkPath = getDefaultSaveRootPath(mContext) + File.separator + String.valueOf(System.currentTimeMillis()) + ".apk";
         File file = new File(apkPath);
         final ProgressDialog progressDialog = new ProgressDialog(mContext);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -163,6 +168,7 @@ public class AVUpdates {
 
     //获取当前程序的版本号
     public static int getAppVersionCode(Context context) {
+        Log.d("版本更新", "getAppVersionCode");
         int versionCode = 0;
         try {
             versionCode = context.getPackageManager().getPackageInfo(
@@ -174,6 +180,7 @@ public class AVUpdates {
     }
 
     public static void install(Context context, String filePath) {
+        Log.d("版本更新", "install");
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setDataAndType(Uri.parse("file://" + filePath), "application/vnd.android.package-archive");
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -181,12 +188,11 @@ public class AVUpdates {
     }
 
     public static String getDefaultSaveRootPath(Context context) {
+        Log.d("版本更新", "getDefaultSaveRootPath");
         if (context.getExternalCacheDir() == null) {
             return Environment.getDownloadCacheDirectory().getAbsolutePath();
         } else {
             return context.getExternalCacheDir().getAbsolutePath();
         }
     }
-
-
 }

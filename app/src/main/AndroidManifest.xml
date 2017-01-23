@@ -151,7 +151,6 @@
             android:label="修改门店"
             android:screenOrientation="portrait" />
 
-
         <!-- 高德 -->
         <meta-data
             android:name="com.amap.api.v2.apikey"

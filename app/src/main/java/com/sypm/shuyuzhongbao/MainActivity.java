@@ -5,13 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.location.LocationManager;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -58,7 +54,6 @@ public class MainActivity extends FragmentManagerActivity {
 
     private void setupUpdate() {
         AVUpdates updates = new AVUpdates(this);
-        updates.setLogEnable(true);
         updates.checkForUpdates(RetrofitClient.CHECK_VERSION);
     }
 
