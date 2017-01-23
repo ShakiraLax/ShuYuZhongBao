@@ -18,7 +18,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
-        versionName "1.1"
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             //选择要添加的对应cpu类型的.so库。
@@ -70,4 +70,5 @@ dependencies {
     compile 'cn.jiguang:jpush:2.2.0'//极光推送
     compile 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'//星期选择器
     compile 'com.github.franmontiel:PersistentCookieJar:v0.9.3'//okhttp
+    compile 'com.koushikdutta.ion:ion:2.1.7'//Ion
 }

@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
+import com.sypm.shuyuzhongbao.update.AVUpdates;
 import com.sypm.shuyuzhongbao.utils.ExampleUtil;
 import com.sypm.shuyuzhongbao.utils.FragmentManagerActivity;
 
@@ -52,6 +53,13 @@ public class MainActivity extends FragmentManagerActivity {
         if (savedInstanceState == null) {
             addFragment(INDEX);
         }
+        setupUpdate();
+    }
+
+    private void setupUpdate() {
+        AVUpdates updates = new AVUpdates(this);
+        updates.setLogEnable(true);
+        updates.checkForUpdates(RetrofitClient.CHECK_VERSION);
     }
 
     private void initGPS() {

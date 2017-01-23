@@ -10,6 +10,7 @@ import com.sypm.shuyuzhongbao.data.SelecteOrder;
 import com.sypm.shuyuzhongbao.data.TotalLine;
 import com.sypm.shuyuzhongbao.data.UserInfo;
 import com.sypm.shuyuzhongbao.data.WorkTime;
+import com.sypm.shuyuzhongbao.update.AppInfo;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -184,5 +185,9 @@ public interface ShuYuService {
     @FormUrlEncoded
     @POST("shiporder/storelist.html")
     Call<OrderList> storeList(@Field("orderSn") String orderSn, @Field("radius") String radius);
+
+    /*版本更新*/
+    @GET("site/checkversion.html")
+    Call<AppInfo> checkVersion();
 
 }
