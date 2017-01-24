@@ -123,7 +123,7 @@ public class AVUpdates {
     private void onLatestVersion() {
         Log.d("版本更新", "onLatestVersion");
         if (updatePromptEnable) {
-            Toast.makeText(mContext, "当前已是最新版本！", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "当前已是最新版本！", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -142,13 +142,16 @@ public class AVUpdates {
 
     private void downloadNewVersion(AppInfo appInfo) {
         Log.d("版本更新", "downloadNewVersion");
-        String apkPath = getDefaultSaveRootPath(mContext) + File.separator + String.valueOf(System.currentTimeMillis()) + ".apk";
-        File file = new File(apkPath);
+        final String apkPath = getDefaultSaveRootPath(mContext) + File.separator + String.valueOf(System.currentTimeMillis()) + ".apk";
+        final File file = new File(apkPath);
+        final String appUrl = appInfo.apkUrl;
+        Log.d("版本更新", appUrl);
+
         final ProgressDialog progressDialog = new ProgressDialog(mContext);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setTitle("正在更新");
         progressDialog.show();
-        Ion.with(mContext).load(appInfo.apkUrl)
+        Ion.with(mContext).load(appUrl)
                 .progressDialog(progressDialog)
                 .write(file)
                 .setCallback(new FutureCallback<File>() {
@@ -164,6 +167,7 @@ public class AVUpdates {
                         install(mContext, result.getPath());
                     }
                 });
+
     }
 
     //获取当前程序的版本号

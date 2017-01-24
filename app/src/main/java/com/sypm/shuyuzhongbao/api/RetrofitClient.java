@@ -24,7 +24,7 @@ public class RetrofitClient {
 
     public static final String CHECK_VERSION = "http://test.sypm.cn/ship/site/checkversion.html";
 
-    public static String HOST = TEST_HOST;
+    public static String HOST = FORMAL_HOST;
 
     private RetrofitClient() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
