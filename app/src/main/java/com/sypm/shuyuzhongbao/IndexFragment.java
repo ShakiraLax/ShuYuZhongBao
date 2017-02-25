@@ -1,5 +1,7 @@
 package com.sypm.shuyuzhongbao;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -126,30 +128,26 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     private TextView txtOnlinRight;
 
     private void updateInfo() {
-        /*上线后开始上传位置信息*/
+        /*判断是上线状态后开始上传位置信息*/
         if (isOnline) {
-            Call<DataResult> call = RetrofitClient.getInstance().getSYService().locationInsert(String.valueOf(WD), String.valueOf(JD), null);
-            call.enqueue(new Callback<DataResult>() {
-                @Override
-                public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                    if (response.body() != null) {
-                        if (response.body().status.equals("1")) {
-                            Log.d("上线后定位信息上传", "纬度" + String.valueOf(WD) + "经度" + String.valueOf(JD));
-                        } else {
-
-                        }
-                    } else {
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<DataResult> call, Throwable t) {
-
-                }
-            });
+//            startAlarm();
         }
         return;
+    }
+
+    public void startAlarm() {
+        /**
+         首先获得系统服务
+         */
+        AlarmManager am = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+
+        /** 设置闹钟的意图，我这里是去调用一个服务，该服务功能就是获取位置并且上传*/
+        Intent intent = new Intent(getActivity(), LocationService.class);
+        PendingIntent pendSender = PendingIntent.getService(getActivity(), 0, intent, 0);
+        am.cancel(pendSender);
+
+        /**AlarmManager.RTC_WAKEUP 这个参数表示系统会唤醒进程；我设置的间隔时间是1分钟 */
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1 * 60 * 1000, pendSender);
     }
 
     @Override
@@ -187,7 +185,6 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         Log.d("执行顺序", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
-
         mAPP = (MyApplication) getActivity().getApplication();
         myHandler = new MyHandler();
         mAPP.setHandler(myHandler);

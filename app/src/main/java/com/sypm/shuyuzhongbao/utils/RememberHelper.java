@@ -15,6 +15,11 @@ public class RememberHelper {
         Remember.putString("registrationId", registrationId);
     }
 
+    public static void saveLocation(String lat, String lng) {
+        Remember.putString("lat", lat);
+        Remember.putString("lng", lng);
+    }
+
     public static void saveUserPhone(String phone) {
         Remember.putString("phone", phone);
     }
@@ -34,6 +39,14 @@ public class RememberHelper {
 
     public static String getRegistrationId() {
         return Remember.getString("registrationId", "");
+    }
+
+    public static String getLat() {
+        return Remember.getString("lat", "");
+    }
+
+    public static String getLng() {
+        return Remember.getString("lng", "");
     }
 
 }
