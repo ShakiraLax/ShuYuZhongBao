@@ -1,8 +1,7 @@
 package com.sypm.shuyuzhongbao;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,10 +56,12 @@ import static android.app.Activity.RESULT_OK;
 
 public class IndexFragment extends BaseFragment implements LocationSource, AMapLocationListener {
 
+    private static final String TAG = "IndexFragment";
+
     private RefreshableView refreshableView;
 
     private ListView listView;
-    private int recLen = 0;
+//    private int recLen = 0;
     private boolean isOnline = true;
     private List<SelecteOrder.ListBean> list;
     private TextView endure, accept_num, salary, percent;
@@ -68,7 +70,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     private double WD, JD;//纬度lat,经度lng
     private boolean isFirstPass = true;
 
-    /*高德start*/
+    /**高德start*/
     //显示地图需要的变量
     private MapView mapView;//地图控件
     private AMap aMap;//地图对象
@@ -80,14 +82,14 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
-    /*高德end*/
+    /**高德end*/
 
-    /*共享handler*/
+    /**共享handler*/
     public static final int UPDATE = 1;
     private MyHandler myHandler = null;
     private MyApplication mAPP = null;
 
-    Handler handler = new Handler();
+    /*Handler handler = new Handler();
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -96,13 +98,12 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             //每隔60秒上传一次位置信息
             handler.postDelayed(this, 60000);
         }
-    };
+    };*/
 
     /**
      * 自己实现 Handler 处理消息更新UI
-     *
-     * @author mark
-     */
+     *接受到来自订单详情界面的消息就进行获取订单操作
+     * */
     final class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -127,40 +128,25 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     private TextView txtOnlinLeft;
     private TextView txtOnlinRight;
 
-    private void updateInfo() {
-        /*判断是上线状态后开始上传位置信息*/
+    /*private void updateInfo() {
+        *//*判断是上线状态后开始上传位置信息*//*
         if (isOnline) {
-//            startAlarm();
+
         }
         return;
-    }
-
-    public void startAlarm() {
-        /**
-         首先获得系统服务
-         */
-        AlarmManager am = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-
-        /** 设置闹钟的意图，我这里是去调用一个服务，该服务功能就是获取位置并且上传*/
-        Intent intent = new Intent(getActivity(), LocationService.class);
-        PendingIntent pendSender = PendingIntent.getService(getActivity(), 0, intent, 0);
-        am.cancel(pendSender);
-
-        /**AlarmManager.RTC_WAKEUP 这个参数表示系统会唤醒进程；我设置的间隔时间是1分钟 */
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1 * 60 * 1000, pendSender);
-    }
+    }*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("执行顺序", "onCreate");
+        Log.d(TAG, "onCreate");
         //允许刷新按钮
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
-        runnable.run();
+//        runnable.run();
     }
 
     private void initView(View inflate) {
-        Log.d("执行顺序", "initView");
+        Log.d(TAG, "initView");
         txtMyOrder = (TextView) inflate.findViewById(R.id.txt_myorder_index);
         txtWorkingOrder = (TextView) inflate.findViewById(R.id.txt_workingorder_index);
         txtPassOrder = (TextView) inflate.findViewById(R.id.txt_passorder_index);
@@ -174,7 +160,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("执行顺序", "onCreateView");
+        Log.d(TAG, "onCreateView");
         View inflate = inflater.inflate(R.layout.fragment_index, container, false);
         initView(inflate);
         return inflate;
@@ -183,11 +169,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        Log.d("执行顺序", "onActivityCreated");
+        Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
         mAPP = (MyApplication) getActivity().getApplication();
         myHandler = new MyHandler();
+        /**共享handler实现在订单详情界面返回到主界面时获取是否有新订单功能 */
         mAPP.setHandler(myHandler);
+        mAPP.startAlarm();
 
         calendar = Calendar.getInstance();
         endure = (TextView) getView().findViewById(R.id.endure);
@@ -213,6 +201,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
                             if (response.isSuccessful()) {
                                 if (response.body().getStatus() == 1) {
+//                                    list.clear();
                                     list = response.body().getList();
                                     listAdapter.refresh(list);
                                     Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
@@ -232,6 +221,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
                             if (response.isSuccessful()) {
                                 if (response.body().getStatus() == 1) {
+//                                    list.clear();
                                     list = response.body().getList();
                                     listAdapter.refresh(list);
                                     Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
@@ -251,6 +241,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
                             if (response.isSuccessful()) {
                                 if (response.body().getStatus() == 1) {
+//                                    list.clear();
                                     list = response.body().getList();
                                     listAdapter.refresh(list);
                                     Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
@@ -270,6 +261,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                         public void onResponse(Call<SelecteOrder> call, Response<SelecteOrder> response) {
                             if (response.isSuccessful()) {
                                 if (response.body().getStatus() == 1) {
+//                                    list.clear();
                                     list = response.body().getList();
                                     listAdapter.refresh(list);
                                     Toast.makeText(getActivity(), "已刷新", Toast.LENGTH_SHORT).show();
@@ -286,12 +278,14 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                 refreshableView.finishRefreshing();
             }
         }, 0);
+
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 initData();
             }
         });
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -477,16 +471,8 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         });
     }
 
-    /*fragment切换时执行*/
-    /*@Override
-    public void onHiddenChanged(boolean hidden) {
-        Log.d("生命周期", "执行");
-        super.onHiddenChanged(hidden);
-        setupListView();
-    }*/
-
     private void autoLine() {
-        Log.d("执行顺序", "autoLine");
+        Log.d(TAG, "autoLine");
         /*自动上线*/
         Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("1");
         call.enqueue(new Callback<DataResult>() {
@@ -503,7 +489,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     private void getOrder() {
-        Log.d("执行顺序", "getOrder");
+        Log.d(TAG, "getOrder");
         Call<OrderBySn> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
         getOrder.enqueue(new Callback<OrderBySn>() {
             @Override
@@ -529,7 +515,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     }
 
     private void initData() {
-        Log.d("执行顺序", "initData");
+        Log.d(TAG, "initData");
         /*未接受订单*/
         Call<OrderBySn> getOrder = RetrofitClient.getInstance().getSYService().getOrder();
         getOrder.enqueue(new Callback<OrderBySn>() {
@@ -583,46 +569,67 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             @Override
             public void onClick(View v) {
                 if (txtOnlinRight.getText().equals("我要下线")) {
-                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
-                    call.enqueue(new Callback<DataResult>() {
-                        @Override
-                        public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                            Snackbar snackbar = Snackbar.make(getView(), "下线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
-                            snackbar.getView().setBackgroundResource(R.color.orange);
-                            snackbar.setActionTextColor(Color.WHITE);
-                            snackbar.show();
-                            txtOnlinLeft.setText("我要上线");
-                            txtOnlinLeft.setBackgroundResource(R.drawable.rect_offleft);
-                            txtOnlinRight.setText("离线中");
-                            txtOnlinRight.setBackgroundResource(R.drawable.rect_offright);
-                            refresh.setBackgroundResource(R.color.translucent_background);
-                            endure.setText("已离线");
-                            endure.setTextColor(Color.GRAY);
-                            accept_num.setTextColor(Color.GRAY);
-                            salary.setTextColor(Color.GRAY);
-                            percent.setTextColor(Color.GRAY);
-                            txtMyOrder.setTextColor(Color.GRAY);
-                            txtMyOrder.setClickable(false);
-                            txtWorkingOrder.setTextColor(Color.GRAY);
-                            txtWorkingOrder.setClickable(false);
-                            txtPassOrder.setTextColor(Color.GRAY);
-                            txtPassOrder.setClickable(false);
-                            txtPassOrder2.setTextColor(Color.GRAY);
-                            txtPassOrder2.setClickable(false);
-                            viewLine1.setBackgroundResource(R.color.txtcolornoclick);
-                            viewLine2.setBackgroundResource(R.color.txtcolornoclick);
-                            viewLine3.setBackgroundResource(R.color.txtcolornoclick);
-                            viewLine4.setBackgroundResource(R.color.txtcolornoclick);
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("提示")
+                            .setMessage("您确定下线并直接退出程序吗")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
 
-                            isOnline = false;
-                            listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
-                        }
+                                }
+                            })
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
+                                    call.enqueue(new Callback<DataResult>() {
+                                        @Override
+                                        public void onResponse(Call<DataResult> call, Response<DataResult> response) {
+                                            if (response.body().status.equals("1")) {
+                                                mAPP.stopAlarm();
+                                                System.exit(0);
+//                                Snackbar snackbar = Snackbar.make(getView(), "下线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
+//                                snackbar.getView().setBackgroundResource(R.color.orange);
+//                                snackbar.setActionTextColor(Color.WHITE);
+//                                snackbar.show();
+//                                txtOnlinLeft.setText("我要上线");
+//                                txtOnlinLeft.setBackgroundResource(R.drawable.rect_offleft);
+//                                txtOnlinRight.setText("离线中");
+//                                txtOnlinRight.setBackgroundResource(R.drawable.rect_offright);
+//                                refresh.setBackgroundResource(R.color.translucent_background);
+//                                endure.setText("已离线");
+//                                endure.setTextColor(Color.GRAY);
+//                                accept_num.setTextColor(Color.GRAY);
+//                                salary.setTextColor(Color.GRAY);
+//                                percent.setTextColor(Color.GRAY);
+//                                txtMyOrder.setTextColor(Color.GRAY);
+//                                txtMyOrder.setClickable(false);
+//                                txtWorkingOrder.setTextColor(Color.GRAY);
+//                                txtWorkingOrder.setClickable(false);
+//                                txtPassOrder.setTextColor(Color.GRAY);
+//                                txtPassOrder.setClickable(false);
+//                                txtPassOrder2.setTextColor(Color.GRAY);
+//                                txtPassOrder2.setClickable(false);
+//                                viewLine1.setBackgroundResource(R.color.txtcolornoclick);
+//                                viewLine2.setBackgroundResource(R.color.txtcolornoclick);
+//                                viewLine3.setBackgroundResource(R.color.txtcolornoclick);
+//                                viewLine4.setBackgroundResource(R.color.txtcolornoclick);
+//                                isOnline = false;
+//                                listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
+                                            } else {
+                                                Toast.makeText(getActivity(), "未成功下线", Toast.LENGTH_SHORT).show();
+                                            }
 
-                        @Override
-                        public void onFailure(Call<DataResult> call, Throwable t) {
+                                        }
 
-                        }
-                    });
+                                        @Override
+                                        public void onFailure(Call<DataResult> call, Throwable t) {
+
+                                        }
+                                    });
+//
+                                }
+                            }).show();
                 }
             }
         });
@@ -634,44 +641,52 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
                     call.enqueue(new Callback<DataResult>() {
                         @Override
                         public void onResponse(Call<DataResult> call, Response<DataResult> response) {
-                            initData();
+                            if (response.body().status.equals("1")) {
+                                initData();
 //                            setupListView();
-                            Snackbar snackbar = Snackbar.make(getView(), "上线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
-                            snackbar.getView().setBackgroundResource(R.color.orange);
-                            snackbar.setActionTextColor(Color.WHITE);
-                            snackbar.show();
-                            txtOnlinLeft.setText("上线中");
-                            txtOnlinLeft.setBackgroundResource(R.drawable.rect_onleft);
-                            txtOnlinRight.setText("我要下线");
-                            txtOnlinRight.setBackgroundResource(R.drawable.rect_onright);
-                            refresh.setBackgroundResource(R.color.orange);
+                                Snackbar snackbar = Snackbar.make(getView(), "上线成功！", Snackbar.LENGTH_LONG).setAction("Action", null);
+                                snackbar.getView().setBackgroundResource(R.color.orange);
+                                snackbar.setActionTextColor(Color.WHITE);
+                                snackbar.show();
+
+                                mAPP.startAlarm();
+
+                                txtOnlinLeft.setText("上线中");
+                                txtOnlinLeft.setBackgroundResource(R.drawable.rect_onleft);
+                                txtOnlinRight.setText("我要下线");
+                                txtOnlinRight.setBackgroundResource(R.drawable.rect_onright);
+                                refresh.setBackgroundResource(R.color.orange);
 //                            endure.setText("在线：" + totalLine.endure + "小时");
-                            endure.setTextColor(Color.WHITE);
-                            accept_num.setTextColor(Color.WHITE);
-                            salary.setTextColor(Color.WHITE);
-                            percent.setTextColor(Color.WHITE);
-                            if (viewLine1.getVisibility() == View.VISIBLE) {
-                                txtMyOrder.setTextColor(getResources().getColor(R.color.orange));
+                                endure.setTextColor(Color.WHITE);
+                                accept_num.setTextColor(Color.WHITE);
+                                salary.setTextColor(Color.WHITE);
+                                percent.setTextColor(Color.WHITE);
+                                if (viewLine1.getVisibility() == View.VISIBLE) {
+                                    txtMyOrder.setTextColor(getResources().getColor(R.color.orange));
+                                }
+                                txtMyOrder.setClickable(true);
+                                if (viewLine2.getVisibility() == View.VISIBLE) {
+                                    txtWorkingOrder.setTextColor(getResources().getColor(R.color.orange));
+                                }
+                                txtWorkingOrder.setClickable(true);
+                                if (viewLine3.getVisibility() == View.VISIBLE) {
+                                    txtPassOrder.setTextColor(getResources().getColor(R.color.orange));
+                                }
+                                txtPassOrder.setClickable(true);
+                                if (viewLine4.getVisibility() == View.VISIBLE) {
+                                    txtPassOrder2.setTextColor(getResources().getColor(R.color.orange));
+                                }
+                                txtPassOrder2.setClickable(true);
+                                viewLine1.setBackgroundResource(R.color.orange);
+                                viewLine2.setBackgroundResource(R.color.orange);
+                                viewLine3.setBackgroundResource(R.color.orange);
+                                viewLine4.setBackgroundResource(R.color.orange);
+                                isOnline = true;
+                                listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
+                            } else {
+                                Toast.makeText(getActivity(), "未成功上线", Toast.LENGTH_SHORT).show();
                             }
-                            txtMyOrder.setClickable(true);
-                            if (viewLine2.getVisibility() == View.VISIBLE) {
-                                txtWorkingOrder.setTextColor(getResources().getColor(R.color.orange));
-                            }
-                            txtWorkingOrder.setClickable(true);
-                            if (viewLine3.getVisibility() == View.VISIBLE) {
-                                txtPassOrder.setTextColor(getResources().getColor(R.color.orange));
-                            }
-                            txtPassOrder.setClickable(true);
-                            if (viewLine4.getVisibility() == View.VISIBLE) {
-                                txtPassOrder2.setTextColor(getResources().getColor(R.color.orange));
-                            }
-                            txtPassOrder2.setClickable(true);
-                            viewLine1.setBackgroundResource(R.color.orange);
-                            viewLine2.setBackgroundResource(R.color.orange);
-                            viewLine3.setBackgroundResource(R.color.orange);
-                            viewLine4.setBackgroundResource(R.color.orange);
-                            isOnline = true;
-                            listView.setAdapter(new ListAdapter(getContext(), list, isOnline));
+
                         }
 
                         @Override
@@ -688,7 +703,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2000 && resultCode == RESULT_OK) {
-            Log.d("执行顺序", "requestCode == 2000");
+            Log.d(TAG, "requestCode == 2000");
 //            initData();
             if (viewLine1.getVisibility() == View.VISIBLE) {
                 setupListView2("5");
@@ -701,7 +716,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
             }
         }
         if (requestCode == 1000 && resultCode == RESULT_OK) {
-            Log.d("执行顺序", "requestCode == 1000");
+            Log.d(TAG, "requestCode == 1000");
 //            initData();
             getOrder();
         }
@@ -713,7 +728,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
         calendar.setTimeInMillis(System.currentTimeMillis());
         StringBuffer sb = new StringBuffer();
         int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         Log.i(">>>>calendar", year + " -" + month + " -" + day);
         sb.append(year + "." + month + "." + day);
@@ -722,7 +737,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     //获取未取货的订单
     private void setupListView() {
-        Log.d("执行顺序", "setupListView");
+        Log.d(TAG, "setupListView");
 //        listView.setAdapter(new ListAdapter(getContext(), null));
         Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder("5", getDate(), "1");
         selectCall.enqueue(new Callback<SelecteOrder>() {
@@ -745,7 +760,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     //未通过接单界面进入的订单详情界面的情况根据tab状态更新相应的type
     private void setupListView2(String type) {
-        Log.d("执行顺序", "setupListView2");
+        Log.d(TAG, "setupListView2");
 //        listView.setAdapter(new ListAdapter(getContext(), null));
         Call<SelecteOrder> selectCall = RetrofitClient.getInstance().getSYService().selecteOrder(type, getDate(), "1");
         selectCall.enqueue(new Callback<SelecteOrder>() {
@@ -815,11 +830,11 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
     }
 
-    /*-----------------高德地图相关类----------------*/
+    /**-----------------高德地图相关类----------------*/
 
     //定位
     private void initLoc() {
-        Log.d("执行顺序", "initLoc");
+        Log.d(TAG, "initLoc");
         //初始化定位
         mLocationClient = new AMapLocationClient(getContext());//getApplicationContext
         //设置定位回调监听
@@ -863,7 +878,7 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
 
                 }
                 if (isFirstPass) {
-                    updateInfo();
+//                    updateInfo();
                     isFirstPass = false;
                     Log.i(">>>>isFirstPass", "" + isFirstPass);
 //                    ToastUtils.show("定位成功！");
@@ -924,11 +939,13 @@ public class IndexFragment extends BaseFragment implements LocationSource, AMapL
      */
     @Override
     public void onDestroy() {
-        Log.d("执行顺序", "onDestroy");
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
+        mAPP.stopAlarm();
         mLocationClient.stopLocation();
         mapView.onDestroy();
-        handler.removeCallbacks(runnable);
+//        handler.removeCallbacks(runnable);
+
         /*退出应用时下线*/
         /*Call<DataResult> call = RetrofitClient.getInstance().getSYService().line("2");
         call.enqueue(new Callback<DataResult>() {

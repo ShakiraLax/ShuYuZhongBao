@@ -23,6 +23,13 @@ public class WelcomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //防止初次安装点击打开多开的问题
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_welcome);
 
         if (!Utils.isNetAvailable(this)) {

@@ -2,11 +2,8 @@ package com.sypm.shuyuzhongbao;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
@@ -27,6 +24,8 @@ public class LocationService extends Service {
     private static final String TAG = "LocationService";
 
     private int recLen = 0;
+    private String lat = null;
+    private String lng = null;
     //声明AMapLocationClient类对象
     AMapLocationClient mLocationClient = null;
     //声明AMapLocationClientOption对象
@@ -42,14 +41,15 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "start LocationService!");
-        netThread.start();
+//        netThread.start();
+        runnable.run();
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
         //设置定位回调监听
         mLocationClient.setLocationListener(mLocationListener);
         //初始化AMapLocationClientOption对象
         mLocationOption = new AMapLocationClientOption();
-        //设置定位模式为AMapLocationMode.Battery_Saving，省电模式。
+        //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //设置是否只定位一次,默认为false
         mLocationOption.setOnceLocation(false);
@@ -68,27 +68,18 @@ public class LocationService extends Service {
 
     }
 
-    Handler netHandler = null;
-
-    /**
-     * 收发网络数据的线程
-     */
-    Thread netThread = new Thread() {
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            Looper.prepare();
-            netHandler = new Handler() {
-                public void dispatchMessage(Message msg) {
-                    Bundle data = msg.getData();
-                    switch (msg.what) {
-                        case 0x1: //发送位置
-                            updateInfo(data.getString("latitude"), data.getString("longitude"));
-                            break;
+            recLen++;
+            /**未获取到定位数据时不上传信息*/
+            if (!(lat == null)) {
+                updateInfo(lat, lng);
+            }
 
-                    }
-                }
-            };
-            Looper.loop();
+            //每隔30秒上传一次位置信息
+            handler.postDelayed(this, 30000);
         }
     };
 
@@ -143,22 +134,32 @@ public class LocationService extends Service {
             Double latitude = amapLocation.getLatitude();//获取纬度
             String longitudestr = String.valueOf(longitude);
             String latitudestr = String.valueOf(latitude);
+            lat = latitudestr;
+            lng = longitudestr;
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date(amapLocation.getTime());
             String timestr = df.format(date);
             Log.i(TAG, "longitude,latitude:" + longitude + "," + latitude);
             Log.i(TAG, "time:" + timestr);
-            Message msg = new Message();
-            Bundle data = new Bundle();
-            data.putString("longitude", longitudestr);
-            data.putString("latitude", latitudestr);
-            data.putString("timestr", timestr);
-            msg.setData(data);
-            msg.what = 0x1;
-            netHandler.sendMessage(msg);
+//            Message msg = new Message();
+//            Bundle data = new Bundle();
+//            data.putString("longitude", longitudestr);
+//            data.putString("latitude", latitudestr);
+//            data.putString("timestr", timestr);
+//            msg.setData(data);
+//            msg.what = 0x1;
+//            netHandler.sendMessage(msg);
 
 //            RememberHelper.saveLocation(latitudestr, longitudestr);
         }
     };
 
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "线程结束");
+//        netThread.stop();
+        super.onDestroy();
+        handler.removeCallbacks(runnable);
+        mLocationClient.stopLocation();
+    }
 }

@@ -54,6 +54,11 @@ import static android.R.attr.mode;
 
 /**
  * 订单详情
+ * 可跳转到此界面的情景
+ * 抢单成功后
+ * 首页 未取货 已取货 已完成 列表项
+ * 收入界面 收入列表
+ * 订单状态发生变化  如配送员已取货，客服取消订单，点击“我知道了”之后
  */
 
 public class OrderDetailActivity2 extends BaseActivity implements LocationSource, AMapLocationListener, RouteSearch.OnRouteSearchListener {
@@ -95,7 +100,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         setContentView(R.layout.activity_order_detail2);
 
         mAPP = (MyApplication) getApplication();
-        // 获得该共享变量实例
+        /**获得该共享变量实例*/
         mHandler = mAPP.getHandler();
 
         shipSn = (TextView) findViewById(R.id.shipSn);
@@ -121,7 +126,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         layoutOfOrderAndGoods = (LinearLayout) findViewById(R.id.layoutOfOrderAndGoods);
         goods = (LinearLayout) findViewById(R.id.goods);
 
-        /*修改门店，跳转到门店列表*/
+        /**修改门店，跳转到门店列表*/
         modify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,10 +136,10 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             }
         });
 
-        /*路线规划*/
+        /**路线规划*/
         mRouteSearch = new RouteSearch(this);
 
-        /*联系门店*/
+        /**联系门店*/
         connectStore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,7 +150,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             }
         });
 
-        /*联系买家*/
+        /**联系买家*/
         connectUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,7 +161,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             }
         });
 
-        /*拨打电话*/
+        /**拨打电话*/
         phone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,41 +172,41 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             }
         });
 
-        /*接单界面传过来的sn*/
+        /**接单界面传过来的sn*/
         shipSnFromGrab = getIntent().getStringExtra("orderFromGrab");
         if (shipSnFromGrab != null) {
-            Log.d("shipSnFromGrab", shipSnFromGrab);
+            Log.d("OrderDetailActivity2", shipSnFromGrab);
             SHIPSN = shipSnFromGrab;
             setupOrderDetail();
         }
 
-        /*流水列表传过来的sn*/
+        /**流水列表传过来的sn*/
         moneyList = (MoneyList.ListBean) getIntent().getSerializableExtra("item");
         if (moneyList != null) {
-            Log.d("根据订单号获取订单详情", moneyList.shipSn);
+            Log.d("OrderDetailActivity2", moneyList.shipSn);
             initOrderData();
         }
 
-        /*首页列表item传过来的sn*/
+        /**首页列表item传过来的sn*/
         shipSnFromFirstPage = getIntent().getStringExtra("shipSn");
         if (shipSnFromFirstPage != null) {
-            Log.d("shipSnFromFirstPage", shipSnFromFirstPage);
+            Log.d("OrderDetailActivity2", shipSnFromFirstPage);
             SHIPSN = shipSnFromFirstPage;
             setupOrderDetail();
         }
 
-        /*极光推送传过来的sn*/
+        /**极光推送传过来的sn*/
         shipSnFromJP = getIntent().getStringExtra("quhuo");
         if (shipSnFromJP != null) {
-            Log.d("shipSnFromJP", shipSnFromJP);
+            Log.d("OrderDetailActivity2", shipSnFromJP);
             SHIPSN = shipSnFromJP;
             setupOrderDetail();
         }
 
-        /*订单状态发生变化后传过来的sn*/
+        /**订单状态发生变化后传过来的sn*/
         shipSnFromStatusChange = getIntent().getStringExtra("wozhidao");
         if (shipSnFromStatusChange != null) {
-            Log.d("shipSnFromStatusChange", shipSnFromStatusChange);
+            Log.d("OrderDetailActivity2", shipSnFromStatusChange);
             SHIPSN = shipSnFromStatusChange;
             setupOrderDetail();
         }
@@ -234,7 +239,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     }
 
     /**
-     * 时间前推或后推分钟,其中minute表示分钟.
+     * 时间前推或后推分钟,其中minute表示分钟
      */
     public static String getPreTime(String time, String minute) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -249,7 +254,9 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         return reachingTime;
     }
 
-    //根据首页订单号展示订单详情包括商品信息
+    /**
+     * 根据首页订单号展示订单详情包括商品信息
+     */
     private void setupOrderDetail() {
         final Call<OrderBySn> orderDetailCall = RetrofitClient.getInstance().getSYService().getOrderDetail(SHIPSN);
         orderDetailCall.enqueue(new Callback<OrderBySn>() {
@@ -292,6 +299,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByIndex.list.goodsList;
                         if (goodsList != null) {
                             goods.setVisibility(View.VISIBLE);
+                            layoutOfOrderAndGoods.removeAllViews();
                             for (int i = 0; i < orderByIndex.list.goodsList.size(); i++) {
                                 TextView goodsTitle = new TextView(getApplicationContext());
                                 goodsTitle.setTextColor(0xff000000);
@@ -353,7 +361,9 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         });
     }
 
-    /*根据收入列表传输过来的shipSn获取订单详情*/
+    /**
+     * 根据收入列表传输过来的shipSn获取订单详情
+     */
     private void initOrderData() {
         Call<OrderBySn> call = RetrofitClient.getInstance().getSYService().getOrderDetail(moneyList.shipSn);
         call.enqueue(new Callback<OrderBySn>() {
@@ -392,6 +402,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         List<OrderBySn.DataBean.GoodsListBean> goodsList = orderByShipSn.list.goodsList;
                         if (goodsList != null) {
                             goods.setVisibility(View.VISIBLE);
+                            layoutOfOrderAndGoods.removeAllViews();
                             for (int i = 0; i < orderByShipSn.list.goodsList.size(); i++) {
                                 TextView goodsTitle = new TextView(getApplicationContext());
                                 goodsTitle.setTextColor(0xff000000);
@@ -451,7 +462,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
     }
 
     private void initData() {
-        /*客户拒单*/
+        /**客户拒单*/
         customerReject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -463,7 +474,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                         if (response.body() != null) {
                             if (response.body().status.equals("1")) {
                                 Intent intent = new Intent(getActivity(), MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                /*intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);*/
                                 setResult(RESULT_OK);
                                 Toast.makeText(getActivity(), "客户拒单提交成功", Toast.LENGTH_LONG).show();
                                 startActivity(intent);
@@ -489,7 +500,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
             }
         });
 
-        /*完成配送*/
+        /**完成配送*/
         dispatchingDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -502,7 +513,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                             if (response.body().status.equals("1")) {
                                 Toast.makeText(getActivity(), "提交成功", Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(getActivity(), MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                /*intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);*/
                                 setResult(RESULT_OK);
                                 startActivity(intent);
                                 finish();
@@ -512,6 +523,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
                                 finish();
                             }
                         } else {
+
                             Toast.makeText(getActivity(), "提交失败", Toast.LENGTH_LONG).show();
                             setResult(RESULT_OK);
                             finish();
@@ -540,6 +552,7 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
 //        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         setResult(RESULT_OK);
 //        startActivity(intent);
+        /**返回主界面时发送消息，使其自动获取指派未接受订单*/
         mHandler.sendEmptyMessage(UPDATE);
         finish();
     }
@@ -552,7 +565,9 @@ public class OrderDetailActivity2 extends BaseActivity implements LocationSource
         }
     }
 
-    /*-----------------高德地图相关-----------------*/
+    /**
+     * -----------------高德地图相关-----------------
+     */
 
     //定位
     private void initLoc() {

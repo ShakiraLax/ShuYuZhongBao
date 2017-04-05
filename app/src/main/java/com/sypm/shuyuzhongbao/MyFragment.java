@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.sypm.shuyuzhongbao.api.RetrofitClient;
 import com.sypm.shuyuzhongbao.data.DataResult;
+import com.sypm.shuyuzhongbao.utils.AndroidUtils;
 import com.sypm.shuyuzhongbao.utils.BaseFragment;
 import com.sypm.shuyuzhongbao.utils.RememberHelper;
 
@@ -28,15 +29,17 @@ import retrofit2.Response;
 public class MyFragment extends BaseFragment {
 
     LinearLayout personal, feedback, modifyPass, workTime, exit;
-    TextView number, phone;
+    TextView number, phone, version;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         number = (TextView) view.findViewById(R.id.number);
         phone = (TextView) view.findViewById(R.id.phone);
+        version = (TextView) view.findViewById(R.id.version);
         number.setText("NO." + RememberHelper.getNumber());
         phone.setText(RememberHelper.getPhone());
+        version.setText("版本号：" + AndroidUtils.getAppVersion(getActivity()));
     }
 
     @Override

@@ -29,6 +29,8 @@ import retrofit2.Response;
 
 public class MainActivity extends FragmentManagerActivity {
 
+    private static final String TAG = "MainActivity";
+
     private static final int INDEX = 0;
 
     private static final int MONEY = 1;
@@ -44,6 +46,7 @@ public class MainActivity extends FragmentManagerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d(TAG, "onCreate");
         initGPS();
         initView();
         if (savedInstanceState == null) {
@@ -53,11 +56,13 @@ public class MainActivity extends FragmentManagerActivity {
     }
 
     private void setupUpdate() {
+        Log.d(TAG, "setupUpdate");
         AVUpdates updates = new AVUpdates(this);
         updates.checkForUpdates(RetrofitClient.CHECK_VERSION);
     }
 
     private void initGPS() {
+        Log.d(TAG, "initGPS");
         LocationManager locationManager = (LocationManager) this
                 .getSystemService(Context.LOCATION_SERVICE);
         // 判断GPS模块是否开启，如果没有则开启
@@ -88,6 +93,7 @@ public class MainActivity extends FragmentManagerActivity {
     }
 
     private void initView() {
+        Log.d(TAG, "initView");
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setCustomView(createCustomTab("首页", R.drawable.main_tab_one)), true);
         tabLayout.addTab(tabLayout.newTab().setCustomView(createCustomTab("收入", R.drawable.main_tab_two)));
@@ -122,6 +128,7 @@ public class MainActivity extends FragmentManagerActivity {
 
     @Override
     public Fragment createFragment(int index) {
+        Log.d(TAG, "createFragment");
         switch (index) {
             case INDEX:
                 return new IndexFragment();
@@ -135,6 +142,7 @@ public class MainActivity extends FragmentManagerActivity {
 
 
     View createCustomTab(String text, int iconRes) {
+        Log.d(TAG, "createCustomTab");
         View view = getLayoutInflater().inflate(R.layout.view_custom_tab, null);
         TextView textView = (TextView) view.findViewById(R.id.tabText);
         ImageView imageView = (ImageView) view.findViewById(R.id.tabIcon);
@@ -145,12 +153,14 @@ public class MainActivity extends FragmentManagerActivity {
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
         exitApp();
     }
 
@@ -158,6 +168,7 @@ public class MainActivity extends FragmentManagerActivity {
 
     //再按一次退出
     private void exitApp() {
+        Log.d(TAG, "exitApp");
         new AlertDialog.Builder(getActivity())
                 .setTitle("提示")
                 .setMessage("您确定退出漱玉嗖嗖并下线吗")
@@ -231,5 +242,11 @@ public class MainActivity extends FragmentManagerActivity {
             msgText.setText(msg);
             msgText.setVisibility(android.view.View.VISIBLE);
         }*/
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.d(TAG, "onNewIntent");
+        super.onNewIntent(intent);
     }
 }
